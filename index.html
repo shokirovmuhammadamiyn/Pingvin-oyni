@@ -1,926 +1,920 @@
 <!DOCTYPE html>
 <html lang="uz">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Pingvinlar Boshqotirmasi - Bubble Sort O'yini</title>
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Quicksand:wght@600;700&display=swap" rel="stylesheet">
-    <!-- Confetti effects for victory -->
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bubble Sort Boshqotirmasi - Multik Personajlar</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+      font-family: 'Fredoka', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
 
-    <style>
-        :root {
-            --arctic-sky-top: #0e1e38;
-            --arctic-sky-mid: #254a78;
-            --arctic-sky-bottom: #7ca8d4;
-            --ice-surface: #e9f7fe;
-            --ice-side: #7db1d3;
-        }
+    :root {
+      --bg-gradient: radial-gradient(circle at 50% 20%, #294073, #111a33);
+      --stage-floor: #e0f2fe;
+      --card-bg: rgba(255, 255, 255, 0.12);
+      --accent: #f59e0b;
+    }
 
-        * {
-            box-sizing: border-box;
-            user-select: none;
-            -webkit-user-select: none;
-        }
+    body {
+      background: var(--bg-gradient);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      padding: 24px 12px;
+      color: #fff;
+      overflow-x: hidden;
+      transition: background 0.8s ease;
+    }
 
-        body {
-            font-family: 'Quicksand', sans-serif;
-            background: linear-gradient(180deg, var(--arctic-sky-top) 0%, var(--arctic-sky-mid) 40%, var(--arctic-sky-bottom) 85%, #b9dcf2 100%);
-            min-height: 100vh;
-            overflow-x: hidden;
-        }
+    header {
+      text-align: center;
+      margin-bottom: 16px;
+    }
 
-        .font-bubble {
-            font-family: 'Fredoka One', cursive, sans-serif;
-        }
+    h1 {
+      font-size: 2.2rem;
+      letter-spacing: 1px;
+      color: #fcd34d;
+      text-shadow: 0 4px 15px rgba(0,0,0,0.5);
+      margin-bottom: 6px;
+    }
 
-        /* Ambient falling snowflakes */
-        .snow-particle {
-            position: fixed;
-            top: -12px;
-            color: #ffffff;
-            pointer-events: none;
-            z-index: 5;
-            animation: snowfall linear infinite;
-        }
+    p.tagline {
+      font-size: 1rem;
+      color: #cbd5e1;
+    }
 
-        @keyframes snowfall {
-            0% {
-                transform: translateY(-10px) translateX(0) rotate(0deg);
-                opacity: 0.95;
-            }
-            100% {
-                transform: translateY(105vh) translateX(45px) rotate(360deg);
-                opacity: 0.2;
-            }
-        }
+    /* Personaj tanlash paneli */
+    .theme-selector {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+      background: rgba(0, 0, 0, 0.25);
+      padding: 6px 12px;
+      border-radius: 40px;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      flex-wrap: wrap;
+      justify-content: center;
+    }
 
-        /* Ice stage 3D effect */
-        .ice-iceberg {
-            background: linear-gradient(180deg, #f0faff 0%, #d8f1fe 40%, #a4d7f5 100%);
-            border-bottom: 14px solid #5d98bc;
-            box-shadow: 0 25px 45px rgba(8, 28, 56, 0.45), inset 0 3px 8px rgba(255, 255, 255, 0.95);
-            border-radius: 36px;
-        }
+    .theme-btn {
+      background: transparent;
+      border: 2px solid transparent;
+      color: #cbd5e1;
+      font-size: 0.95rem;
+      font-weight: 700;
+      padding: 8px 18px;
+      border-radius: 25px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.25s ease;
+    }
 
-        /* Glassmorphism panels */
-        .frosted-glass {
-            background: rgba(255, 255, 255, 0.88);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 2px solid rgba(255, 255, 255, 0.85);
-            box-shadow: 0 12px 30px rgba(12, 38, 71, 0.2);
-        }
+    .theme-btn:hover {
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
+    }
 
-        /* Penguin interaction animations */
-        .penguin-slot {
-            transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-            transform-origin: bottom center;
-        }
+    .theme-btn.active {
+      background: #f59e0b;
+      color: #111827;
+      border-color: #fde68a;
+      box-shadow: 0 4px 15px rgba(245, 158, 11, 0.4);
+      transform: scale(1.05);
+    }
 
-        /* Selected penguin pointer halo */
-        .penguin-slot.is-selected {
-            filter: drop-shadow(0 0 16px rgba(250, 204, 21, 0.95));
-            transform: translateY(-12px) scale(1.08);
-        }
+    /* O'yin maydoni */
+    .game-arena {
+      position: relative;
+      width: 100%;
+      max-width: 900px;
+      height: 380px;
+      background: var(--card-bg);
+      backdrop-filter: blur(12px);
+      border-radius: 28px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      box-shadow: 0 20px 50px rgba(0,0,0,0.45);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+    }
 
-        .penguin-slot.is-neighbor-selected {
-            filter: drop-shadow(0 0 14px rgba(56, 189, 248, 0.9));
-        }
+    /* Tabiat foni / dekoratsiyalar */
+    .scenery {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 1;
+    }
 
-        /* Sakrab o'tish (Jumping swap arc) */
-        .jump-right-arc {
-            animation: jumpRight 0.55s cubic-bezier(0.25, 1, 0.5, 1) forwards !important;
-            z-index: 30;
-        }
+    .scenery-item {
+      position: absolute;
+      opacity: 0.85;
+      filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3));
+      transition: all 0.6s ease;
+    }
 
-        .jump-left-arc {
-            animation: jumpLeft 0.55s cubic-bezier(0.25, 1, 0.5, 1) forwards !important;
-            z-index: 25;
-        }
+    /* Muzlik / Yer platformasi */
+    .stage-platform {
+      position: relative;
+      z-index: 2;
+      width: 100%;
+      height: 70px;
+      background: var(--stage-floor);
+      border-top: 4px solid rgba(255, 255, 255, 0.8);
+      border-radius: 0 0 28px 28px;
+      box-shadow: inset 0 8px 16px rgba(0,0,0,0.15);
+    }
 
-        @keyframes jumpRight {
-            0% { transform: translate(0, 0) rotate(0deg); }
-            45% { transform: translate(35px, -65px) rotate(14deg) scale(1.18); }
-            100% { transform: translate(0, 0) rotate(0deg); }
-        }
+    /* Qahramonlar konteyneri */
+    .characters-track {
+      position: absolute;
+      bottom: 60px;
+      left: 0;
+      width: 100%;
+      height: 280px;
+      z-index: 3;
+      display: flex;
+      align-items: flex-end;
+      padding: 0 20px;
+    }
 
-        @keyframes jumpLeft {
-            0% { transform: translate(0, 0) rotate(0deg); }
-            45% { transform: translate(-35px, -65px) rotate(-14deg) scale(1.18); }
-            100% { transform: translate(0, 0) rotate(0deg); }
-        }
+    /* Har bir qahramon slot/kartasi */
+    .char-node {
+      position: absolute;
+      bottom: 0;
+      width: 80px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-end;
+      cursor: pointer;
+      transition: left 0.55s cubic-bezier(0.34, 1.56, 0.64, 1), transform 0.3s ease;
+      transform-origin: bottom center;
+    }
 
-        /* Victory dancing */
-        .victory-dance {
-            animation: winDance 0.8s infinite alternate ease-in-out;
-        }
+    .char-node:hover {
+      transform: translateY(-8px) scale(1.05);
+    }
 
-        @keyframes winDance {
-            0% { transform: translateY(0) rotate(-9deg); }
-            50% { transform: translateY(-30px) rotate(0deg) scale(1.12); }
-            100% { transform: translateY(0) rotate(9deg); }
-        }
+    .char-node.selected {
+      filter: drop-shadow(0 0 16px #fcd34d);
+      transform: translateY(-16px) scale(1.12);
+    }
 
-        /* Cute wing flapping during actions */
-        .is-selected .wing-left, .jump-right-arc .wing-left, .victory-dance .wing-left {
-            animation: flapL 0.28s infinite alternate ease-in-out;
-        }
-        .is-selected .wing-right, .jump-right-arc .wing-right, .victory-dance .wing-right {
-            animation: flapR 0.28s infinite alternate ease-in-out;
-        }
-        @keyframes flapL { 0% { transform: rotate(0deg); } 100% { transform: rotate(-38deg); } }
-        @keyframes flapR { 0% { transform: rotate(0deg); } 100% { transform: rotate(38deg); } }
+    /* Silliq egri sakrash animatsiyasi */
+    .char-node.jumping-left {
+      animation: jumpArcLeft 0.6s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+      z-index: 10;
+    }
 
-        /* Subtle blinking eyes */
-        .eye-pupil {
-            animation: eyeBlink 4.2s infinite;
-            transform-origin: center;
-        }
-        @keyframes eyeBlink {
-            0%, 95%, 100% { transform: scaleY(1); }
-            97% { transform: scaleY(0.1); }
-        }
-    </style>
+    .char-node.jumping-right {
+      animation: jumpArcRight 0.6s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+      z-index: 10;
+    }
+
+    @keyframes jumpArcLeft {
+      0% { transform: translate(0, 0) scale(1); }
+      45% { transform: translate(0, -60px) scale(1.18) rotate(-10deg); }
+      100% { transform: translate(0, 0) scale(1) rotate(0deg); }
+    }
+
+    @keyframes jumpArcRight {
+      0% { transform: translate(0, 0) scale(1); }
+      45% { transform: translate(0, -60px) scale(1.18) rotate(10deg); }
+      100% { transform: translate(0, 0) scale(1) rotate(0deg); }
+    }
+
+    /* Qahramon rasmi / SVG shakli */
+    .character-body {
+      position: relative;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-end;
+    }
+
+    .char-svg {
+      width: 100%;
+      height: 100%;
+      filter: drop-shadow(0 8px 12px rgba(0,0,0,0.35));
+      transition: all 0.3s ease;
+    }
+
+    /* Raqam nishoni */
+    .badge-number {
+      position: absolute;
+      top: 52%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 32px;
+      height: 32px;
+      background: #ffffff;
+      color: #111827;
+      font-size: 1.25rem;
+      font-weight: 900;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.3), inset 0 -2px 4px rgba(0,0,0,0.15);
+      border: 2px solid #fff;
+    }
+
+    /* G'alaba qozongandagi raqs */
+    .char-node.victory {
+      animation: victoryDance 0.7s infinite alternate ease-in-out;
+    }
+
+    @keyframes victoryDance {
+      0% { transform: translateY(0) rotate(-6deg); }
+      100% { transform: translateY(-24px) rotate(6deg); }
+    }
+
+    /* Interaktiv tugmalar paneli */
+    .control-panel {
+      margin-top: 22px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 14px;
+      width: 100%;
+      max-width: 900px;
+    }
+
+    .status-box {
+      font-size: 1.15rem;
+      font-weight: 600;
+      color: #f1f5f9;
+      background: rgba(0, 0, 0, 0.35);
+      padding: 10px 24px;
+      border-radius: 20px;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      min-height: 48px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    }
+
+    .buttons-group {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .btn {
+      padding: 12px 22px;
+      font-size: 1rem;
+      font-weight: 700;
+      border: none;
+      border-radius: 14px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 6px 16px rgba(0,0,0,0.3);
+      color: #fff;
+    }
+
+    .btn:hover:not(:disabled) {
+      transform: translateY(-3px) scale(1.02);
+      box-shadow: 0 10px 22px rgba(0,0,0,0.4);
+    }
+
+    .btn:active:not(:disabled) {
+      transform: translateY(1px);
+    }
+
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none !important;
+    }
+
+    .btn-move { background: linear-gradient(135deg, #0ea5e9, #0284c7); }
+    .btn-step { background: linear-gradient(135deg, #8b5cf6, #6d28d9); }
+    .btn-auto { background: linear-gradient(135deg, #10b981, #059669); }
+    .btn-reset { background: linear-gradient(135deg, #64748b, #475569); }
+
+    /* Konfetti effekti */
+    .confetti-canvas {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 100;
+    }
+  </style>
 </head>
+<body>
 
-<body class="flex flex-col justify-between items-center min-h-screen p-2 sm:p-4 text-slate-800">
+  <canvas id="confettiCanvas" class="confetti-canvas"></canvas>
 
-    <!-- Falling snow layer -->
-    <div id="snowfall-wrap" class="fixed inset-0 pointer-events-none z-0"></div>
+  <header>
+    <h1>Bubble Sort Boshqotirmasi</h1>
+    <p class="tagline">Personajni tanlang, o'zingiz sakratib tartiblang yoki Bubble Sort orqali saralang!</p>
+  </header>
 
-    <!-- Scenery: Igloo, Pine trees and Snowy landscape -->
-    <div class="absolute inset-x-0 bottom-44 sm:bottom-56 pointer-events-none z-0 flex items-end justify-between px-3 sm:px-12 opacity-80">
-        <!-- Snowy Pine Trees -->
-        <svg class="w-24 sm:w-40 h-auto drop-shadow-md" viewBox="0 0 100 120" fill="none">
-            <path d="M50 5 L70 36 H60 L78 68 H66 L86 102 H14 L34 68 H22 L40 36 H30 Z" fill="#134e4a"/>
-            <path d="M50 5 L62 25 H38 Z M50 36 L68 56 H32 Z M50 68 L76 92 H24 Z" fill="#ffffff" opacity="0.9"/>
-            <rect x="46" y="102" width="8" height="18" fill="#451a03"/>
-        </svg>
+  <!-- Personaj tanlash -->
+  <div class="theme-selector">
+    <button class="theme-btn active" data-theme="penguin">🐧 Pingvinlar</button>
+    <button class="theme-btn" data-theme="bear">🐻 Ayiqchalar</button>
+    <button class="theme-btn" data-theme="chick">🐥 Jo'jachalar</button>
+    <button class="theme-btn" data-theme="fish">🐠 Baliqchalar</button>
+  </div>
 
-        <!-- Video's Cozy Igloo -->
-        <svg class="w-32 sm:w-56 h-auto drop-shadow-lg" viewBox="0 0 170 120">
-            <path d="M15 95 A70 70 0 0 1 155 95 Z" fill="#f0f9ff" stroke="#7dd3fc" stroke-width="3"/>
-            <path d="M30 85 Q85 80 140 85 M45 65 Q85 60 125 65 M60 45 Q85 40 110 45" stroke="#bae6fd" stroke-width="2.5" fill="none"/>
-            <path d="M52 85 V95 M85 85 V95 M118 85 V95 M68 65 V85 M102 65 V85 M85 45 V65" stroke="#7dd3fc" stroke-width="2"/>
-            <path d="M62 95 A23 23 0 0 1 108 95 Z" fill="#1e3a8a" stroke="#7dd3fc" stroke-width="3"/>
-            <path d="M68 95 A17 17 0 0 1 102 95 Z" fill="#fef08a" opacity="0.95"/>
-            <!-- Cute little chimney smoke puff -->
-            <ellipse cx="125" cy="40" rx="6" ry="4" fill="#ffffff" opacity="0.8"/>
-            <ellipse cx="132" cy="28" rx="8" ry="5" fill="#ffffff" opacity="0.6"/>
-        </svg>
+  <!-- O'yin maydoni -->
+  <div class="game-arena" id="arena">
+    <div class="scenery" id="scenery"></div>
+    <div class="characters-track" id="track"></div>
+    <div class="stage-platform"></div>
+  </div>
 
-        <!-- Right Side Snow Tree -->
-        <svg class="w-28 sm:w-44 h-auto drop-shadow-md" viewBox="0 0 100 120" fill="none">
-            <path d="M50 8 L68 38 H58 L76 70 H64 L84 104 H16 L36 70 H24 L42 38 H32 Z" fill="#115e59"/>
-            <path d="M50 8 L60 26 H40 Z M50 38 L67 58 H33 Z M50 70 L74 94 H26 Z" fill="#ffffff" opacity="0.85"/>
-            <rect x="46" y="104" width="8" height="16" fill="#451a03"/>
-        </svg>
+  <!-- Boshqaruv paneli -->
+  <div class="control-panel">
+    <div class="status-box" id="statusText">
+      Qaysidir qahramonni bosing yoki qo'lda almashtiring!
     </div>
 
-    <!-- Header HUD: Title & Game Stats -->
-    <header class="w-full max-w-5xl z-10 mx-auto mb-2">
-        <div class="frosted-glass rounded-2xl p-3 sm:p-4 flex flex-wrap items-center justify-between gap-3 shadow-xl">
-            <!-- App Logo & Title -->
-            <div class="flex items-center gap-3">
-                <div class="w-11 h-11 sm:w-12 sm:h-12 rounded-2xl bg-cyan-100 border-2 border-cyan-300 flex items-center justify-center text-2xl shadow-inner">
-                    🐧
-                </div>
-                <div>
-                    <h1 class="text-lg sm:text-2xl font-bubble text-slate-800 tracking-wide flex items-center gap-2">
-                        <span>Pingvinlar Boshqotirmasi</span>
-                        <span class="text-xs bg-amber-500 text-white font-bold px-2 py-0.5 rounded-full uppercase">Bubble Sort</span>
-                    </h1>
-                    <p class="text-xs sm:text-sm text-slate-600 font-semibold">
-                        Kichigidan kattasiga (1 dan 8 gacha) sakratib to'g'irlang!
-                    </p>
-                </div>
-            </div>
-
-            <!-- Stats: Moves, Comparisons, Sounds -->
-            <div class="flex items-center gap-2 sm:gap-4 flex-wrap">
-                <!-- Move counter -->
-                <div class="bg-cyan-50 border border-cyan-200 rounded-xl px-3 py-1 text-center min-w-[70px]">
-                    <span class="text-[10px] uppercase font-bold text-cyan-600 block">Qadamlar</span>
-                    <span id="moves-label" class="text-base sm:text-lg font-bubble text-cyan-900">0</span>
-                </div>
-
-                <!-- Timer -->
-                <div class="bg-indigo-50 border border-indigo-200 rounded-xl px-3 py-1 text-center min-w-[70px]">
-                    <span class="text-[10px] uppercase font-bold text-indigo-600 block">Vaqt</span>
-                    <span id="timer-label" class="text-base sm:text-lg font-bubble text-indigo-900">00:00</span>
-                </div>
-
-                <!-- Sound Toggle -->
-                <button id="sound-btn" class="p-2 sm:px-3 sm:py-2 bg-white hover:bg-slate-50 border border-slate-300 text-slate-700 rounded-xl font-bold text-xs sm:text-sm shadow-sm transition active:scale-95 flex items-center gap-1.5" title="Ovozni yoqish/o'chirish">
-                    <span id="sound-icon">🔊</span>
-                    <span class="hidden sm:inline">Ovoz</span>
-                </button>
-            </div>
-        </div>
-    </header>
-
-    <!-- Hint / Guidance Banner -->
-    <div class="w-full max-w-4xl z-10 mb-2">
-        <div id="narrator-card" class="frosted-glass rounded-2xl px-4 py-2.5 sm:px-6 sm:py-3 flex items-center justify-between gap-3 shadow-md border-l-8 border-cyan-500 text-xs sm:text-sm">
-            <div class="flex items-center gap-2.5">
-                <span class="text-2xl animate-bounce">🧊</span>
-                <span id="narrator-text" class="font-bold text-slate-700">
-                    O'ynash uchun ixtiyoriy pingvinni bosing yoki 'Sakratib almashtirish' tugmalaridan foydalaning!
-                </span>
-            </div>
-            <span id="badge-status" class="shrink-0 px-2.5 py-1 rounded-full text-xs font-bold bg-cyan-100 text-cyan-800 border border-cyan-300">
-                Tayyor
-            </span>
-        </div>
+    <div class="buttons-group">
+      <button class="btn btn-move" id="btnLeft" disabled>⬅️ Chapga sakrash</button>
+      <button class="btn btn-move" id="btnRight" disabled>O'ngga sakrash ➡️</button>
+      <button class="btn btn-step" id="btnStep">👟 1 Qadam (Bubble)</button>
+      <button class="btn btn-auto" id="btnAuto">⚡ Avto Saralash</button>
+      <button class="btn btn-reset" id="btnReset">🎲 Aralashtirish</button>
     </div>
+  </div>
 
-    <!-- Arctic Ice Stage with Penguins -->
-    <main class="w-full max-w-5xl z-10 flex flex-col items-center justify-center my-auto">
-        <div class="w-full ice-iceberg relative px-2 py-6 sm:px-8 sm:py-10 min-h-[310px] sm:min-h-[350px] flex items-end justify-center shadow-2xl overflow-hidden">
-            
-            <!-- Ice Floe Shiny Crack Vectors -->
-            <svg class="absolute inset-0 w-full h-full pointer-events-none opacity-40">
-                <path d="M 40,25 Q 90,45 130,30 T 220,65" stroke="#ffffff" stroke-width="3" fill="none"/>
-                <path d="M 480,260 Q 550,230 630,250" stroke="#7bb7d8" stroke-width="2.5" fill="none"/>
-                <circle cx="20%" cy="85%" r="60" fill="#4d89ae" opacity="0.12"/>
-                <circle cx="75%" cy="88%" r="80" fill="#4d89ae" opacity="0.12"/>
+  <script>
+    /* ==========================================================
+       1. WEB AUDIO API - QUFNOQ OVOZ EFFEKTLARI
+       ========================================================== */
+    const AudioEngine = {
+      ctx: null,
+      init() {
+        if (!this.ctx) {
+          const AudioContext = window.AudioContext || window.webkitAudioContext;
+          this.ctx = new AudioContext();
+        }
+        if (this.ctx.state === 'suspended') {
+          this.ctx.resume();
+        }
+      },
+      // Sakrash (boing/spring) tovushi
+      playJump(isRight = true) {
+        this.init();
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        const now = this.ctx.currentTime;
+
+        osc.type = 'sine';
+        const startFreq = isRight ? 260 : 380;
+        const endFreq = isRight ? 580 : 220;
+
+        osc.frequency.setValueAtTime(startFreq, now);
+        osc.frequency.exponentialRampToValueAtTime(endFreq, now + 0.35);
+
+        gain.gain.setValueAtTime(0.28, now);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.38);
+
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start(now);
+        osc.stop(now + 0.4);
+      },
+      // Xatolik yoki kichik ogohlantirish tovushi
+      playClick() {
+        this.init();
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        const now = this.ctx.currentTime;
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(440, now);
+        gain.gain.setValueAtTime(0.15, now);
+        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.08);
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        osc.start(now);
+        osc.stop(now + 0.1);
+      },
+      // G'alaba musiqasi
+      playVictory() {
+        this.init();
+        const notes = [261.63, 329.63, 392.00, 523.25, 659.25, 783.99];
+        notes.forEach((freq, idx) => {
+          setTimeout(() => {
+            const osc = this.ctx.createOscillator();
+            const gain = this.ctx.createGain();
+            const now = this.ctx.currentTime;
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(freq, now);
+            gain.gain.setValueAtTime(0.2, now);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + 0.5);
+            osc.connect(gain);
+            gain.connect(this.ctx.destination);
+            osc.start(now);
+            osc.stop(now + 0.55);
+          }, idx * 110);
+        });
+      }
+    };
+
+    /* ==========================================================
+       2. PERSONAJLARNING SVG MODELLARI VA MAVZULARI
+       ========================================================== */
+    const THEMES = {
+      penguin: {
+        bg: 'radial-gradient(circle at 50% 20%, #294073, #111a33)',
+        floor: '#e0f2fe',
+        card: 'rgba(255, 255, 255, 0.12)',
+        sceneryHTML: `
+          <div class="scenery-item" style="left: 30px; bottom: 65px; font-size: 70px;">🏔️</div>
+          <div class="scenery-item" style="right: 40px; bottom: 65px; font-size: 65px;">⛄</div>
+          <div class="scenery-item" style="right: 120px; bottom: 70px; font-size: 55px;">❄️</div>
+          <div class="scenery-item" style="left: 120px; bottom: 70px; font-size: 50px;">🌲</div>
+        `,
+        renderSVG(val, height) {
+          return `
+            <svg class="char-svg" viewBox="0 0 100 130" style="height: ${height}px;">
+              <!-- Qanotlar -->
+              <ellipse cx="14" cy="75" rx="9" ry="24" fill="#0f172a" transform="rotate(-15 14 75)"/>
+              <ellipse cx="86" cy="75" rx="9" ry="24" fill="#0f172a" transform="rotate(15 86 75)"/>
+              <!-- Tana -->
+              <path d="M 50 10 C 26 10 18 40 18 85 C 18 115 30 125 50 125 C 70 125 82 115 82 85 C 82 40 74 10 50 10 Z" fill="#0f172a"/>
+              <!-- Oq qorin -->
+              <ellipse cx="50" cy="75" rx="24" ry="40" fill="#f8fafc"/>
+              <!-- Ko'zlar -->
+              <circle cx="41" cy="36" r="6" fill="#fff"/>
+              <circle cx="43" cy="36" r="2.8" fill="#000"/>
+              <circle cx="59" cy="36" r="6" fill="#fff"/>
+              <circle cx="57" cy="36" r="2.8" fill="#000"/>
+              <!-- Tumshug'i -->
+              <polygon points="50,42 43,49 57,49" fill="#f59e0b"/>
+              <!-- Oyoqchalar -->
+              <ellipse cx="38" cy="126" rx="9" ry="4" fill="#f59e0b"/>
+              <ellipse cx="62" cy="126" rx="9" ry="4" fill="#f59e0b"/>
             </svg>
+          `;
+        }
+      },
+      bear: {
+        bg: 'radial-gradient(circle at 50% 20%, #451a03, #1f0b02)',
+        floor: '#854d0e',
+        card: 'rgba(255, 255, 255, 0.08)',
+        sceneryHTML: `
+          <div class="scenery-item" style="left: 40px; bottom: 65px; font-size: 70px;">🌲</div>
+          <div class="scenery-item" style="left: 110px; bottom: 65px; font-size: 55px;">🪵</div>
+          <div class="scenery-item" style="right: 50px; bottom: 65px; font-size: 65px;">🏕️</div>
+          <div class="scenery-item" style="right: 130px; bottom: 65px; font-size: 50px;">🌲</div>
+        `,
+        renderSVG(val, height) {
+          return `
+            <svg class="char-svg" viewBox="0 0 100 130" style="height: ${height}px;">
+              <!-- Quloqlar -->
+              <circle cx="28" cy="24" r="14" fill="#78350f"/>
+              <circle cx="28" cy="24" r="7" fill="#fbbf24"/>
+              <circle cx="72" cy="24" r="14" fill="#78350f"/>
+              <circle cx="72" cy="24" r="7" fill="#fbbf24"/>
+              <!-- Qalpoqcha -->
+              <polygon points="50,4 34,26 66,26" fill="#dc2626"/>
+              <circle cx="50" cy="4" r="5" fill="#fef08a"/>
+              <!-- Tana va bosh -->
+              <ellipse cx="50" cy="85" rx="34" ry="40" fill="#92400e"/>
+              <circle cx="50" cy="45" r="28" fill="#92400e"/>
+              <!-- Ko'krak/qorin oq doira -->
+              <ellipse cx="50" cy="86" rx="22" ry="28" fill="#fef3c7"/>
+              <!-- Tumshuq qismi -->
+              <ellipse cx="50" cy="50" rx="14" ry="10" fill="#fef3c7"/>
+              <ellipse cx="50" cy="46" rx="5" ry="3.5" fill="#1f2937"/>
+              <!-- Ko'zlar -->
+              <circle cx="41" cy="38" r="3.5" fill="#111827"/>
+              <circle cx="59" cy="38" r="3.5" fill="#111827"/>
+              <!-- Panjalar -->
+              <circle cx="20" cy="78" r="10" fill="#78350f"/>
+              <circle cx="80" cy="78" r="10" fill="#78350f"/>
+            </svg>
+          `;
+        }
+      },
+      chick: {
+        bg: 'radial-gradient(circle at 50% 20%, #1e3a5f, #0c1a2e)',
+        floor: '#166534',
+        card: 'rgba(255, 255, 255, 0.1)',
+        sceneryHTML: `
+          <div class="scenery-item" style="left: 30px; bottom: 65px; font-size: 65px;">🌻</div>
+          <div class="scenery-item" style="left: 100px; bottom: 65px; font-size: 50px;">🌾</div>
+          <div class="scenery-item" style="right: 40px; bottom: 65px; font-size: 65px;">🏡</div>
+          <div class="scenery-item" style="right: 120px; bottom: 65px; font-size: 55px;">🌷</div>
+        `,
+        renderSVG(val, height) {
+          return `
+            <svg class="char-svg" viewBox="0 0 100 130" style="height: ${height}px;">
+              <!-- Qanotlar -->
+              <ellipse cx="16" cy="80" rx="8" ry="18" fill="#eab308" transform="rotate(-15 16 80)"/>
+              <ellipse cx="84" cy="80" rx="8" ry="18" fill="#eab308" transform="rotate(15 84 80)"/>
+              <!-- Tana va Bosh -->
+              <circle cx="50" cy="85" r="34" fill="#facc15"/>
+              <circle cx="50" cy="42" r="24" fill="#facc15"/>
+              <!-- Qorin -->
+              <ellipse cx="50" cy="88" rx="22" ry="26" fill="#fef08a"/>
+              <!-- Ko'zlar -->
+              <circle cx="42" cy="38" r="4.5" fill="#000"/>
+              <circle cx="43.5" cy="36.5" r="1.5" fill="#fff"/>
+              <circle cx="58" cy="38" r="4.5" fill="#000"/>
+              <circle cx="59.5" cy="36.5" r="1.5" fill="#fff"/>
+              <!-- Tumshug'i -->
+              <polygon points="50,44 43,51 57,51" fill="#ea580c"/>
+              <!-- Qizil kokili -->
+              <ellipse cx="50" cy="18" rx="5" ry="9" fill="#ef4444"/>
+              <!-- Oyoqlar -->
+              <ellipse cx="40" cy="124" rx="8" ry="3.5" fill="#ea580c"/>
+              <ellipse cx="60" cy="124" rx="8" ry="3.5" fill="#ea580c"/>
+            </svg>
+          `;
+        }
+      },
+      fish: {
+        bg: 'radial-gradient(circle at 50% 20%, #0369a1, #082f49)',
+        floor: '#0284c7',
+        card: 'rgba(255, 255, 255, 0.1)',
+        sceneryHTML: `
+          <div class="scenery-item" style="left: 30px; bottom: 65px; font-size: 70px;">🪸</div>
+          <div class="scenery-item" style="left: 110px; bottom: 65px; font-size: 55px;">🫧</div>
+          <div class="scenery-item" style="right: 40px; bottom: 65px; font-size: 65px;">🐚</div>
+          <div class="scenery-item" style="right: 120px; bottom: 65px; font-size: 50px;">🫧</div>
+        `,
+        renderSVG(val, height) {
+          return `
+            <svg class="char-svg" viewBox="0 0 100 130" style="height: ${height}px;">
+              <!-- Dum suzgichlari -->
+              <path d="M 50 115 Q 25 135 15 120 Q 35 105 50 105 Z" fill="#f97316"/>
+              <path d="M 50 115 Q 75 135 85 120 Q 65 105 50 105 Z" fill="#f97316"/>
+              <!-- Tana (vertikal baliqcha) -->
+              <ellipse cx="50" cy="65" rx="33" ry="46" fill="#fb923c"/>
+              <!-- Yon suzgichlar -->
+              <ellipse cx="14" cy="65" rx="6" ry="18" fill="#ea580c"/>
+              <ellipse cx="86" cy="65" rx="6" ry="18" fill="#ea580c"/>
+              <!-- Oq qorin markazi -->
+              <ellipse cx="50" cy="66" rx="21" ry="30" fill="#ffedd5"/>
+              <!-- Ko'zlar -->
+              <circle cx="38" cy="38" r="6.5" fill="#fff"/>
+              <circle cx="39" cy="38" r="3" fill="#000"/>
+              <circle cx="62" cy="38" r="6.5" fill="#fff"/>
+              <circle cx="61" cy="38" r="3" fill="#000"/>
+              <!-- Og'izcha -->
+              <ellipse cx="50" cy="24" rx="6" ry="3.5" fill="#c2410c"/>
+            </svg>
+          `;
+        }
+      }
+    };
 
-            <!-- Penguins Container (Ordered 1 to 8 positions) -->
-            <div id="penguins-track" class="relative w-full flex items-end justify-center gap-1.5 sm:gap-3 md:gap-5 z-10 pb-1">
-                <!-- Dynamically generated SVG penguins will be injected here -->
-            </div>
-        </div>
+    /* ==========================================================
+       3. ASOSIY DASTUR MANTIQI VA HOZIRGI HOLAT
+       ========================================================== */
+    const INITIAL_ARRAY = [7, 4, 2, 1, 8, 3, 6, 5];
+    let array = [...INITIAL_ARRAY];
+    let currentTheme = 'penguin';
+    let selectedIdx = null;
+    let isBusy = false;
 
-        <!-- Dedicated Between-Penguin Quick-Swap Buttons for Touch & Mobile -->
-        <div id="swap-buttons-row" class="w-full flex items-center justify-center gap-1 sm:gap-2 md:gap-4 mt-2 px-1 z-10">
-            <!-- 7 swap buttons corresponding to adjacent pairs [0-1], [1-2], [2-3], etc. -->
-        </div>
-    </main>
+    // DOM Elementlar
+    const arena = document.getElementById('arena');
+    const scenery = document.getElementById('scenery');
+    const track = document.getElementById('track');
+    const statusText = document.getElementById('statusText');
+    const btnLeft = document.getElementById('btnLeft');
+    const btnRight = document.getElementById('btnRight');
+    const btnStep = document.getElementById('btnStep');
+    const btnAuto = document.getElementById('btnAuto');
+    const btnReset = document.getElementById('btnReset');
+    const themeBtns = document.querySelectorAll('.theme-btn');
 
-    <!-- Control Dashboard -->
-    <footer class="w-full max-w-5xl z-10 mt-3 mb-1">
-        <div class="frosted-glass rounded-2xl p-3 sm:p-5 shadow-2xl flex flex-col gap-3">
-            
-            <!-- Main Controls Grid -->
-            <div class="flex flex-wrap items-center justify-between gap-3">
-                
-                <!-- Manual Puzzle Action Buttons -->
-                <div class="flex flex-wrap items-center gap-2">
-                    <button id="jump-prev-btn" class="px-3.5 py-2.5 bg-sky-500 hover:bg-sky-400 text-white font-bold rounded-xl shadow border-b-4 border-sky-700 active:border-b-0 active:translate-y-1 transition text-xs sm:text-sm flex items-center gap-1">
-                        <span>⬅️</span> Tanlangan chapga
-                    </button>
-                    
-                    <button id="jump-next-btn" class="px-3.5 py-2.5 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl shadow border-b-4 border-blue-800 active:border-b-0 active:translate-y-1 transition text-xs sm:text-sm flex items-center gap-1">
-                        Tanlangan o'ngga <span>➡️</span>
-                    </button>
+    // Mavzuni sozlash
+    function applyTheme(themeKey) {
+      currentTheme = themeKey;
+      const theme = THEMES[themeKey];
+      document.body.style.background = theme.bg;
+      arena.style.background = theme.card;
+      document.querySelector('.stage-platform').style.background = theme.floor;
+      scenery.innerHTML = theme.sceneryHTML;
 
-                    <button id="manual-swap-selected-btn" class="px-4 py-2.5 bg-amber-500 hover:bg-amber-400 text-amber-950 font-bold rounded-xl shadow border-b-4 border-amber-700 active:border-b-0 active:translate-y-1 transition text-xs sm:text-sm flex items-center gap-1.5">
-                        <span>🦘</span> Sakrab Almashish
-                    </button>
-                </div>
+      themeBtns.forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.theme === themeKey);
+      });
+      renderTrack();
+    }
 
-                <!-- Computer / Auto Bubble Sort Controls -->
-                <div class="flex flex-wrap items-center gap-2">
-                    <button id="auto-step-btn" class="px-3.5 py-2.5 bg-indigo-500 hover:bg-indigo-400 text-white font-bold rounded-xl shadow border-b-4 border-indigo-700 active:border-b-0 active:translate-y-1 transition text-xs sm:text-sm flex items-center gap-1.5">
-                        <span>👣</span> 1 Qadam (Bubble Step)
-                    </button>
+    // Element koordinatalarini hisoblash
+    function getNodeLeftPosition(index, total) {
+      const trackWidth = track.clientWidth || 800;
+      const charWidth = 80;
+      const padding = 20;
+      const usableWidth = trackWidth - (padding * 2) - charWidth;
+      const gap = usableWidth / (total - 1);
+      return padding + (index * gap);
+    }
 
-                    <button id="auto-play-btn" class="px-4 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl shadow border-b-4 border-emerald-800 active:border-b-0 active:translate-y-1 transition text-xs sm:text-sm flex items-center gap-1.5">
-                        <span id="auto-icon">▶</span> <span id="auto-label">Kompyuter Saralashi</span>
-                    </button>
-                </div>
-            </div>
+    // Qahramonlarni ekranga joylash
+    function renderTrack() {
+      track.innerHTML = '';
+      const total = array.length;
 
-            <!-- Game Management and Reset Row -->
-            <div class="flex flex-wrap items-center justify-between gap-2 border-t border-slate-200/80 pt-3">
-                <div class="flex items-center gap-2">
-                    <button id="reset-video-btn" class="px-3 py-1.5 sm:px-4 sm:py-2 bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold rounded-xl border border-slate-300 text-xs sm:text-sm shadow-sm active:scale-95 transition" title="Videodagi boshlang'ich tartib: 7, 4, 2, 1, 8, 3, 6, 5">
-                        ⏪ Videodagi holat (7, 4, 2, 1, 8, 3, 6, 5)
-                    </button>
-                    <button id="shuffle-btn" class="px-3 py-1.5 sm:px-4 sm:py-2 bg-purple-600 hover:bg-purple-500 text-white font-bold rounded-xl shadow border-b-4 border-purple-800 active:border-b-0 active:translate-y-1 transition text-xs sm:text-sm flex items-center gap-1">
-                        <span>🎲</span> Qayta Aralashtirish
-                    </button>
-                </div>
+      array.forEach((val, idx) => {
+        const node = document.createElement('div');
+        node.className = 'char-node';
+        node.id = `char-${idx}`;
+        node.dataset.index = idx;
+        node.dataset.value = val;
 
-                <!-- Live Python / Algorithm Code display indicator -->
-                <div class="text-[11px] sm:text-xs font-mono font-bold text-slate-500 bg-slate-100 border border-slate-200 px-3 py-1.5 rounded-xl">
-                    <span id="python-hint">if arr[j] &gt; arr[j+1]: arr[j], arr[j+1] = arr[j+1], arr[j]</span>
-                </div>
-            </div>
-        </div>
-    </footer>
+        // O'lcham (1 dan 8 gacha mos proportsiyada balandlashadi)
+        const minHeight = 110;
+        const maxHeight = 230;
+        const height = minHeight + ((val - 1) / 7) * (maxHeight - minHeight);
 
-    <script>
-        // High quality sound effects generator without any external audio files
-        class WinterSoundEffects {
-            constructor() {
-                this.ctx = null;
-                this.muted = false;
-            }
+        const leftPos = getNodeLeftPosition(idx, total);
+        node.style.left = `${leftPos}px`;
 
-            init() {
-                if (!this.ctx) {
-                    const AudioContextClass = window.AudioContext || window.webkitAudioContext;
-                    this.ctx = new AudioContextClass();
-                }
-                if (this.ctx.state === 'suspended') {
-                    this.ctx.resume();
-                }
-            }
+        // SVG qahramon
+        const charHtml = THEMES[currentTheme].renderSVG(val, height);
 
-            // Click / Select chirp
-            playSelect() {
-                if (this.muted) return;
-                this.init();
-                const now = this.ctx.currentTime;
-                const osc = this.ctx.createOscillator();
-                const gain = this.ctx.createGain();
+        node.innerHTML = `
+          <div class="character-body" style="height: ${height}px;">
+            ${charHtml}
+            <div class="badge-number">${val}</div>
+          </div>
+        `;
 
-                osc.type = 'sine';
-                osc.frequency.setValueAtTime(520, now);
-                osc.frequency.exponentialRampToValueAtTime(780, now + 0.08);
-
-                gain.gain.setValueAtTime(0.18, now);
-                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.12);
-
-                osc.connect(gain);
-                gain.connect(this.ctx.destination);
-                osc.start(now);
-                osc.stop(now + 0.12);
-            }
-
-            // High bouncy cartoon boing when penguin jumps
-            playJumpBoing(pitchMultiplier = 1) {
-                if (this.muted) return;
-                this.init();
-                const now = this.ctx.currentTime;
-                const osc = this.ctx.createOscillator();
-                const gain = this.ctx.createGain();
-
-                const baseFreq = 340 * pitchMultiplier;
-                osc.type = 'triangle';
-                osc.frequency.setValueAtTime(baseFreq, now);
-                osc.frequency.exponentialRampToValueAtTime(baseFreq * 2.1, now + 0.16);
-                osc.frequency.exponentialRampToValueAtTime(baseFreq * 1.2, now + 0.32);
-
-                gain.gain.setValueAtTime(0.25, now);
-                gain.gain.exponentialRampToValueAtTime(0.005, now + 0.35);
-
-                osc.connect(gain);
-                gain.connect(this.ctx.destination);
-                osc.start(now);
-                osc.stop(now + 0.35);
-            }
-
-            // Ice slide / whoosh swap sound
-            playSwapSound() {
-                if (this.muted) return;
-                this.init();
-                const now = this.ctx.currentTime;
-                const osc = this.ctx.createOscillator();
-                const gain = this.ctx.createGain();
-
-                osc.type = 'sine';
-                osc.frequency.setValueAtTime(280, now);
-                osc.frequency.linearRampToValueAtTime(620, now + 0.12);
-                osc.frequency.linearRampToValueAtTime(220, now + 0.3);
-
-                gain.gain.setValueAtTime(0.2, now);
-                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.32);
-
-                osc.connect(gain);
-                gain.connect(this.ctx.destination);
-                osc.start(now);
-                osc.stop(now + 0.32);
-            }
-
-            // Wrong move buzz
-            playBuzz() {
-                if (this.muted) return;
-                this.init();
-                const now = this.ctx.currentTime;
-                const osc = this.ctx.createOscillator();
-                const gain = this.ctx.createGain();
-
-                osc.type = 'sawtooth';
-                osc.frequency.setValueAtTime(130, now);
-                osc.frequency.setValueAtTime(100, now + 0.1);
-
-                gain.gain.setValueAtTime(0.18, now);
-                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.22);
-
-                osc.connect(gain);
-                gain.connect(this.ctx.destination);
-                osc.start(now);
-                osc.stop(now + 0.22);
-            }
-
-            // Sorted penguin celebration sound
-            playWinFanfare() {
-                if (this.muted) return;
-                this.init();
-                const notes = [523.25, 659.25, 783.99, 1046.50, 1318.51];
-                let time = this.ctx.currentTime;
-
-                notes.forEach((freq, index) => {
-                    const osc = this.ctx.createOscillator();
-                    const gain = this.ctx.createGain();
-
-                    osc.type = 'triangle';
-                    osc.frequency.setValueAtTime(freq, time);
-
-                    gain.gain.setValueAtTime(0.28, time);
-                    gain.gain.exponentialRampToValueAtTime(0.001, time + 0.3);
-
-                    osc.connect(gain);
-                    gain.connect(this.ctx.destination);
-
-                    osc.start(time);
-                    osc.stop(time + 0.3);
-                    time += 0.12;
-                });
-            }
+        if (selectedIdx === idx) {
+          node.classList.add('selected');
         }
 
-        const audio = new WinterSoundEffects();
+        node.addEventListener('click', () => onNodeClick(idx));
+        track.appendChild(node);
+      });
 
-        // Video standard starting array
-        const VIDEO_INITIAL_ARRAY = [7, 4, 2, 1, 8, 3, 6, 5];
-        let penguins = [...VIDEO_INITIAL_ARRAY];
+      updateButtons();
+      checkVictory();
+    }
 
-        // Interaction State
-        let selectedIndex = 0; // Currently focused penguin
-        let isAutoSorting = false;
-        let autoSortTimer = null;
-        let isAnimatingSwap = false;
-        let movesCount = 0;
-        let isGameWon = false;
+    // Bosganda tanlash
+    function onNodeClick(idx) {
+      if (isBusy) return;
+      AudioEngine.playClick();
 
-        // Timer
-        let secondsElapsed = 0;
-        let gameTimerInterval = null;
+      if (selectedIdx === idx) {
+        selectedIdx = null;
+        statusText.textContent = "Tanlov bekor qilindi. O'zingiz xohlagan boshqa personajni tanlang.";
+      } else {
+        selectedIdx = idx;
+        statusText.textContent = `Tanlandi: #${array[idx]} sonli personaj. Chapga yoki o'ngga sakrating!`;
+      }
+      renderTrack();
+    }
 
-        // Colors for scarves corresponding to numbers 1..8
-        const scarfPalette = [
-            '#ef4444', // 1: Qizil
-            '#f97316', // 2: To'q sariq
-            '#eab308', // 3: Sariq
-            '#10b981', // 4: Yashil
-            '#06b6d4', // 5: Zangori
-            '#3b82f6', // 6: Ko'k
-            '#8b5cf6', // 7: Binafsha
-            '#ec4899'  // 8: Pushti
-        ];
+    // Tugmalar holatini yangilash
+    function updateButtons() {
+      btnLeft.disabled = isBusy || selectedIdx === null || selectedIdx <= 0;
+      btnRight.disabled = isBusy || selectedIdx === null || selectedIdx >= array.length - 1;
+      btnStep.disabled = isBusy;
+      btnAuto.disabled = isBusy;
+      btnReset.disabled = isBusy;
+    }
 
-        function renderPenguinSVG(num) {
-            // Height proportional to number 1 to 8: min 110px -> max 220px
-            const minH = 115;
-            const maxH = 225;
-            const height = minH + ((num - 1) / 7) * (maxH - minH);
-            const width = height * 0.64;
-            const scarf = scarfPalette[(num - 1) % scarfPalette.length];
+    // Kechikish funksiyasi
+    const sleep = (ms) => new Promise(r => setTimeout(r, ms));
 
-            return `
-            <div class="flex flex-col items-center justify-end select-none pointer-events-none" style="width: ${width}px; height: ${height}px;">
-                <svg viewBox="0 0 100 135" class="w-full h-full drop-shadow-md overflow-visible">
-                    <!-- Ground shadow -->
-                    <ellipse cx="50" cy="128" rx="36" ry="6" fill="#467b9c" opacity="0.4" />
+    /* ==========================================================
+       4. SILLIQ VA BALAND EGRI CHIZIQ (ARC) SAKRASH TRANSFORMATSIYASI
+       ========================================================== */
+    async function swapElements(i, j, sound = true) {
+      if (i === j) return;
+      if (i > j) { const temp = i; i = j; j = temp; } // doim i < j
 
-                    <!-- Orange Feet -->
-                    <ellipse cx="35" cy="125" rx="14" ry="6" fill="#f97316" stroke="#c2410c" stroke-width="1.5"/>
-                    <ellipse cx="65" cy="125" rx="14" ry="6" fill="#f97316" stroke="#c2410c" stroke-width="1.5"/>
+      const nodeA = document.getElementById(`char-${i}`);
+      const nodeB = document.getElementById(`char-${j}`);
 
-                    <!-- Outer Navy Penguin Body -->
-                    <path d="M50 10 C25 10 18 36 18 72 C18 104 26 122 50 122 C74 122 82 104 82 72 C82 36 75 10 50 10 Z" fill="#1e293b" stroke="#0f172a" stroke-width="2.5"/>
+      if (!nodeA || !nodeB) return;
 
-                    <!-- Left Wing -->
-                    <path class="wing-left" d="M20 52 C7 62 4 82 12 94 C17 98 22 92 23 78 Z" fill="#1e293b" stroke="#0f172a" stroke-width="1.8"/>
-                    
-                    <!-- Right Wing -->
-                    <path class="wing-right" d="M80 52 C93 62 96 82 88 94 C83 98 78 92 77 78 Z" fill="#1e293b" stroke="#0f172a" stroke-width="1.8"/>
+      const total = array.length;
+      const leftA = getNodeLeftPosition(i, total);
+      const leftB = getNodeLeftPosition(j, total);
 
-                    <!-- White Belly -->
-                    <path d="M50 36 C34 36 28 56 28 80 C28 104 34 118 50 118 C66 118 72 104 72 80 C72 56 66 36 50 36 Z" fill="#ffffff"/>
+      // Tovush
+      if (sound) AudioEngine.playJump(true);
 
-                    <!-- Scarf around neck -->
-                    <path d="M28 44 Q50 51 72 44 Q74 52 70 56 Q50 60 30 56 Z" fill="${scarf}"/>
-                    <path d="M60 50 L68 74 L57 76 L52 52 Z" fill="${scarf}" stroke="#ffffff" stroke-width="0.7"/>
+      // Animatsiya sinflari
+      nodeA.classList.add('jumping-right');
+      nodeB.classList.add('jumping-left');
 
-                    <!-- Large Eyes with blinking effect -->
-                    <ellipse cx="39" cy="29" rx="6.5" ry="7.5" fill="#ffffff"/>
-                    <ellipse class="eye-pupil" cx="40" cy="29" rx="3.5" ry="4" fill="#0f172a"/>
-                    <circle cx="38.5" cy="27" r="1.3" fill="#ffffff"/>
+      // Silliq siljish
+      nodeA.style.left = `${leftB}px`;
+      nodeB.style.left = `${leftA}px`;
 
-                    <ellipse cx="61" cy="29" rx="6.5" ry="7.5" fill="#ffffff"/>
-                    <ellipse class="eye-pupil" cx="60" cy="29" rx="3.5" ry="4" fill="#0f172a"/>
-                    <circle cx="58.5" cy="27" r="1.3" fill="#ffffff"/>
+      await sleep(600);
 
-                    <!-- Cute Rosy Cheeks -->
-                    <circle cx="31" cy="37" r="4.5" fill="#fda4af" opacity="0.8"/>
-                    <circle cx="69" cy="37" r="4.5" fill="#fda4af" opacity="0.8"/>
+      // Massivda almashtirish
+      const tempVal = array[i];
+      array[i] = array[j];
+      array[j] = tempVal;
 
-                    <!-- Orange Beak -->
-                    <polygon points="44,35 56,35 50,46" fill="#ea580c" stroke="#c2410c" stroke-width="1.2"/>
+      nodeA.classList.remove('jumping-right');
+      nodeB.classList.remove('jumping-left');
 
-                    <!-- Large readable number written on belly -->
-                    <text x="50" y="90" font-family="'Fredoka One', cursive, sans-serif" font-size="34" font-weight="bold" fill="#0f172a" text-anchor="middle" dominant-baseline="middle">
-                        ${num}
-                    </text>
-                </svg>
+      if (selectedIdx === i) selectedIdx = j;
+      else if (selectedIdx === j) selectedIdx = i;
 
-                <!-- Value badge pill below feet -->
-                <div class="mt-1 font-bubble text-xs sm:text-sm font-bold text-slate-800 bg-white/95 border-2 border-slate-300 px-2.5 py-0.5 rounded-full shadow-sm">
-                    ${num}
-                </div>
-            </div>
-            `;
+      renderTrack();
+    }
+
+    // Qo'lda sakratish
+    async function manualMove(direction) {
+      if (selectedIdx === null || isBusy) return;
+      const targetIdx = selectedIdx + direction;
+      if (targetIdx < 0 || targetIdx >= array.length) return;
+
+      isBusy = true;
+      updateButtons();
+      statusText.textContent = `${array[selectedIdx]} va ${array[targetIdx]} o'zaro sakrab joy almashmoqda...`;
+
+      await swapElements(selectedIdx, targetIdx, true);
+
+      isBusy = false;
+      updateButtons();
+    }
+
+    /* ==========================================================
+       5. BUBBLE SORT ALGORITMI (KOMPYUTER SARALASHI)
+       ========================================================== */
+    async function bubbleSortStep() {
+      if (isBusy) return;
+      isBusy = true;
+      selectedIdx = null;
+      updateButtons();
+
+      let swappedAny = false;
+
+      for (let i = 0; i < array.length - 1; i++) {
+        // Taqqoslash
+        statusText.textContent = `Taqqoslash: ${array[i]} va ${array[i+1]}`;
+        const node1 = document.getElementById(`char-${i}`);
+        const node2 = document.getElementById(`char-${i+1}`);
+        if (node1) node1.classList.add('selected');
+        if (node2) node2.classList.add('selected');
+
+        await sleep(400);
+
+        if (array[i] > array[i+1]) {
+          statusText.textContent = `${array[i]} > ${array[i+1]}! Sakrab o'rni almashtirilmoqda!`;
+          await swapElements(i, i+1, true);
+          swappedAny = true;
+          await sleep(250);
+          break; // Bitta qadamda bitta almashinuv
+        } else {
+          if (node1) node1.classList.remove('selected');
+          if (node2) node2.classList.remove('selected');
         }
+      }
 
-        const track = document.getElementById('penguins-track');
-        const swapButtonsRow = document.getElementById('swap-buttons-row');
-        const movesLabel = document.getElementById('moves-label');
-        const timerLabel = document.getElementById('timer-label');
-        const narratorText = document.getElementById('narrator-text');
-        const badgeStatus = document.getElementById('badge-status');
-        const soundBtn = document.getElementById('sound-btn');
-        const soundIcon = document.getElementById('sound-icon');
-        const autoPlayBtn = document.getElementById('auto-play-btn');
-        const autoIcon = document.getElementById('auto-icon');
-        const autoLabel = document.getElementById('auto-label');
-        const autoStepBtn = document.getElementById('auto-step-btn');
-        const jumpPrevBtn = document.getElementById('jump-prev-btn');
-        const jumpNextBtn = document.getElementById('jump-next-btn');
-        const manualSwapSelectedBtn = document.getElementById('manual-swap-selected-btn');
-        const resetVideoBtn = document.getElementById('reset-video-btn');
-        const shuffleBtn = document.getElementById('shuffle-btn');
-        const pythonHint = document.getElementById('python-hint');
+      if (!swappedAny) {
+        statusText.textContent = "Algoritm tekshirdi: massiv allaqachon to'g'ri tartiblangan!";
+      }
 
-        // Check if sorted 1..8
-        function checkIfSorted() {
-            for (let k = 0; k < penguins.length - 1; k++) {
-                if (penguins[k] > penguins[k + 1]) return false;
-            }
-            return true;
+      isBusy = false;
+      renderTrack();
+    }
+
+    async function autoBubbleSort() {
+      if (isBusy) return;
+      isBusy = true;
+      selectedIdx = null;
+      updateButtons();
+
+      let n = array.length;
+      let swapped;
+
+      do {
+        swapped = false;
+        for (let j = 0; j < n - 1; j++) {
+          statusText.textContent = `Bubble Sort: ${array[j]} va ${array[j+1]} taqqoslanmoqda...`;
+          
+          const node1 = document.getElementById(`char-${j}`);
+          const node2 = document.getElementById(`char-${j+1}`);
+          if (node1) node1.classList.add('selected');
+          if (node2) node2.classList.add('selected');
+          await sleep(350);
+
+          if (array[j] > array[j+1]) {
+            statusText.textContent = `${array[j]} kattaroq, o'ng tomonga sakrab o'tmoqda!`;
+            await swapElements(j, j+1, true);
+            swapped = true;
+            await sleep(300);
+          } else {
+            if (node1) node1.classList.remove('selected');
+            if (node2) node2.classList.remove('selected');
+          }
         }
+        n--;
+      } while (swapped);
 
-        // Timer management
-        function startTimer() {
-            if (gameTimerInterval) return;
-            gameTimerInterval = setInterval(() => {
-                secondsElapsed++;
-                const mins = String(Math.floor(secondsElapsed / 60)).padStart(2, '0');
-                const secs = String(secondsElapsed % 60).padStart(2, '0');
-                timerLabel.textContent = `${mins}:${secs}`;
-            }, 1000);
-        }
+      isBusy = false;
+      renderTrack();
+    }
 
-        function stopTimer() {
-            clearInterval(gameTimerInterval);
-            gameTimerInterval = null;
-        }
+    // Qayta aralashtirish
+    function resetAndShuffle() {
+      if (isBusy) return;
+      selectedIdx = null;
+      // Aralashtirish
+      for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+      }
+      statusText.textContent = "Personajlar aralashtirildi! Endi ularni 1 dan 8 gacha saralang.";
+      renderTrack();
+    }
 
-        function resetTimer() {
-            stopTimer();
-            secondsElapsed = 0;
-            timerLabel.textContent = "00:00";
-        }
+    /* ==========================================================
+       6. G'ALABA VA KONFETTI EFFEKTI
+       ========================================================== */
+    function checkVictory() {
+      const isSorted = array.every((val, idx) => idx === 0 || array[idx - 1] <= val);
+      if (isSorted) {
+        statusText.innerHTML = "🎉 <b>AJOYIB G'ALABA!</b> Barcha qahramonlar 1 dan 8 gacha to'g'ri tartiblandi! 🌟";
+        document.querySelectorAll('.char-node').forEach(node => node.classList.add('victory'));
+        AudioEngine.playVictory();
+        launchConfetti();
+      }
+    }
 
-        function updateStage() {
-            track.innerHTML = '';
-            swapButtonsRow.innerHTML = '';
+    function launchConfetti() {
+      const canvas = document.getElementById('confettiCanvas');
+      const ctx = canvas.getContext('2d');
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
 
-            penguins.forEach((val, idx) => {
-                // Penguin slot
-                const slot = document.createElement('div');
-                slot.className = 'penguin-slot cursor-pointer flex flex-col items-center justify-end relative';
-                slot.dataset.index = idx;
+      const pieces = Array.from({ length: 90 }, () => ({
+        x: Math.random() * canvas.width,
+        y: -20,
+        r: Math.random() * 8 + 4,
+        color: ['#f59e0b', '#10b981', '#3b82f6', '#ec4899', '#8b5cf6'][Math.floor(Math.random() * 5)],
+        speed: Math.random() * 4 + 2,
+        tilt: Math.random() * 10 - 5
+      }));
 
-                if (idx === selectedIndex) {
-                    slot.classList.add('is-selected');
-                } else if (idx === selectedIndex + 1) {
-                    slot.classList.add('is-neighbor-selected');
-                }
-
-                if (isGameWon) {
-                    slot.classList.add('victory-dance');
-                }
-
-                slot.innerHTML = renderPenguinSVG(val);
-
-                // Slot click to select or direct swap
-                slot.addEventListener('click', () => {
-                    if (isAnimatingSwap || isAutoSorting) return;
-                    startTimer();
-
-                    if (selectedIndex === idx && idx < penguins.length - 1) {
-                        // Clicking already selected penguin jumps it with its right neighbor!
-                        swapPenguins(idx, idx + 1);
-                    } else {
-                        selectedIndex = idx;
-                        audio.playSelect();
-                        narratorText.textContent = `Pingvin #${penguins[idx]} tanlandi! O'ngga/chapga sakratish uchun tugmalarni bosing.`;
-                        updateStage();
-                    }
-                });
-
-                track.appendChild(slot);
-
-                // Generate adjacent swap bridge button (between idx and idx+1)
-                if (idx < penguins.length - 1) {
-                    const swapBtn = document.createElement('button');
-                    const isFocusPair = (idx === selectedIndex);
-                    swapBtn.className = `px-2 py-1 sm:px-3 sm:py-1.5 rounded-lg text-xs font-bold transition shadow-sm flex items-center justify-center gap-1 active:scale-90 ${
-                        isFocusPair 
-                        ? 'bg-amber-400 text-amber-950 ring-2 ring-amber-500 scale-105' 
-                        : 'bg-white/80 hover:bg-white text-slate-700 border border-slate-300'
-                    }`;
-                    swapBtn.innerHTML = `<span>⇄</span>`;
-                    swapBtn.title = `${penguins[idx]} va ${penguins[idx+1]} o'rnini almashtirish`;
-                    
-                    swapBtn.addEventListener('click', (e) => {
-                        e.stopPropagation();
-                        if (isAnimatingSwap || isAutoSorting) return;
-                        startTimer();
-                        selectedIndex = idx;
-                        swapPenguins(idx, idx + 1);
-                    });
-
-                    swapButtonsRow.appendChild(swapBtn);
-                }
-            });
-
-            movesLabel.textContent = movesCount;
-        }
-
-        function swapPenguins(idxA, idxB) {
-            if (isAnimatingSwap) return;
-            if (idxA < 0 || idxB < 0 || idxA >= penguins.length || idxB >= penguins.length) return;
-
-            isAnimatingSwap = true;
-            movesCount++;
-            movesLabel.textContent = movesCount;
-
-            const slots = track.children;
-            const slotA = slots[idxA];
-            const slotB = slots[idxB];
-
-            // Sound: High boing jump
-            audio.playJumpBoing(1 + (penguins[idxA] * 0.08));
-
-            // Visual Jump classes
-            if (idxA < idxB) {
-                slotA.classList.add('jump-right-arc');
-                slotB.classList.add('jump-left-arc');
-            } else {
-                slotA.classList.add('jump-left-arc');
-                slotB.classList.add('jump-right-arc');
-            }
-
-            narratorText.textContent = `🦘 #${penguins[idxA]} va #${penguins[idxB]} sakrab joylarini almashtirmoqda!`;
-            badgeStatus.textContent = "Sakramoqda...";
-            badgeStatus.className = "shrink-0 px-2.5 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-800 border border-amber-300";
-
-            setTimeout(() => {
-                // Actual array swap
-                const temp = penguins[idxA];
-                penguins[idxA] = penguins[idxB];
-                penguins[idxB] = temp;
-
-                audio.playSwapSound();
-
-                slotA.classList.remove('jump-right-arc', 'jump-left-arc');
-                slotB.classList.remove('jump-right-arc', 'jump-left-arc');
-
-                isAnimatingSwap = false;
-
-                // Check victory condition
-                if (checkIfSorted()) {
-                    handleVictory();
-                } else {
-                    badgeStatus.textContent = "Davom eting";
-                    badgeStatus.className = "shrink-0 px-2.5 py-1 rounded-full text-xs font-bold bg-cyan-100 text-cyan-800 border border-cyan-300";
-                    updateStage();
-                }
-            }, 550);
-        }
-
-        function handleVictory() {
-            isGameWon = true;
-            stopAutoPlay();
-            stopTimer();
-
-            narratorText.textContent = `🎉 QOYILMAQOM! Barcha 8 ta pingvin tartib bilan (1..8) to'g'ri tizildi!`;
-            badgeStatus.textContent = "G'alaba!";
-            badgeStatus.className = "shrink-0 px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800 border border-emerald-400";
-            pythonHint.textContent = "✅ Saralash yakunlandi: [1, 2, 3, 4, 5, 6, 7, 8]";
-
-            audio.playWinFanfare();
-            updateStage();
-
-            // Festive confetti blast
-            if (window.confetti) {
-                confetti({
-                    particleCount: 90,
-                    spread: 80,
-                    origin: { y: 0.6 }
-                });
-                setTimeout(() => {
-                    confetti({ particleCount: 70, angle: 60, spread: 55, origin: { x: 0 } });
-                    confetti({ particleCount: 70, angle: 120, spread: 55, origin: { x: 1 } });
-                }, 300);
-            }
-        }
-
-        function performBubbleSortSingleStep() {
-            if (isAnimatingSwap || isGameWon) return;
-
-            startTimer();
-
-            // Find first unsorted adjacent inversion: arr[j] > arr[j+1]
-            let foundSwap = false;
-            for (let j = 0; j < penguins.length - 1; j++) {
-                if (penguins[j] > penguins[j + 1]) {
-                    selectedIndex = j;
-                    pythonHint.textContent = `if arr[${j}] (${penguins[j]}) > arr[${j+1}] (${penguins[j+1]}): swap!`;
-                    swapPenguins(j, j + 1);
-                    foundSwap = true;
-                    break;
-                }
-            }
-
-            if (!foundSwap && checkIfSorted()) {
-                handleVictory();
-            }
-        }
-
-        // Automatic Bubble Sort Engine (Computer solves it)
-        function toggleAutoPlay() {
-            if (isAutoSorting) {
-                stopAutoPlay();
-            } else {
-                if (isGameWon) {
-                    resetToVideoState();
-                }
-                startAutoPlay();
-            }
-        }
-
-        function startAutoPlay() {
-            isAutoSorting = true;
-            autoPlayBtn.classList.remove('bg-emerald-600', 'hover:bg-emerald-500');
-            autoPlayBtn.classList.add('bg-rose-600', 'hover:bg-rose-500');
-            autoIcon.textContent = "⏸";
-            autoLabel.textContent = "To'xtatish";
-            badgeStatus.textContent = "Kompyuter saralamoqda";
-            startTimer();
-
-            autoSortTimer = setInterval(() => {
-                if (checkIfSorted()) {
-                    stopAutoPlay();
-                    handleVictory();
-                    return;
-                }
-                if (!isAnimatingSwap) {
-                    performBubbleSortSingleStep();
-                }
-            }, 750);
-        }
-
-        function stopAutoPlay() {
-            isAutoSorting = false;
-            clearInterval(autoSortTimer);
-            autoSortTimer = null;
-            autoPlayBtn.classList.remove('bg-rose-600', 'hover:bg-rose-500');
-            autoPlayBtn.classList.add('bg-emerald-600', 'hover:bg-emerald-500');
-            autoIcon.textContent = "▶";
-            autoLabel.textContent = "Kompyuter Saralashi";
-            if (!isGameWon) {
-                badgeStatus.textContent = "Kutilmoqda";
-            }
-        }
-
-        function resetToVideoState() {
-            stopAutoPlay();
-            resetTimer();
-            isGameWon = false;
-            movesCount = 0;
-            selectedIndex = 0;
-            penguins = [...VIDEO_INITIAL_ARRAY];
-            narratorText.textContent = "Videodagi dastlabki tartib qaytarildi: [7, 4, 2, 1, 8, 3, 6, 5]";
-            badgeStatus.textContent = "Tiklandi";
-            pythonHint.textContent = "v = [7, 4, 2, 1, 8, 3, 6, 5]";
-            audio.playSelect();
-            updateStage();
-        }
-
-        function shuffleArray() {
-            stopAutoPlay();
-            resetTimer();
-            isGameWon = false;
-            movesCount = 0;
-            selectedIndex = 0;
-
-            // Fisher-Yates shuffle
-            do {
-                for (let k = penguins.length - 1; k > 0; k--) {
-                    const r = Math.floor(Math.random() * (k + 1));
-                    [penguins[k], penguins[r]] = [penguins[r], penguins[k]];
-                }
-            } while (checkIfSorted());
-
-            narratorText.textContent = "Pingvinlar aralashtirildi! Endi ularni tartib bilan terib chiqing.";
-            badgeStatus.textContent = "Aralashtirildi";
-            audio.playSwapSound();
-            updateStage();
-        }
-
-        // Jump Selected Left
-        jumpPrevBtn.addEventListener('click', () => {
-            if (isAnimatingSwap || isAutoSorting) return;
-            startTimer();
-            if (selectedIndex > 0) {
-                const target = selectedIndex - 1;
-                swapPenguins(target, selectedIndex);
-                selectedIndex = target;
-            } else {
-                audio.playBuzz();
-                narratorText.textContent = "Eng birinchi pingvin undan chapga o'ta olmaydi!";
-            }
+      let frames = 0;
+      function animateConfetti() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        pieces.forEach(p => {
+          p.y += p.speed;
+          p.x += Math.sin(frames * 0.05) + p.tilt * 0.2;
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+          ctx.fillStyle = p.color;
+          ctx.fill();
         });
-
-        // Jump Selected Right
-        jumpNextBtn.addEventListener('click', () => {
-            if (isAnimatingSwap || isAutoSorting) return;
-            startTimer();
-            if (selectedIndex < penguins.length - 1) {
-                const target = selectedIndex + 1;
-                swapPenguins(selectedIndex, target);
-                selectedIndex = target;
-            } else {
-                audio.playBuzz();
-                narratorText.textContent = "Eng oxirgi pingvin undan o'ngga o'ta olmaydi!";
-            }
-        });
-
-        // Swap selected pair
-        manualSwapSelectedBtn.addEventListener('click', () => {
-            if (isAnimatingSwap || isAutoSorting) return;
-            startTimer();
-            if (selectedIndex < penguins.length - 1) {
-                swapPenguins(selectedIndex, selectedIndex + 1);
-            } else if (selectedIndex > 0) {
-                swapPenguins(selectedIndex - 1, selectedIndex);
-                selectedIndex--;
-            }
-        });
-
-        // Single step button
-        autoStepBtn.addEventListener('click', () => {
-            stopAutoPlay();
-            performBubbleSortSingleStep();
-        });
-
-        autoPlayBtn.addEventListener('click', toggleAutoPlay);
-        resetVideoBtn.addEventListener('click', resetToVideoState);
-        shuffleBtn.addEventListener('click', shuffleArray);
-
-        // Sound Mute Toggle
-        soundBtn.addEventListener('click', () => {
-            audio.muted = !audio.muted;
-            if (audio.muted) {
-                soundIcon.textContent = "🔇";
-            } else {
-                soundIcon.textContent = "🔊";
-                audio.playSelect();
-            }
-        });
-
-        // Ambient falling snowflakes builder
-        function generateFallingSnow() {
-            const container = document.getElementById('snowfall-wrap');
-            const flakeCount = 35;
-            for (let i = 0; i < flakeCount; i++) {
-                const flake = document.createElement('div');
-                flake.className = 'snow-particle';
-                flake.textContent = ['❄', '❅', '•', '❆'][Math.floor(Math.random() * 4)];
-                flake.style.left = Math.random() * 100 + 'vw';
-                flake.style.fontSize = (Math.random() * 14 + 10) + 'px';
-                flake.style.opacity = Math.random() * 0.7 + 0.3;
-                flake.style.animationDuration = (Math.random() * 6 + 5) + 's';
-                flake.style.animationDelay = (Math.random() * 7) + 's';
-                container.appendChild(flake);
-            }
+        frames++;
+        if (frames < 180) {
+          requestAnimationFrame(animateConfetti);
+        } else {
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
         }
+      }
+      animateConfetti();
+    }
 
-        // Initialize on load
-        window.addEventListener('DOMContentLoaded', () => {
-            generateFallingSnow();
-            updateStage();
-        });
-    </script>
+    /* ==========================================================
+       7. HODISALARNI ULASH
+       ========================================================== */
+    btnLeft.addEventListener('click', () => manualMove(-1));
+    btnRight.addEventListener('click', () => manualMove(1));
+    btnStep.addEventListener('click', bubbleSortStep);
+    btnAuto.addEventListener('click', autoBubbleSort);
+    btnReset.addEventListener('click', resetAndShuffle);
+
+    themeBtns.forEach(btn => {
+      btn.addEventListener('click', () => applyTheme(btn.dataset.theme));
+    });
+
+    window.addEventListener('resize', () => {
+      renderTrack();
+    });
+
+    // Boshlang'ich yuklash
+    applyTheme('penguin');
+  </script>
 </body>
 </html>
