@@ -1,5 +1,5 @@
 // ============================================================
-// TANK BATTLE — 4 PLAYER ARENA (PRO VERSION)
+// TANK BATTLE — 4 PLAYER ARENA (PRO v3)
 // ============================================================
 
 class TankGame {
@@ -9,20 +9,20 @@ class TankGame {
     this.humanCount = humanCount;
     this.running = false;
 
-    // Tanklar sozlamalari
+    // Tanklar: o'lchami kattaroq (1 sm² ga mos ~48px)
     this.tanks = [
-      { id: 0, name: "P1 Moviy", color: "#06b6d4", darkColor: "#0891b2", x: 80, y: canvas.height - 80, angle: -Math.PI / 4, ammo: 5, maxAmmo: 5, alive: true, isBot: 0 >= humanCount, isPressing: false, pressTime: 0, rotateSpeed: 0.045, speed: 2.6 },
-      { id: 1, name: "P2 Yashil", color: "#22c55e", darkColor: "#16a34a", x: 80, y: 80, angle: Math.PI / 4, ammo: 5, maxAmmo: 5, alive: true, isBot: 1 >= humanCount, isPressing: false, pressTime: 0, rotateSpeed: 0.045, speed: 2.6 },
-      { id: 2, name: "P3 Binafsha", color: "#a855f7", darkColor: "#9333ea", x: canvas.width - 80, y: 80, angle: 3 * Math.PI / 4, ammo: 5, maxAmmo: 5, alive: true, isBot: 2 >= humanCount, isPressing: false, pressTime: 0, rotateSpeed: 0.045, speed: 2.6 },
-      { id: 3, name: "P4 Qora", color: "#334155", darkColor: "#0f172a", x: canvas.width - 80, y: canvas.height - 80, angle: -3 * Math.PI / 4, ammo: 5, maxAmmo: 5, alive: true, isBot: 3 >= humanCount, isPressing: false, pressTime: 0, rotateSpeed: 0.045, speed: 2.6 }
+      { id: 0, name: "P1 Moviy", color: "#06b6d4", darkColor: "#0891b2", x: 90, y: canvas.height - 90, angle: -Math.PI / 4, ammo: 5, maxAmmo: 5, alive: true, isBot: 0 >= humanCount, isMoving: false, rotateSpeed: 0.04, speed: 2.3 },
+      { id: 1, name: "P2 Yashil", color: "#22c55e", darkColor: "#16a34a", x: 90, y: 90, angle: Math.PI / 4, ammo: 5, maxAmmo: 5, alive: true, isBot: 1 >= humanCount, isMoving: false, rotateSpeed: 0.04, speed: 2.3 },
+      { id: 2, name: "P3 Binafsha", color: "#a855f7", darkColor: "#9333ea", x: canvas.width - 90, y: 90, angle: 3 * Math.PI / 4, ammo: 5, maxAmmo: 5, alive: true, isBot: 2 >= humanCount, isMoving: false, rotateSpeed: 0.04, speed: 2.3 },
+      { id: 3, name: "P4 Qora", color: "#334155", darkColor: "#0f172a", x: canvas.width - 90, y: canvas.height - 90, angle: -3 * Math.PI / 4, ammo: 5, maxAmmo: 5, alive: true, isBot: 3 >= humanCount, isMoving: false, rotateSpeed: 0.04, speed: 2.3 }
     ];
 
     this.bullets = [];
     this.particles = [];
-    this.mysteryBox = { x: 0, y: 0, w: 32, h: 32, active: true, pulse: 0 };
     this.obstacles = [];
     this.rocks = [];
     this.plants = [];
+    this.mysteryBox = { x: 0, y: 0, w: 34, h: 34, pulse: 0 };
 
     this.initArena();
   }
@@ -31,42 +31,39 @@ class TankGame {
     const w = this.canvas.width;
     const h = this.canvas.height;
 
-    // Tanklarning burchaklardagi start pozitsiyalari
-    this.tanks[0].x = 85;           this.tanks[0].y = h - 85;
-    this.tanks[1].x = 85;           this.tanks[1].y = 85;
-    this.tanks[2].x = w - 85;       this.tanks[2].y = 85;
-    this.tanks[3].x = w - 85;       this.tanks[3].y = h - 85;
+    // Tanklarning boshlang'ich joylari
+    this.tanks[0].x = 95;           this.tanks[0].y = h - 95;
+    this.tanks[1].x = 95;           this.tanks[1].y = 95;
+    this.tanks[2].x = w - 95;       this.tanks[2].y = 95;
+    this.tanks[3].x = w - 95;       this.tanks[3].y = h - 95;
 
-    // Skrinshotdagi vertikal sariq-qora to'siqlar
+    // To'siqlar
     this.obstacles = [
       { x: w * 0.35, y: h * 0.08, w: 22, h: h * 0.30, type: "hazard" },
       { x: w * 0.35, y: h * 0.62, w: 22, h: h * 0.30, type: "hazard" },
       { x: w * 0.65, y: h * 0.08, w: 22, h: h * 0.30, type: "hazard" },
       { x: w * 0.65, y: h * 0.62, w: 22, h: h * 0.30, type: "hazard" },
-
-      // Gorizontal beton devorlar
       { x: w * 0.12, y: h * 0.5 - 12, w: w * 0.18, h: 24, type: "concrete" },
       { x: w * 0.70, y: h * 0.5 - 12, w: w * 0.18, h: 24, type: "concrete" }
     ];
 
-    // Toshlar (Boulders)
+    // Toshlar
     this.rocks = [
-      { x: w * 0.46, y: h * 0.5, r: 28 },
-      { x: w * 0.28, y: h * 0.82, r: 24 },
-      { x: w * 0.72, y: h * 0.18, r: 24 },
-      { x: w * 0.72, y: h * 0.88, r: 26 }
+      { x: w * 0.46, y: h * 0.5, r: 30 },
+      { x: w * 0.28, y: h * 0.82, r: 26 },
+      { x: w * 0.72, y: h * 0.18, r: 26 },
+      { x: w * 0.72, y: h * 0.88, r: 28 }
     ];
 
-    // Palma butalari
+    // O'simliklar
     this.plants = [
-      { x: w * 0.24, y: h * 0.22, r: 25 },
-      { x: w * 0.10, y: h * 0.65, r: 22 },
-      { x: w * 0.88, y: h * 0.66, r: 24 }
+      { x: w * 0.24, y: h * 0.22, r: 26 },
+      { x: w * 0.10, y: h * 0.65, r: 24 },
+      { x: w * 0.88, y: h * 0.66, r: 26 }
     ];
 
-    // O'rtadagi sirli '?' qutisi
-    this.mysteryBox.x = w * 0.58;
-    this.mysteryBox.y = h * 0.5 - 16;
+    this.mysteryBox.x = w * 0.56;
+    this.mysteryBox.y = h * 0.5 - 17;
   }
 
   start() {
@@ -85,67 +82,61 @@ class TankGame {
     this.initArena();
   }
 
-  // TUGMA BOSILGANDA (Harakat boshlanadi)
+  // TUGMA BOSILDI (Harakat boshlanadi)
   onPlayerDown(idx) {
     const t = this.tanks[idx];
     if (t && t.alive) {
-      t.isPressing = true;
-      t.pressTime = performance.now();
+      t.isMoving = true;
     }
   }
 
-  // TUGMA QO'YIB YUBORILGANDA (Agar tez bosilgan bo'lsa - o'q uzadi)
+  // TUGMA QO'YIB YUBORILDI (To'xtaydi va darhol o'q uzadi!)
   onPlayerUp(idx) {
     const t = this.tanks[idx];
-    if (t && t.alive && t.isPressing) {
-      const duration = performance.now() - t.pressTime;
-      t.isPressing = false;
-
-      // Agar bosish 250 millisekunddan kam davom etgan bo'lsa -> O'Q OTISH
-      if (duration < 250) {
-        this.fireBullet(t);
-      }
+    if (t && t.alive && t.isMoving) {
+      t.isMoving = false;
+      this.fireBullet(t);
     }
   }
 
+  // O'Q OTISH (Sekinlashgan o'q tezligi: 3.8)
   fireBullet(t) {
     if (t.ammo <= 0) {
-      SoundEngine.play(120, "sine", 0.05);
+      SoundEngine.play(130, "sine", 0.05);
       return;
     }
 
     t.ammo--;
-    SoundEngine.play(180, "square", 0.12);
+    SoundEngine.play(200, "square", 0.12);
 
-    // Otilgan o'q uchquni
     this.spawnMuzzleFlash(t);
 
-    const bx = t.x + Math.cos(t.angle) * 26;
-    const by = t.y + Math.sin(t.angle) * 26;
+    const bx = t.x + Math.cos(t.angle) * 32;
+    const by = t.y + Math.sin(t.angle) * 32;
 
     this.bullets.push({
       x: bx,
       y: by,
-      vx: Math.cos(t.angle) * 6.5,
-      vy: Math.sin(t.angle) * 6.5,
+      vx: Math.cos(t.angle) * 3.8, // Sekinlashtirilgan tezlik
+      vy: Math.sin(t.angle) * 3.8,
       bounces: 4,
       owner: t,
-      life: 300
+      life: 420
     });
 
-    // Patronni qayta zaryadlash
+    // O'q zaxirasi asta to'ladi
     setTimeout(() => {
       if (t.ammo < t.maxAmmo) t.ammo++;
-    }, 1800);
+    }, 1600);
   }
 
   spawnMuzzleFlash(t) {
     for (let i = 0; i < 6; i++) {
       this.particles.push({
-        x: t.x + Math.cos(t.angle) * 24,
-        y: t.y + Math.sin(t.angle) * 24,
-        vx: Math.cos(t.angle + (Math.random() - 0.5)) * 3,
-        vy: Math.sin(t.angle + (Math.random() - 0.5)) * 3,
+        x: t.x + Math.cos(t.angle) * 30,
+        y: t.y + Math.sin(t.angle) * 30,
+        vx: Math.cos(t.angle + (Math.random() - 0.5)) * 2,
+        vy: Math.sin(t.angle + (Math.random() - 0.5)) * 2,
         color: "#fbbf24",
         life: 12,
         r: 3
@@ -156,13 +147,13 @@ class TankGame {
   spawnDust(t) {
     if (Math.random() < 0.4) {
       this.particles.push({
-        x: t.x - Math.cos(t.angle) * 14 + (Math.random() - 0.5) * 8,
-        y: t.y - Math.sin(t.angle) * 14 + (Math.random() - 0.5) * 8,
-        vx: (Math.random() - 0.5) * 0.5,
-        vy: (Math.random() - 0.5) * 0.5,
-        color: "rgba(217, 163, 98, 0.5)",
+        x: t.x - Math.cos(t.angle) * 20 + (Math.random() - 0.5) * 10,
+        y: t.y - Math.sin(t.angle) * 20 + (Math.random() - 0.5) * 10,
+        vx: (Math.random() - 0.5) * 0.4,
+        vy: (Math.random() - 0.5) * 0.4,
+        color: "rgba(202, 138, 4, 0.45)",
         life: 25,
-        r: 4 + Math.random() * 3
+        r: 5
       });
     }
   }
@@ -171,20 +162,19 @@ class TankGame {
     this.tanks.forEach(t => {
       if (!t.isBot || !t.alive) return;
 
-      // Botlar o'z-o'zidan harakatlanishi va nishonga olishi
-      if (!t.isPressing && Math.random() < 0.03) {
-        t.isPressing = true;
-        t.pressTime = performance.now();
-        t.botDriveTime = 400 + Math.random() * 700;
+      // Botlarning harakati va o'q uzishi
+      if (!t.isMoving && Math.random() < 0.03) {
+        t.isMoving = true;
+        t.botDriveTime = 400 + Math.random() * 800;
+        t.botStartDrive = performance.now();
       }
 
-      if (t.isPressing && performance.now() - t.pressTime > (t.botDriveTime || 500)) {
-        t.isPressing = false;
-      }
-
-      // Tasodifiy o'q uzish
-      if (Math.random() < 0.02 && t.ammo > 0) {
-        this.fireBullet(t);
+      if (t.isMoving && performance.now() - t.botStartDrive > t.botDriveTime) {
+        t.isMoving = false;
+        // Bot harakat to'xtaganda o'q uzadi
+        if (Math.random() < 0.7) {
+          this.fireBullet(t);
+        }
       }
     });
   }
@@ -201,34 +191,31 @@ class TankGame {
     const h = this.canvas.height;
 
     this.updateBots();
-
-    // Sirli quti animatsiyasi
     this.mysteryBox.pulse += 0.05;
 
-    // Tanklar holatini yangilash
+    // Tanklar harakati
     this.tanks.forEach(t => {
       if (!t.alive) return;
 
-      if (!t.isPressing) {
-        // BOSILMAGANDA: Joyida doimiy aylanadi
+      if (!t.isMoving) {
+        // Aylanish
         t.angle += t.rotateSpeed;
       } else {
-        // BOSIB TURILGANDA: O'sha tarafga qarab oldinga siljiydi
+        // Oldinga yurish
         const nextX = t.x + Math.cos(t.angle) * t.speed;
         const nextY = t.y + Math.sin(t.angle) * t.speed;
 
-        // Devorlar va chegaralar bilan to'qnashuv tekshiruvi
         let collides = false;
 
-        // Ekran chegarasi
-        if (nextX < 24 || nextX > w - 24 || nextY < 24 || nextY > h - 24) {
+        // Chegaralar (tank razmeri kattalashgani uchun 30px chegara)
+        if (nextX < 30 || nextX > w - 30 || nextY < 30 || nextY > h - 30) {
           collides = true;
         }
 
         // To'siqlar
         for (let obs of this.obstacles) {
-          if (nextX > obs.x - 18 && nextX < obs.x + obs.w + 18 &&
-              nextY > obs.y - 18 && nextY < obs.y + obs.h + 18) {
+          if (nextX > obs.x - 24 && nextX < obs.x + obs.w + 24 &&
+              nextY > obs.y - 24 && nextY < obs.y + obs.h + 24) {
             collides = true;
             break;
           }
@@ -236,7 +223,7 @@ class TankGame {
 
         // Toshlar
         for (let rk of this.rocks) {
-          if (Math.hypot(nextX - rk.x, nextY - rk.y) < rk.r + 14) {
+          if (Math.hypot(nextX - rk.x, nextY - rk.y) < rk.r + 20) {
             collides = true;
             break;
           }
@@ -250,36 +237,36 @@ class TankGame {
       }
     });
 
-    // O'qlar harakati va rikoshet
+    // O'qlar
     for (let i = this.bullets.length - 1; i >= 0; i--) {
       const b = this.bullets[i];
       b.x += b.vx;
       b.y += b.vy;
       b.life--;
 
-      // Tashqi devorlardan rikoshet
+      // Tashqi devor rikosheti
       if (b.x < 12 || b.x > w - 12) {
         b.vx *= -1;
         b.bounces--;
-        SoundEngine.play(450, "sine", 0.04);
+        SoundEngine.play(400, "sine", 0.04);
       }
       if (b.y < 12 || b.y > h - 12) {
         b.vy *= -1;
         b.bounces--;
-        SoundEngine.play(450, "sine", 0.04);
+        SoundEngine.play(400, "sine", 0.04);
       }
 
-      // To'siqlardan rikoshet
+      // To'siqlar rikosheti
       for (let obs of this.obstacles) {
         if (b.x > obs.x && b.x < obs.x + obs.w && b.y > obs.y && b.y < obs.y + obs.h) {
           b.vx *= -1;
           b.bounces--;
-          SoundEngine.play(450, "sine", 0.04);
+          SoundEngine.play(400, "sine", 0.04);
           break;
         }
       }
 
-      // Toshlardan rikoshet
+      // Toshlar rikosheti
       for (let rk of this.rocks) {
         if (Math.hypot(b.x - rk.x, b.y - rk.y) < rk.r) {
           b.vx *= -1;
@@ -289,9 +276,9 @@ class TankGame {
         }
       }
 
-      // Tankka tegishi
+      // Tankka tegishi (radius 26px ga moslandi)
       for (let t of this.tanks) {
-        if (t.alive && Math.hypot(b.x - t.x, b.y - t.y) < 22) {
+        if (t.alive && Math.hypot(b.x - t.x, b.y - t.y) < 26) {
           t.alive = false;
           b.bounces = 0;
           this.spawnExplosion(t.x, t.y, t.color);
@@ -306,7 +293,7 @@ class TankGame {
       }
     }
 
-    // Zarrachalar (particles)
+    // Particllar
     for (let i = this.particles.length - 1; i >= 0; i--) {
       const p = this.particles[i];
       p.x += p.vx;
@@ -319,8 +306,8 @@ class TankGame {
   }
 
   spawnExplosion(x, y, color) {
-    for (let i = 0; i < 20; i++) {
-      const spd = 1 + Math.random() * 4;
+    for (let i = 0; i < 22; i++) {
+      const spd = 1.2 + Math.random() * 4.5;
       const ang = Math.random() * Math.PI * 2;
       this.particles.push({
         x, y,
@@ -328,7 +315,7 @@ class TankGame {
         vy: Math.sin(ang) * spd,
         color: Math.random() > 0.5 ? color : "#f97316",
         life: 30,
-        r: 3 + Math.random() * 4
+        r: 4 + Math.random() * 4
       });
     }
   }
@@ -338,33 +325,29 @@ class TankGame {
     const w = this.canvas.width;
     const h = this.canvas.height;
 
-    // 1. Cho'l foni (Sand Dunes)
+    // Fon
     ctx.fillStyle = "#e5ba79";
     ctx.fillRect(0, 0, w, h);
 
-    // Qum barxanlari chiziqlari (tekstura)
+    // Qum relyefi
     ctx.fillStyle = "rgba(212, 160, 89, 0.4)";
-    for (let y = 0; y < h; y += 45) {
+    for (let y = 0; y < h; y += 48) {
       ctx.beginPath();
       ctx.ellipse(w / 2, y, w * 0.7, 18, 0, 0, Math.PI * 2);
       ctx.fill();
     }
 
-    // 2. To'rt burchakdagi maxsus zonalar (Skrinshotdagi kabi)
     this.renderCornerZones(ctx, w, h);
 
-    // 3. To'siqlar
+    // To'siqlar
     this.obstacles.forEach(obs => {
       if (obs.type === "hazard") {
-        // Sariq-qora chiziqli to'siq
-        ctx.save();
         ctx.fillStyle = "#eab308";
         ctx.fillRect(obs.x, obs.y, obs.w, obs.h);
         ctx.strokeStyle = "#111";
         ctx.lineWidth = 3;
         ctx.strokeRect(obs.x, obs.y, obs.w, obs.h);
 
-        // Qora chiziqlar (Hazard stripes)
         ctx.fillStyle = "#111";
         for (let sy = obs.y + 4; sy < obs.y + obs.h; sy += 16) {
           ctx.beginPath();
@@ -374,16 +357,12 @@ class TankGame {
           ctx.lineTo(obs.x, sy + 6);
           ctx.fill();
         }
-        ctx.restore();
       } else {
-        // Gorizontal beton to'siq
         ctx.fillStyle = "#cbd5e1";
         ctx.fillRect(obs.x, obs.y, obs.w, obs.h);
         ctx.strokeStyle = "#64748b";
         ctx.lineWidth = 2;
         ctx.strokeRect(obs.x, obs.y, obs.w, obs.h);
-
-        // Beton nuqtalari
         ctx.fillStyle = "#475569";
         for (let bx = obs.x + 12; bx < obs.x + obs.w - 8; bx += 14) {
           ctx.fillRect(bx, obs.y + 6, 2, 2);
@@ -392,30 +371,25 @@ class TankGame {
       }
     });
 
-    // 4. Toshlar (Boulders)
+    // Toshlar
     this.rocks.forEach(rk => {
-      ctx.save();
-      // Tosh soyasi
-      ctx.fillStyle = "rgba(0,0,0,0.22)";
+      ctx.fillStyle = "rgba(0,0,0,0.25)";
       ctx.beginPath();
-      ctx.arc(rk.x + 5, rk.y + 6, rk.r, 0, Math.PI * 2);
+      ctx.arc(rk.x + 6, rk.y + 7, rk.r, 0, Math.PI * 2);
       ctx.fill();
 
-      // Tosh tanasi
       ctx.fillStyle = "#a8a29e";
       ctx.beginPath();
       ctx.arc(rk.x, rk.y, rk.r, 0, Math.PI * 2);
       ctx.fill();
 
-      // Qirralari
       ctx.fillStyle = "#78716c";
       ctx.beginPath();
       ctx.arc(rk.x - 3, rk.y - 3, rk.r * 0.7, 0, Math.PI * 2);
       ctx.fill();
-      ctx.restore();
     });
 
-    // 5. Palma butalari
+    // Palma
     this.plants.forEach(pl => {
       ctx.save();
       ctx.translate(pl.x, pl.y);
@@ -423,34 +397,34 @@ class TankGame {
       for (let a = 0; a < 8; a++) {
         ctx.rotate(Math.PI / 4);
         ctx.beginPath();
-        ctx.ellipse(12, 0, 14, 5, 0, 0, Math.PI * 2);
+        ctx.ellipse(14, 0, 15, 6, 0, 0, Math.PI * 2);
         ctx.fill();
       }
       ctx.fillStyle = "#3f6212";
       ctx.beginPath();
-      ctx.arc(0, 0, 6, 0, Math.PI * 2);
+      ctx.arc(0, 0, 7, 0, Math.PI * 2);
       ctx.fill();
       ctx.restore();
     });
 
-    // 6. Sirli '?' qutisi
+    // Sirli '?' qutisi
     ctx.save();
-    const boxScale = 1 + Math.sin(this.mysteryBox.pulse) * 0.06;
+    const boxScale = 1 + Math.sin(this.mysteryBox.pulse) * 0.08;
     ctx.translate(this.mysteryBox.x, this.mysteryBox.y);
     ctx.scale(boxScale, boxScale);
     ctx.fillStyle = "#facc15";
-    ctx.fillRect(-16, -16, 32, 32);
+    ctx.fillRect(-17, -17, 34, 34);
     ctx.strokeStyle = "#ca8a04";
     ctx.lineWidth = 3;
-    ctx.strokeRect(-16, -16, 32, 32);
+    ctx.strokeRect(-17, -17, 34, 34);
     ctx.fillStyle = "#000";
-    ctx.font = "900 18px sans-serif";
+    ctx.font = "900 20px sans-serif";
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
     ctx.fillText("?", 0, 0);
     ctx.restore();
 
-    // 7. Zarrachalar (Particles)
+    // Zarrachalar
     this.particles.forEach(p => {
       ctx.fillStyle = p.color;
       ctx.beginPath();
@@ -458,100 +432,99 @@ class TankGame {
       ctx.fill();
     });
 
-    // 8. O'qlar
+    // O'qlar (kattaroq va yorqinroq ko'rinish)
     this.bullets.forEach(b => {
       ctx.save();
       ctx.fillStyle = "#fff";
       ctx.shadowColor = "#facc15";
-      ctx.shadowBlur = 8;
+      ctx.shadowBlur = 10;
       ctx.beginPath();
-      ctx.arc(b.x, b.y, 4, 0, Math.PI * 2);
+      ctx.arc(b.x, b.y, 5, 0, Math.PI * 2);
       ctx.fill();
       ctx.restore();
     });
 
-    // 9. Tanklar (Yuqori darajadagi 3D ko'rinish)
+    // Tanklar (KATTALASHTIRILGAN 1 sm² / ~48px)
     this.tanks.forEach(t => {
       if (!t.alive) return;
       this.drawTankSprite(ctx, t);
     });
 
-    // 10. Patronlar ko'rsatkichi (Burchaklardagi 5 talik patron panellari)
     this.renderAmmoHUD(ctx, w, h);
   }
 
   renderCornerZones(ctx, w, h) {
-    // Chap-yuqori: Yashil radar
     ctx.fillStyle = "#22c55e";
     ctx.beginPath();
     ctx.arc(0, 0, 75, 0, Math.PI / 2);
     ctx.fill();
 
-    // O'ng-yuqori: Kosmik binafsha
     ctx.fillStyle = "#4c1d95";
     ctx.beginPath();
     ctx.arc(w, 0, 75, Math.PI / 2, Math.PI);
     ctx.fill();
 
-    // Chap-pastki: Moviy ko'l
     ctx.fillStyle = "#0284c7";
     ctx.beginPath();
     ctx.arc(0, h, 75, -Math.PI / 2, 0);
     ctx.fill();
 
-    // O'ng-pastki: Qora tuynuk
     ctx.fillStyle = "#0f172a";
     ctx.beginPath();
     ctx.arc(w, h, 75, Math.PI, -Math.PI / 2);
     ctx.fill();
   }
 
+  // TANKNI CHIZISH (Katta 48px o'lchamda)
   drawTankSprite(ctx, t) {
     ctx.save();
     ctx.translate(t.x, t.y);
     ctx.rotate(t.angle);
 
-    // Tank soyasi
-    ctx.fillStyle = "rgba(0,0,0,0.3)";
-    ctx.fillRect(-18, -14, 38, 30);
+    // Soya
+    ctx.fillStyle = "rgba(0,0,0,0.32)";
+    ctx.fillRect(-24, -20, 50, 40);
 
-    // Gusenitsalar (Tracks)
+    // Gusenitsalar (G'ildirak yo'llari)
     ctx.fillStyle = "#1e293b";
-    ctx.fillRect(-19, -17, 38, 8);
-    ctx.fillRect(-19, 9, 38, 8);
+    ctx.fillRect(-24, -24, 48, 11);
+    ctx.fillRect(-24, 13, 48, 11);
 
-    // Gusenitsa tishlari
+    // Gusenitsa qovurg'alari
     ctx.fillStyle = "#475569";
-    for (let gx = -16; gx < 16; gx += 7) {
-      ctx.fillRect(gx, -17, 3, 8);
-      ctx.fillRect(gx, 9, 3, 8);
+    for (let gx = -21; gx < 21; gx += 8) {
+      ctx.fillRect(gx, -24, 4, 11);
+      ctx.fillRect(gx, 13, 4, 11);
     }
 
-    // Korpus
+    // Korpus (42x30 px)
     ctx.fillStyle = t.color;
     ctx.beginPath();
-    ctx.roundRect(-16, -11, 32, 22, 5);
+    ctx.roundRect(-21, -15, 42, 30, 7);
     ctx.fill();
     ctx.strokeStyle = t.darkColor;
-    ctx.lineWidth = 2;
+    ctx.lineWidth = 3;
     ctx.stroke();
 
     // Zambarak lulasi (Barrel)
     ctx.fillStyle = "#0f172a";
-    ctx.fillRect(2, -3.5, 22, 7);
-    ctx.fillStyle = "#475569";
-    ctx.fillRect(21, -4.5, 4, 9); // Lulaning uchi
+    ctx.fillRect(4, -5, 28, 10);
+    ctx.fillStyle = "#64748b";
+    ctx.fillRect(28, -6, 5, 12);
 
     // Minora (Turret)
     ctx.fillStyle = t.darkColor;
     ctx.beginPath();
-    ctx.arc(0, 0, 9, 0, Math.PI * 2);
+    ctx.arc(0, 0, 13, 0, Math.PI * 2);
     ctx.fill();
+    ctx.strokeStyle = "#fff";
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
 
     // Qopqoq / Lyuk
     ctx.fillStyle = "#fff";
     ctx.beginPath();
-    ctx.arc(-2, 0, 4, 0, Math.PI * 2);
+    ctx.arc(-3, 0, 5, 0, Math.PI * 2);
     ctx.fill();
 
     ctx.restore();
@@ -559,26 +532,24 @@ class TankGame {
 
   renderAmmoHUD(ctx, w, h) {
     const hudPositions = [
-      { x: 18, y: h - 34, t: this.tanks[0] }, // P1
-      { x: 18, y: 16, t: this.tanks[1] },     // P2
-      { x: w - 100, y: 16, t: this.tanks[2] }, // P3
-      { x: w - 100, y: h - 34, t: this.tanks[3] } // P4
+      { x: 22, y: h - 38, t: this.tanks[0] },
+      { x: 22, y: 18, t: this.tanks[1] },
+      { x: w - 110, y: 18, t: this.tanks[2] },
+      { x: w - 110, y: h - 38, t: this.tanks[3] }
     ];
 
     hudPositions.forEach(({ x, y, t }) => {
-      // Qora ramka
-      ctx.fillStyle = "rgba(15, 23, 42, 0.85)";
-      ctx.strokeStyle = "rgba(255, 255, 255, 0.3)";
-      ctx.lineWidth = 1.5;
+      ctx.fillStyle = "rgba(15, 23, 42, 0.9)";
+      ctx.strokeStyle = "rgba(255, 255, 255, 0.4)";
+      ctx.lineWidth = 2;
       ctx.beginPath();
-      ctx.roundRect(x, y, 82, 18, 5);
+      ctx.roundRect(x, y, 90, 20, 6);
       ctx.fill();
       ctx.stroke();
 
-      // 5 ta patron
       for (let i = 0; i < t.maxAmmo; i++) {
         ctx.fillStyle = i < t.ammo ? "#38bdf8" : "#334155";
-        ctx.fillRect(x + 6 + i * 15, y + 4, 9, 10);
+        ctx.fillRect(x + 7 + i * 16, y + 4, 10, 12);
       }
     });
   }
