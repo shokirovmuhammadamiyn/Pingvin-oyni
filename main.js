@@ -1,11 +1,14 @@
-// O'YINLAR VA GLOBAL ENGINE
+// ============================================================
+// MAIN ENGINE — SOUND & TOUCH MULTIPLAYER CONTROLS
+// ============================================================
+
 const SoundEngine = {
   ctx: null,
   enabled: true,
   init() {
     if (!this.ctx) {
-      const AudioContext = window.AudioContext || window.webkitAudioContext;
-      if (AudioContext) this.ctx = new AudioContext();
+      const AudioCtx = window.AudioContext || window.webkitAudioContext;
+      if (AudioCtx) this.ctx = new AudioCtx();
     }
     if (this.ctx && this.ctx.state === "suspended") {
       this.ctx.resume();
@@ -35,7 +38,6 @@ let activeGame = null;
 let activeGameName = "";
 let humanPlayersCount = 1;
 
-// O'yin maydoni canvas
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
 
@@ -49,7 +51,7 @@ function resizeCanvas() {
 }
 window.addEventListener("resize", resizeCanvas);
 
-// Rejim tanlash (1, 2 yoki 4 kishi)
+// O'yinchi sonini tanlash
 document.querySelectorAll(".mode-btn").forEach(btn => {
   btn.onclick = () => {
     document.querySelectorAll(".mode-btn").forEach(b => b.classList.remove("active"));
@@ -59,7 +61,7 @@ document.querySelectorAll(".mode-btn").forEach(btn => {
   };
 });
 
-// O'yinni ishga tushirish
+// O'yinni boshlash
 function launchGame(name) {
   SoundEngine.init();
   SoundEngine.play(600, "triangle", 0.1);
@@ -92,16 +94,14 @@ function showMenu() {
 
 document.getElementById("btnBack").onclick = showMenu;
 document.getElementById("btnMenu").onclick = showMenu;
-document.getElementById("btnRestart").onclick = () => {
-  launchGame(activeGameName);
-};
+document.getElementById("btnRestart").onclick = () => launchGame(activeGameName);
 
 document.getElementById("btnSound").onclick = () => {
   SoundEngine.enabled = !SoundEngine.enabled;
   document.getElementById("btnSound").textContent = SoundEngine.enabled ? "🔊" : "🔇";
 };
 
-// 4 Burchak tugmalari bosilishi (Touch/Click)
+// 4 BURCHAK KNOPKALARINI BOSH QARISH (HOLD & RELEASE)
 function setupCornerButtons() {
   const map = [
     { id: "tapP1", idx: 0 },
@@ -112,32 +112,84 @@ function setupCornerButtons() {
 
   map.forEach(({ id, idx }) => {
     const el = document.getElementById(id);
-    const trigger = (e) => {
+    if (!el) return;
+
+    const startHandler = (e) => {
       e.preventDefault();
-      if (activeGame && activeGame.onPlayerAction) {
-        activeGame.onPlayerAction(idx);
+      e.stopPropagation();
+      el.classList.add("pressed");
+      if (activeGame) {
+        if (activeGame.onPlayerDown) activeGame.onPlayerDown(idx);
+        else if (activeGame.onPlayerAction) activeGame.onPlayerAction(idx);
       }
     };
-    el.addEventListener("touchstart", trigger, { passive: false });
-    el.addEventListener("mousedown", trigger);
+
+    const stopHandler = (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      el.classList.remove("pressed");
+      if (activeGame && activeGame.onPlayerUp) {
+        activeGame.onPlayerUp(idx);
+      }
+    };
+
+    // Sensor qurilmalar (Smartfon / Planshet)
+    el.addEventListener("touchstart", startHandler, { passive: false });
+    el.addEventListener("touchend", stopHandler, { passive: false });
+    el.addEventListener("touchcancel", stopHandler, { passive: false });
+
+    // Kompyuter (Sichqoncha)
+    el.addEventListener("mousedown", startHandler);
+    el.addEventListener("mouseup", stopHandler);
+    el.addEventListener("mouseleave", stopHandler);
   });
+
+  // Ekran zonasidan boshqarish (P1 uchun chap-pastki qism)
+  const container = document.querySelector(".canvas-container");
+  container.addEventListener("touchstart", (e) => {
+    const t = e.touches[0];
+    const rect = container.getBoundingClientRect();
+    const x = t.clientX - rect.left;
+    const y = t.clientY - rect.top;
+
+    if (x < rect.width * 0.35 && y > rect.height * 0.65) {
+      if (activeGame && activeGame.onPlayerDown) activeGame.onPlayerDown(0);
+      document.getElementById("tapP1").classList.add("pressed");
+    }
+  }, { passive: true });
+
+  container.addEventListener("touchend", () => {
+    if (activeGame && activeGame.onPlayerUp) activeGame.onPlayerUp(0);
+    document.getElementById("tapP1").classList.remove("pressed");
+  }, { passive: true });
 }
 setupCornerButtons();
 
-// Klaviatura boshqaruvi
+// KLAVIATURA (KOMPYUTER FOYDALANUVCHILARI UCHUN)
+const keyMap = {
+  "Space": 0, "KeyW": 0,
+  "KeyQ": 1,
+  "KeyP": 2, "ArrowUp": 2,
+  "Enter": 3, "ArrowDown": 3
+};
+
 window.addEventListener("keydown", (e) => {
-  if (!activeGame) return;
-  // P1: Space yoki W
-  if (e.code === "Space" || e.key === "w" || e.key === "W") activeGame.onPlayerAction(0);
-  // P2: Q
-  if (e.key === "q" || e.key === "Q") activeGame.onPlayerAction(1);
-  // P3: P yoki ArrowUp
-  if (e.key === "p" || e.key === "P" || e.key === "ArrowUp") activeGame.onPlayerAction(2);
-  // P4: Enter yoki ArrowDown
-  if (e.code === "Enter" || e.key === "ArrowDown") activeGame.onPlayerAction(3);
+  if (!activeGame || e.repeat) return;
+  const pIdx = keyMap[e.code];
+  if (pIdx !== undefined) {
+    if (activeGame.onPlayerDown) activeGame.onPlayerDown(pIdx);
+    else if (activeGame.onPlayerAction) activeGame.onPlayerAction(pIdx);
+  }
 });
 
-// Natijalar oynasi
+window.addEventListener("keyup", (e) => {
+  if (!activeGame) return;
+  const pIdx = keyMap[e.code];
+  if (pIdx !== undefined && activeGame.onPlayerUp) {
+    activeGame.onPlayerUp(pIdx);
+  }
+});
+
 function showGameOverModal(title, scoreList) {
   document.getElementById("resTitle").textContent = title;
   const board = document.getElementById("resScores");
@@ -148,7 +200,7 @@ function showGameOverModal(title, scoreList) {
     row.className = "score-row";
     row.innerHTML = `
       <span style="color:${item.color}">${item.name}</span>
-      <span>${item.score} ochko</span>
+      <span>${item.score}</span>
     `;
     board.appendChild(row);
   });
