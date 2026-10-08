@@ -1,920 +1,2100 @@
 <!DOCTYPE html>
 <html lang="uz">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Bubble Sort Boshqotirmasi - Multik Personajlar</title>
-  <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      user-select: none;
-      font-family: 'Fredoka', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<title>Mini Games — Multik Qahramonlar</title>
 
-    :root {
-      --bg-gradient: radial-gradient(circle at 50% 20%, #294073, #111a33);
-      --stage-floor: #e0f2fe;
-      --card-bg: rgba(255, 255, 255, 0.12);
-      --accent: #f59e0b;
-    }
+<style>
+*{
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+  -webkit-tap-highlight-color:transparent;
+}
 
-    body {
-      background: var(--bg-gradient);
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: flex-start;
-      padding: 24px 12px;
-      color: #fff;
-      overflow-x: hidden;
-      transition: background 0.8s ease;
-    }
+:root{
+  --yellow:#fbbf24;
+  --blue:#38bdf8;
+  --green:#34d399;
+  --red:#fb7185;
+  --purple:#a78bfa;
+  --dark:#07111f;
+  --glass:rgba(255,255,255,.10);
+  --border:rgba(255,255,255,.16);
+}
 
-    header {
-      text-align: center;
-      margin-bottom: 16px;
-    }
+body{
+  min-height:100vh;
+  color:#fff;
+  font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  background:
+    radial-gradient(circle at 50% 0%,#263b73 0,#101a35 42%,#050a15 100%);
+  overflow-x:hidden;
+}
 
-    h1 {
-      font-size: 2.2rem;
-      letter-spacing: 1px;
-      color: #fcd34d;
-      text-shadow: 0 4px 15px rgba(0,0,0,0.5);
-      margin-bottom: 6px;
-    }
+button{
+  font:inherit;
+}
 
-    p.tagline {
-      font-size: 1rem;
-      color: #cbd5e1;
-    }
+.app{
+  width:min(1180px,100%);
+  min-height:100vh;
+  margin:auto;
+  padding:18px;
+}
 
-    /* Personaj tanlash paneli */
-    .theme-selector {
-      display: flex;
-      gap: 10px;
-      margin-bottom: 20px;
-      background: rgba(0, 0, 0, 0.25);
-      padding: 6px 12px;
-      border-radius: 40px;
-      border: 1px solid rgba(255, 255, 255, 0.15);
-      flex-wrap: wrap;
-      justify-content: center;
-    }
+/* ================= HEADER ================= */
 
-    .theme-btn {
-      background: transparent;
-      border: 2px solid transparent;
-      color: #cbd5e1;
-      font-size: 0.95rem;
-      font-weight: 700;
-      padding: 8px 18px;
-      border-radius: 25px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      transition: all 0.25s ease;
-    }
+.topbar{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  margin-bottom:20px;
+}
 
-    .theme-btn:hover {
-      background: rgba(255, 255, 255, 0.1);
-      color: #fff;
-    }
+.logo{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  font-weight:900;
+  font-size:22px;
+}
 
-    .theme-btn.active {
-      background: #f59e0b;
-      color: #111827;
-      border-color: #fde68a;
-      box-shadow: 0 4px 15px rgba(245, 158, 11, 0.4);
-      transform: scale(1.05);
-    }
+.logo-icon{
+  width:45px;
+  height:45px;
+  display:grid;
+  place-items:center;
+  border-radius:14px;
+  background:linear-gradient(135deg,#fbbf24,#f97316);
+  box-shadow:0 8px 25px rgba(251,191,36,.25);
+}
 
-    /* O'yin maydoni */
-    .game-arena {
-      position: relative;
-      width: 100%;
-      max-width: 900px;
-      height: 380px;
-      background: var(--card-bg);
-      backdrop-filter: blur(12px);
-      border-radius: 28px;
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      box-shadow: 0 20px 50px rgba(0,0,0,0.45);
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
-      justify-content: flex-end;
-    }
+.sound-btn{
+  border:1px solid var(--border);
+  background:var(--glass);
+  color:white;
+  width:45px;
+  height:45px;
+  border-radius:14px;
+  cursor:pointer;
+}
 
-    /* Tabiat foni / dekoratsiyalar */
-    .scenery {
-      position: absolute;
-      inset: 0;
-      pointer-events: none;
-      z-index: 1;
-    }
+/* ================= SCREENS ================= */
 
-    .scenery-item {
-      position: absolute;
-      opacity: 0.85;
-      filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3));
-      transition: all 0.6s ease;
-    }
+.screen{
+  display:none;
+  animation:screenIn .4s ease;
+}
 
-    /* Muzlik / Yer platformasi */
-    .stage-platform {
-      position: relative;
-      z-index: 2;
-      width: 100%;
-      height: 70px;
-      background: var(--stage-floor);
-      border-top: 4px solid rgba(255, 255, 255, 0.8);
-      border-radius: 0 0 28px 28px;
-      box-shadow: inset 0 8px 16px rgba(0,0,0,0.15);
-    }
+.screen.active{
+  display:block;
+}
 
-    /* Qahramonlar konteyneri */
-    .characters-track {
-      position: absolute;
-      bottom: 60px;
-      left: 0;
-      width: 100%;
-      height: 280px;
-      z-index: 3;
-      display: flex;
-      align-items: flex-end;
-      padding: 0 20px;
-    }
+@keyframes screenIn{
+  from{
+    opacity:0;
+    transform:translateY(12px);
+  }
+  to{
+    opacity:1;
+    transform:none;
+  }
+}
 
-    /* Har bir qahramon slot/kartasi */
-    .char-node {
-      position: absolute;
-      bottom: 0;
-      width: 80px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: flex-end;
-      cursor: pointer;
-      transition: left 0.55s cubic-bezier(0.34, 1.56, 0.64, 1), transform 0.3s ease;
-      transform-origin: bottom center;
-    }
+/* ================= HOME ================= */
 
-    .char-node:hover {
-      transform: translateY(-8px) scale(1.05);
-    }
+.hero{
+  text-align:center;
+  padding:25px 10px 30px;
+}
 
-    .char-node.selected {
-      filter: drop-shadow(0 0 16px #fcd34d);
-      transform: translateY(-16px) scale(1.12);
-    }
+.hero h1{
+  font-size:clamp(38px,7vw,72px);
+  line-height:1;
+  font-weight:950;
+  letter-spacing:-3px;
+  background:linear-gradient(90deg,#fcd34d,#fff,#7dd3fc);
+  -webkit-background-clip:text;
+  color:transparent;
+}
 
-    /* Silliq egri sakrash animatsiyasi */
-    .char-node.jumping-left {
-      animation: jumpArcLeft 0.6s cubic-bezier(0.25, 1, 0.5, 1) forwards;
-      z-index: 10;
-    }
+.hero p{
+  margin-top:12px;
+  color:#b9c5dc;
+  font-size:16px;
+}
 
-    .char-node.jumping-right {
-      animation: jumpArcRight 0.6s cubic-bezier(0.25, 1, 0.5, 1) forwards;
-      z-index: 10;
-    }
+.games-grid{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:18px;
+}
 
-    @keyframes jumpArcLeft {
-      0% { transform: translate(0, 0) scale(1); }
-      45% { transform: translate(0, -60px) scale(1.18) rotate(-10deg); }
-      100% { transform: translate(0, 0) scale(1) rotate(0deg); }
-    }
+.game-card{
+  min-height:190px;
+  border:1px solid var(--border);
+  border-radius:28px;
+  padding:22px;
+  color:white;
+  text-align:left;
+  cursor:pointer;
+  position:relative;
+  overflow:hidden;
+  transition:.3s;
+  box-shadow:0 15px 40px rgba(0,0,0,.25);
+}
 
-    @keyframes jumpArcRight {
-      0% { transform: translate(0, 0) scale(1); }
-      45% { transform: translate(0, -60px) scale(1.18) rotate(10deg); }
-      100% { transform: translate(0, 0) scale(1) rotate(0deg); }
-    }
+.game-card:hover{
+  transform:translateY(-7px) scale(1.01);
+  box-shadow:0 22px 55px rgba(0,0,0,.4);
+}
 
-    /* Qahramon rasmi / SVG shakli */
-    .character-body {
-      position: relative;
-      width: 100%;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: flex-end;
-    }
+.game-card:active{
+  transform:scale(.98);
+}
 
-    .char-svg {
-      width: 100%;
-      height: 100%;
-      filter: drop-shadow(0 8px 12px rgba(0,0,0,0.35));
-      transition: all 0.3s ease;
-    }
+.game-card::after{
+  content:"";
+  position:absolute;
+  width:170px;
+  height:170px;
+  border-radius:50%;
+  right:-50px;
+  top:-60px;
+  background:rgba(255,255,255,.12);
+}
 
-    /* Raqam nishoni */
-    .badge-number {
-      position: absolute;
-      top: 52%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      width: 32px;
-      height: 32px;
-      background: #ffffff;
-      color: #111827;
-      font-size: 1.25rem;
-      font-weight: 900;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.3), inset 0 -2px 4px rgba(0,0,0,0.15);
-      border: 2px solid #fff;
-    }
+.card-sort{
+  background:linear-gradient(135deg,#2563eb,#172554);
+}
 
-    /* G'alaba qozongandagi raqs */
-    .char-node.victory {
-      animation: victoryDance 0.7s infinite alternate ease-in-out;
-    }
+.card-football{
+  background:linear-gradient(135deg,#059669,#064e3b);
+}
 
-    @keyframes victoryDance {
-      0% { transform: translateY(0) rotate(-6deg); }
-      100% { transform: translateY(-24px) rotate(6deg); }
-    }
+.card-tank{
+  background:linear-gradient(135deg,#dc2626,#450a0a);
+}
 
-    /* Interaktiv tugmalar paneli */
-    .control-panel {
-      margin-top: 22px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 14px;
-      width: 100%;
-      max-width: 900px;
-    }
+.card-race{
+  background:linear-gradient(135deg,#7c3aed,#2e1065);
+}
 
-    .status-box {
-      font-size: 1.15rem;
-      font-weight: 600;
-      color: #f1f5f9;
-      background: rgba(0, 0, 0, 0.35);
-      padding: 10px 24px;
-      border-radius: 20px;
-      border: 1px solid rgba(255, 255, 255, 0.12);
-      min-height: 48px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-    }
+.game-icon{
+  font-size:55px;
+  margin-bottom:12px;
+}
 
-    .buttons-group {
-      display: flex;
-      gap: 12px;
-      flex-wrap: wrap;
-      justify-content: center;
-    }
+.game-card h2{
+  font-size:25px;
+}
 
-    .btn {
-      padding: 12px 22px;
-      font-size: 1rem;
-      font-weight: 700;
-      border: none;
-      border-radius: 14px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-      box-shadow: 0 6px 16px rgba(0,0,0,0.3);
-      color: #fff;
-    }
+.game-card p{
+  color:#dbeafe;
+  margin-top:5px;
+  font-size:14px;
+}
 
-    .btn:hover:not(:disabled) {
-      transform: translateY(-3px) scale(1.02);
-      box-shadow: 0 10px 22px rgba(0,0,0,0.4);
-    }
+.play-label{
+  position:absolute;
+  right:20px;
+  bottom:20px;
+  padding:8px 14px;
+  border-radius:20px;
+  background:rgba(0,0,0,.25);
+  font-size:13px;
+  font-weight:800;
+}
 
-    .btn:active:not(:disabled) {
-      transform: translateY(1px);
-    }
+/* ================= COMMON GAME ================= */
 
-    .btn:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-      transform: none !important;
-    }
+.game-header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin-bottom:14px;
+}
 
-    .btn-move { background: linear-gradient(135deg, #0ea5e9, #0284c7); }
-    .btn-step { background: linear-gradient(135deg, #8b5cf6, #6d28d9); }
-    .btn-auto { background: linear-gradient(135deg, #10b981, #059669); }
-    .btn-reset { background: linear-gradient(135deg, #64748b, #475569); }
+.game-title{
+  font-size:27px;
+  font-weight:900;
+}
 
-    /* Konfetti effekti */
-    .confetti-canvas {
-      position: fixed;
-      inset: 0;
-      pointer-events: none;
-      z-index: 100;
-    }
-  </style>
+.back-btn{
+  border:1px solid var(--border);
+  background:var(--glass);
+  color:white;
+  padding:10px 15px;
+  border-radius:13px;
+  cursor:pointer;
+}
+
+.panel{
+  border:1px solid var(--border);
+  background:rgba(255,255,255,.07);
+  backdrop-filter:blur(18px);
+  border-radius:25px;
+  padding:18px;
+  box-shadow:0 20px 60px rgba(0,0,0,.25);
+}
+
+.status{
+  text-align:center;
+  padding:12px;
+  margin-bottom:14px;
+  border-radius:15px;
+  background:rgba(0,0,0,.25);
+  color:#dbeafe;
+  min-height:45px;
+}
+
+.controls{
+  display:flex;
+  gap:9px;
+  justify-content:center;
+  flex-wrap:wrap;
+  margin-top:15px;
+}
+
+.btn{
+  border:none;
+  color:white;
+  font-weight:800;
+  padding:12px 17px;
+  border-radius:13px;
+  cursor:pointer;
+  transition:.2s;
+  box-shadow:0 7px 18px rgba(0,0,0,.25);
+}
+
+.btn:hover{
+  transform:translateY(-2px);
+}
+
+.btn:active{
+  transform:scale(.96);
+}
+
+.btn-blue{background:linear-gradient(135deg,#0ea5e9,#0369a1)}
+.btn-green{background:linear-gradient(135deg,#10b981,#047857)}
+.btn-red{background:linear-gradient(135deg,#ef4444,#991b1b)}
+.btn-purple{background:linear-gradient(135deg,#8b5cf6,#5b21b6)}
+.btn-gray{background:linear-gradient(135deg,#64748b,#334155)}
+.btn-yellow{background:linear-gradient(135deg,#f59e0b,#b45309);color:#111}
+
+/* ================= CHARACTER SELECT ================= */
+
+.character-select{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:12px;
+  margin-bottom:18px;
+}
+
+.char-select{
+  padding:14px 8px;
+  border:2px solid transparent;
+  border-radius:18px;
+  background:rgba(255,255,255,.07);
+  color:white;
+  cursor:pointer;
+  transition:.25s;
+}
+
+.char-select:hover{
+  background:rgba(255,255,255,.12);
+}
+
+.char-select.active{
+  border-color:#fbbf24;
+  background:rgba(251,191,36,.16);
+  transform:translateY(-4px);
+}
+
+.char-select .emoji{
+  font-size:42px;
+  display:block;
+}
+
+.char-select span{
+  font-weight:800;
+  font-size:13px;
+}
+
+/* ================= BUBBLE ================= */
+
+.sort-arena{
+  height:390px;
+  position:relative;
+  overflow:hidden;
+  border-radius:22px;
+  background:
+    linear-gradient(to bottom,rgba(255,255,255,.04),rgba(0,0,0,.15)),
+    #102044;
+}
+
+.sort-ground{
+  position:absolute;
+  bottom:0;
+  left:0;
+  right:0;
+  height:65px;
+  background:#dbeafe;
+  border-radius:0 0 22px 22px;
+}
+
+.sort-track{
+  position:absolute;
+  left:0;
+  right:0;
+  bottom:65px;
+  height:270px;
+}
+
+.sort-char{
+  position:absolute;
+  bottom:0;
+  width:80px;
+  text-align:center;
+  cursor:pointer;
+  transition:left .55s cubic-bezier(.34,1.56,.64,1);
+}
+
+.sort-body{
+  position:relative;
+  margin:auto;
+}
+
+.sort-svg{
+  width:100%;
+  height:100%;
+  filter:drop-shadow(0 8px 8px rgba(0,0,0,.35));
+}
+
+.number{
+  position:absolute;
+  left:50%;
+  top:53%;
+  transform:translate(-50%,-50%);
+  width:32px;
+  height:32px;
+  border-radius:50%;
+  background:white;
+  color:#111827;
+  display:grid;
+  place-items:center;
+  font-weight:950;
+  box-shadow:0 3px 10px rgba(0,0,0,.35);
+}
+
+.sort-char.selected{
+  filter:drop-shadow(0 0 16px #facc15);
+  transform:translateY(-13px) scale(1.08);
+}
+
+/* ================= FOOTBALL ================= */
+
+.football-field{
+  position:relative;
+  height:500px;
+  overflow:hidden;
+  border-radius:24px;
+  background:
+    repeating-linear-gradient(
+      90deg,
+      #15803d 0,
+      #15803d 60px,
+      #166534 60px,
+      #166534 120px
+    );
+  border:5px solid rgba(255,255,255,.7);
+}
+
+.field-line{
+  position:absolute;
+  background:rgba(255,255,255,.8);
+}
+
+.mid-line{
+  width:3px;
+  height:100%;
+  left:50%;
+  top:0;
+}
+
+.center-circle{
+  position:absolute;
+  width:130px;
+  height:130px;
+  border:3px solid white;
+  border-radius:50%;
+  left:50%;
+  top:50%;
+  transform:translate(-50%,-50%);
+}
+
+.goal{
+  position:absolute;
+  top:50%;
+  transform:translateY(-50%);
+  width:35px;
+  height:140px;
+  border:5px solid white;
+}
+
+.goal.left{left:-5px}
+.goal.right{right:-5px}
+
+.football-player{
+  position:absolute;
+  width:62px;
+  height:62px;
+  display:grid;
+  place-items:center;
+  font-size:43px;
+  border-radius:50%;
+  background:rgba(255,255,255,.18);
+  border:3px solid rgba(255,255,255,.8);
+  transition:.15s linear;
+  z-index:5;
+}
+
+.ball{
+  position:absolute;
+  width:25px;
+  height:25px;
+  border-radius:50%;
+  background:white;
+  box-shadow:0 3px 8px rgba(0,0,0,.35);
+  display:grid;
+  place-items:center;
+  font-size:15px;
+  z-index:6;
+  transition:.25s ease;
+}
+
+/* ================= TANK ================= */
+
+.tank-field{
+  position:relative;
+  height:500px;
+  overflow:hidden;
+  border-radius:24px;
+  background:
+    radial-gradient(circle at 20% 20%,#526347,#283522 45%,#162014);
+}
+
+.obstacle{
+  position:absolute;
+  background:#303b2b;
+  border:3px solid #66755b;
+  border-radius:8px;
+  box-shadow:inset 0 0 15px rgba(0,0,0,.5);
+}
+
+.tank-player{
+  position:absolute;
+  width:55px;
+  height:55px;
+  border-radius:12px;
+  background:#374b32;
+  border:3px solid #a7b99b;
+  display:grid;
+  place-items:center;
+  font-size:30px;
+  z-index:5;
+  transition:.12s linear;
+}
+
+.tank-player::after{
+  content:"";
+  position:absolute;
+  width:35px;
+  height:9px;
+  background:#65795a;
+  border:2px solid #1d281a;
+  right:-25px;
+  top:22px;
+  border-radius:4px;
+}
+
+.bullet{
+  position:absolute;
+  width:9px;
+  height:9px;
+  border-radius:50%;
+  background:#fde047;
+  box-shadow:0 0 10px #facc15;
+  z-index:10;
+}
+
+.hp{
+  position:absolute;
+  top:-13px;
+  left:0;
+  width:100%;
+  height:6px;
+  border-radius:10px;
+  background:#111;
+  overflow:hidden;
+}
+
+.hp i{
+  display:block;
+  width:100%;
+  height:100%;
+  background:#4ade80;
+}
+
+/* ================= RACING ================= */
+
+.race-track{
+  position:relative;
+  height:500px;
+  overflow:hidden;
+  border-radius:24px;
+  background:#292929;
+  border-left:70px solid #333;
+  border-right:70px solid #333;
+}
+
+.road-lines{
+  position:absolute;
+  inset:0;
+  background:
+    repeating-linear-gradient(
+      to bottom,
+      transparent 0,
+      transparent 45px,
+      rgba(255,255,255,.8) 45px,
+      rgba(255,255,255,.8) 75px
+    );
+  opacity:.6;
+  animation:roadMove .5s linear infinite;
+}
+
+@keyframes roadMove{
+  to{background-position:0 75px}
+}
+
+.racer{
+  position:absolute;
+  width:54px;
+  height:90px;
+  border-radius:15px 15px 10px 10px;
+  display:grid;
+  place-items:center;
+  font-size:31px;
+  box-shadow:0 10px 18px rgba(0,0,0,.5);
+  border:3px solid white;
+  z-index:5;
+}
+
+.racer::before,
+.racer::after{
+  content:"";
+  position:absolute;
+  width:9px;
+  height:25px;
+  background:#111;
+  border-radius:5px;
+  top:20px;
+}
+
+.racer::before{left:-7px}
+.racer::after{right:-7px}
+
+/* ================= PLAYER CONTROL ================= */
+
+.mobile-controls{
+  display:flex;
+  justify-content:center;
+  gap:12px;
+  margin-top:15px;
+  flex-wrap:wrap;
+}
+
+.control-big{
+  width:65px;
+  height:55px;
+  border:none;
+  border-radius:15px;
+  background:rgba(255,255,255,.13);
+  color:white;
+  font-size:23px;
+  cursor:pointer;
+  border:1px solid var(--border);
+}
+
+.control-big:active{
+  transform:scale(.9);
+  background:rgba(255,255,255,.25);
+}
+
+/* ================= MODAL ================= */
+
+.modal{
+  position:fixed;
+  inset:0;
+  display:none;
+  place-items:center;
+  background:rgba(0,0,0,.65);
+  backdrop-filter:blur(8px);
+  z-index:100;
+  padding:20px;
+}
+
+.modal.show{
+  display:grid;
+}
+
+.modal-box{
+  width:min(440px,100%);
+  padding:30px;
+  text-align:center;
+  background:linear-gradient(145deg,#172554,#0f172a);
+  border:1px solid var(--border);
+  border-radius:28px;
+  box-shadow:0 30px 90px rgba(0,0,0,.55);
+  animation:modalIn .35s ease;
+}
+
+@keyframes modalIn{
+  from{
+    opacity:0;
+    transform:scale(.8);
+  }
+  to{
+    opacity:1;
+    transform:none;
+  }
+}
+
+.modal-icon{
+  font-size:70px;
+}
+
+.modal-box h2{
+  font-size:30px;
+  margin:8px 0;
+}
+
+.modal-box p{
+  color:#cbd5e1;
+  margin-bottom:20px;
+}
+
+/* ================= TOAST ================= */
+
+.toast{
+  position:fixed;
+  left:50%;
+  bottom:25px;
+  transform:translate(-50%,100px);
+  background:#111827;
+  color:white;
+  padding:12px 20px;
+  border-radius:30px;
+  z-index:200;
+  transition:.35s;
+  box-shadow:0 10px 30px rgba(0,0,0,.4);
+}
+
+.toast.show{
+  transform:translate(-50%,0);
+}
+
+/* ================= RESPONSIVE ================= */
+
+@media(max-width:700px){
+
+  .app{
+    padding:12px;
+  }
+
+  .games-grid{
+    grid-template-columns:1fr;
+  }
+
+  .game-card{
+    min-height:155px;
+  }
+
+  .character-select{
+    grid-template-columns:repeat(2,1fr);
+  }
+
+  .sort-arena,
+  .football-field,
+  .tank-field,
+  .race-track{
+    height:430px;
+  }
+
+  .race-track{
+    border-left-width:35px;
+    border-right-width:35px;
+  }
+
+  .game-title{
+    font-size:22px;
+  }
+
+  .hero{
+    padding-top:15px;
+  }
+}
+</style>
 </head>
+
 <body>
 
-  <canvas id="confettiCanvas" class="confetti-canvas"></canvas>
+<div class="app">
 
-  <header>
-    <h1>Bubble Sort Boshqotirmasi</h1>
-    <p class="tagline">Personajni tanlang, o'zingiz sakratib tartiblang yoki Bubble Sort orqali saralang!</p>
-  </header>
-
-  <!-- Personaj tanlash -->
-  <div class="theme-selector">
-    <button class="theme-btn active" data-theme="penguin">🐧 Pingvinlar</button>
-    <button class="theme-btn" data-theme="bear">🐻 Ayiqchalar</button>
-    <button class="theme-btn" data-theme="chick">🐥 Jo'jachalar</button>
-    <button class="theme-btn" data-theme="fish">🐠 Baliqchalar</button>
-  </div>
-
-  <!-- O'yin maydoni -->
-  <div class="game-arena" id="arena">
-    <div class="scenery" id="scenery"></div>
-    <div class="characters-track" id="track"></div>
-    <div class="stage-platform"></div>
-  </div>
-
-  <!-- Boshqaruv paneli -->
-  <div class="control-panel">
-    <div class="status-box" id="statusText">
-      Qaysidir qahramonni bosing yoki qo'lda almashtiring!
+  <div class="topbar">
+    <div class="logo">
+      <div class="logo-icon">🎮</div>
+      <span>Mini Games</span>
     </div>
 
-    <div class="buttons-group">
-      <button class="btn btn-move" id="btnLeft" disabled>⬅️ Chapga sakrash</button>
-      <button class="btn btn-move" id="btnRight" disabled>O'ngga sakrash ➡️</button>
-      <button class="btn btn-step" id="btnStep">👟 1 Qadam (Bubble)</button>
-      <button class="btn btn-auto" id="btnAuto">⚡ Avto Saralash</button>
-      <button class="btn btn-reset" id="btnReset">🎲 Aralashtirish</button>
-    </div>
+    <button class="sound-btn" id="soundBtn">🔊</button>
   </div>
 
-  <script>
-    /* ==========================================================
-       1. WEB AUDIO API - QUFNOQ OVOZ EFFEKTLARI
-       ========================================================== */
-    const AudioEngine = {
-      ctx: null,
-      init() {
-        if (!this.ctx) {
-          const AudioContext = window.AudioContext || window.webkitAudioContext;
-          this.ctx = new AudioContext();
-        }
-        if (this.ctx.state === 'suspended') {
-          this.ctx.resume();
-        }
-      },
-      // Sakrash (boing/spring) tovushi
-      playJump(isRight = true) {
-        this.init();
-        const osc = this.ctx.createOscillator();
-        const gain = this.ctx.createGain();
-        const now = this.ctx.currentTime;
+  <!-- ================= HOME ================= -->
 
-        osc.type = 'sine';
-        const startFreq = isRight ? 260 : 380;
-        const endFreq = isRight ? 580 : 220;
+  <section id="home" class="screen active">
 
-        osc.frequency.setValueAtTime(startFreq, now);
-        osc.frequency.exponentialRampToValueAtTime(endFreq, now + 0.35);
+    <div class="hero">
+      <h1>MINI GAMES</h1>
+      <p>🐧 🐻 🐥 🐠 — sevimli qahramonlar bilan o‘ynang!</p>
+    </div>
 
-        gain.gain.setValueAtTime(0.28, now);
-        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.38);
+    <div class="games-grid">
 
-        osc.connect(gain);
-        gain.connect(this.ctx.destination);
-        osc.start(now);
-        osc.stop(now + 0.4);
-      },
-      // Xatolik yoki kichik ogohlantirish tovushi
-      playClick() {
-        this.init();
-        const osc = this.ctx.createOscillator();
-        const gain = this.ctx.createGain();
-        const now = this.ctx.currentTime;
-        osc.type = 'triangle';
-        osc.frequency.setValueAtTime(440, now);
-        gain.gain.setValueAtTime(0.15, now);
-        gain.gain.exponentialRampToValueAtTime(0.01, now + 0.08);
-        osc.connect(gain);
-        gain.connect(this.ctx.destination);
-        osc.start(now);
-        osc.stop(now + 0.1);
-      },
-      // G'alaba musiqasi
-      playVictory() {
-        this.init();
-        const notes = [261.63, 329.63, 392.00, 523.25, 659.25, 783.99];
-        notes.forEach((freq, idx) => {
-          setTimeout(() => {
-            const osc = this.ctx.createOscillator();
-            const gain = this.ctx.createGain();
-            const now = this.ctx.currentTime;
-            osc.type = 'triangle';
-            osc.frequency.setValueAtTime(freq, now);
-            gain.gain.setValueAtTime(0.2, now);
-            gain.gain.exponentialRampToValueAtTime(0.001, now + 0.5);
-            osc.connect(gain);
-            gain.connect(this.ctx.destination);
-            osc.start(now);
-            osc.stop(now + 0.55);
-          }, idx * 110);
-        });
+      <button class="game-card card-sort" onclick="openGame('sort')">
+        <div class="game-icon">🧩</div>
+        <h2>Bubble Sort</h2>
+        <p>Qahramonlarni 1 dan 8 gacha tartiblang.</p>
+        <div class="play-label">▶ O‘ynash</div>
+      </button>
+
+      <button class="game-card card-football" onclick="openGame('football')">
+        <div class="game-icon">⚽</div>
+        <h2>4 Player Football</h2>
+        <p>4 qahramon — bitta futbol maydoni.</p>
+        <div class="play-label">▶ O‘ynash</div>
+      </button>
+
+      <button class="game-card card-tank" onclick="openGame('tank')">
+        <div class="game-icon">🛡️</div>
+        <h2>Tank Battle</h2>
+        <p>Tanklarni boshqaring va raqiblarni yenging.</p>
+        <div class="play-label">▶ O‘ynash</div>
+      </button>
+
+      <button class="game-card card-race" onclick="openGame('race')">
+        <div class="game-icon">🏎️</div>
+        <h2>Mini Racing</h2>
+        <p>4 qahramon bilan poygada g‘olib bo‘ling.</p>
+        <div class="play-label">▶ O‘ynash</div>
+      </button>
+
+    </div>
+
+  </section>
+
+
+  <!-- ================= BUBBLE SORT ================= -->
+
+  <section id="sort" class="screen">
+
+    <div class="game-header">
+      <div class="game-title">🧩 Bubble Sort</div>
+      <button class="back-btn" onclick="goHome()">🏠 Menyu</button>
+    </div>
+
+    <div class="panel">
+
+      <div class="character-select" id="sortThemes">
+
+        <button class="char-select active" data-theme="penguin">
+          <span class="emoji">🐧</span>
+          <span>Pingvin</span>
+        </button>
+
+        <button class="char-select" data-theme="bear">
+          <span class="emoji">🐻</span>
+          <span>Ayiq</span>
+        </button>
+
+        <button class="char-select" data-theme="chick">
+          <span class="emoji">🐥</span>
+          <span>Jo‘ja</span>
+        </button>
+
+        <button class="char-select" data-theme="fish">
+          <span class="emoji">🐠</span>
+          <span>Baliq</span>
+        </button>
+
+      </div>
+
+      <div class="status" id="sortStatus">
+        Personajni tanlang yoki Bubble Sort orqali saralang.
+      </div>
+
+      <div class="sort-arena">
+        <div class="sort-track" id="sortTrack"></div>
+        <div class="sort-ground"></div>
+      </div>
+
+      <div class="controls">
+
+        <button class="btn btn-blue" id="sortLeft">
+          ⬅️ Chapga
+        </button>
+
+        <button class="btn btn-blue" id="sortRight">
+          O‘ngga ➡️
+        </button>
+
+        <button class="btn btn-purple" id="sortStep">
+          👟 1 qadam
+        </button>
+
+        <button class="btn btn-green" id="sortAuto">
+          ⚡ Avto
+        </button>
+
+        <button class="btn btn-gray" id="sortShuffle">
+          🔀 Aralashtirish
+        </button>
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- ================= FOOTBALL ================= -->
+
+  <section id="football" class="screen">
+
+    <div class="game-header">
+      <div class="game-title">⚽ 4 Player Football</div>
+      <button class="back-btn" onclick="goHome()">🏠 Menyu</button>
+    </div>
+
+    <div class="panel">
+
+      <div class="status" id="footballStatus">
+        4 o‘yinchi maydonga chiqdi! Gol uring!
+      </div>
+
+      <div class="football-field" id="footballField">
+
+        <div class="field-line mid-line"></div>
+        <div class="center-circle"></div>
+
+        <div class="goal left"></div>
+        <div class="goal right"></div>
+
+        <div class="ball" id="ball">⚽</div>
+
+      </div>
+
+      <div class="mobile-controls">
+
+        <button class="control-big" id="footballUp">⬆️</button>
+        <button class="control-big" id="footballLeft">⬅️</button>
+        <button class="control-big" id="footballKick">⚽</button>
+        <button class="control-big" id="footballRight">➡️</button>
+        <button class="control-big" id="footballDown">⬇️</button>
+
+      </div>
+
+      <div class="controls">
+
+        <button class="btn btn-green" onclick="resetFootball()">
+          🔄 Qayta boshlash
+        </button>
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- ================= TANK ================= -->
+
+  <section id="tank" class="screen">
+
+    <div class="game-header">
+      <div class="game-title">🛡️ Tank Battle</div>
+      <button class="back-btn" onclick="goHome()">🏠 Menyu</button>
+    </div>
+
+    <div class="panel">
+
+      <div class="status" id="tankStatus">
+        Tank jangiga tayyor!
+      </div>
+
+      <div class="tank-field" id="tankField">
+
+        <div class="obstacle" style="left:18%;top:18%;width:120px;height:35px"></div>
+        <div class="obstacle" style="left:55%;top:28%;width:100px;height:80px"></div>
+        <div class="obstacle" style="left:30%;top:65%;width:140px;height:35px"></div>
+        <div class="obstacle" style="right:8%;bottom:15%;width:90px;height:80px"></div>
+
+      </div>
+
+      <div class="mobile-controls">
+
+        <button class="control-big" id="tankUp">⬆️</button>
+        <button class="control-big" id="tankLeft">⬅️</button>
+        <button class="control-big" id="tankFire">🔥</button>
+        <button class="control-big" id="tankRight">➡️</button>
+        <button class="control-big" id="tankDown">⬇️</button>
+
+      </div>
+
+      <div class="controls">
+        <button class="btn btn-red" onclick="resetTank()">🔄 Yangi jang</button>
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- ================= RACING ================= -->
+
+  <section id="race" class="screen">
+
+    <div class="game-header">
+      <div class="game-title">🏎️ Mini Racing</div>
+      <button class="back-btn" onclick="goHome()">🏠 Menyu</button>
+    </div>
+
+    <div class="panel">
+
+      <div class="status" id="raceStatus">
+        Poyga boshlanmoqda...
+      </div>
+
+      <div class="race-track" id="raceTrack">
+
+        <div class="road-lines"></div>
+
+      </div>
+
+      <div class="mobile-controls">
+
+        <button class="control-big" id="raceLeft">⬅️</button>
+        <button class="control-big" id="raceBoost">⚡</button>
+        <button class="control-big" id="raceRight">➡️</button>
+
+      </div>
+
+      <div class="controls">
+        <button class="btn btn-purple" onclick="resetRace()">
+          🔄 Qayta poyga
+        </button>
+      </div>
+
+    </div>
+
+  </section>
+
+</div>
+
+
+<!-- ================= WIN MODAL ================= -->
+
+<div class="modal" id="winModal">
+
+  <div class="modal-box">
+
+    <div class="modal-icon" id="winIcon">🏆</div>
+
+    <h2 id="winTitle">G‘ALABA!</h2>
+
+    <p id="winText">Ajoyib natija!</p>
+
+    <div class="controls">
+
+      <button class="btn btn-yellow" onclick="closeModal()">
+        ▶ Davom etish
+      </button>
+
+      <button class="btn btn-gray" onclick="goHome();closeModal()">
+        🏠 Menyu
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+<div class="toast" id="toast"></div>
+
+
+<script>
+
+/* ============================================================
+   AUDIO
+============================================================ */
+
+const AudioEngine={
+
+  ctx:null,
+  enabled:true,
+
+  init(){
+
+    if(!this.enabled)return;
+
+    if(!this.ctx){
+
+      const C=window.AudioContext||window.webkitAudioContext;
+
+      if(C)this.ctx=new C();
+
+    }
+
+    if(this.ctx && this.ctx.state==="suspended"){
+      this.ctx.resume();
+    }
+
+  },
+
+  beep(freq=440,duration=.08,type="sine"){
+
+    if(!this.enabled)return;
+
+    this.init();
+
+    if(!this.ctx)return;
+
+    const o=this.ctx.createOscillator();
+    const g=this.ctx.createGain();
+
+    const t=this.ctx.currentTime;
+
+    o.type=type;
+    o.frequency.setValueAtTime(freq,t);
+
+    g.gain.setValueAtTime(.08,t);
+    g.gain.exponentialRampToValueAtTime(.001,t+duration);
+
+    o.connect(g);
+    g.connect(this.ctx.destination);
+
+    o.start(t);
+    o.stop(t+duration);
+
+  },
+
+  jump(){
+    this.beep(520,.12,"sine");
+  },
+
+  hit(){
+    this.beep(110,.16,"square");
+  },
+
+  goal(){
+    this.beep(700,.18,"triangle");
+    setTimeout(()=>this.beep(900,.2,"triangle"),120);
+  }
+
+};
+
+
+/* ============================================================
+   GLOBAL
+============================================================ */
+
+let currentScreen="home";
+
+function openGame(id){
+
+  document.querySelectorAll(".screen").forEach(s=>{
+    s.classList.remove("active");
+  });
+
+  const target=document.getElementById(id);
+
+  if(target){
+    target.classList.add("active");
+    currentScreen=id;
+  }
+
+  if(id==="sort")initSort();
+  if(id==="football")resetFootball();
+  if(id==="tank")resetTank();
+  if(id==="race")resetRace();
+
+  window.scrollTo({top:0,behavior:"smooth"});
+
+}
+
+function goHome(){
+
+  document.querySelectorAll(".screen").forEach(s=>{
+    s.classList.remove("active");
+  });
+
+  document.getElementById("home").classList.add("active");
+
+  currentScreen="home";
+
+}
+
+function showToast(text){
+
+  const t=document.getElementById("toast");
+
+  t.textContent=text;
+  t.classList.add("show");
+
+  setTimeout(()=>t.classList.remove("show"),1800);
+
+}
+
+function win(icon,title,text){
+
+  document.getElementById("winIcon").textContent=icon;
+  document.getElementById("winTitle").textContent=title;
+  document.getElementById("winText").textContent=text;
+
+  document.getElementById("winModal").classList.add("show");
+
+  AudioEngine.goal();
+
+}
+
+function closeModal(){
+
+  document.getElementById("winModal").classList.remove("show");
+
+}
+
+
+/* ============================================================
+   SOUND BUTTON
+============================================================ */
+
+document.getElementById("soundBtn").onclick=()=>{
+
+  AudioEngine.enabled=!AudioEngine.enabled;
+
+  document.getElementById("soundBtn").textContent=
+    AudioEngine.enabled ? "🔊":"🔇";
+
+};
+
+
+/* ============================================================
+   CHARACTER SVG
+============================================================ */
+
+const THEMES={
+
+penguin:{
+render(h){
+
+return `
+<svg class="sort-svg" viewBox="0 0 100 130" style="height:${h}px">
+<ellipse cx="14" cy="75" rx="9" ry="24" fill="#0f172a"/>
+<ellipse cx="86" cy="75" rx="9" ry="24" fill="#0f172a"/>
+<path d="M50 10C26 10 18 40 18 85C18 115 30 125 50 125C70 125 82 115 82 85C82 40 74 10 50 10Z" fill="#0f172a"/>
+<ellipse cx="50" cy="75" rx="24" ry="40" fill="#f8fafc"/>
+<circle cx="41" cy="36" r="6" fill="white"/>
+<circle cx="43" cy="36" r="2.8"/>
+<circle cx="59" cy="36" r="6" fill="white"/>
+<circle cx="57" cy="36" r="2.8"/>
+<polygon points="50,42 43,49 57,49" fill="#f59e0b"/>
+<ellipse cx="38" cy="126" rx="9" ry="4" fill="#f59e0b"/>
+<ellipse cx="62" cy="126" rx="9" ry="4" fill="#f59e0b"/>
+</svg>`;
+
+},
+
+bear:{
+render(h){
+
+return `
+<svg class="sort-svg" viewBox="0 0 100 130" style="height:${h}px">
+<circle cx="28" cy="24" r="14" fill="#78350f"/>
+<circle cx="72" cy="24" r="14" fill="#78350f"/>
+<circle cx="28" cy="24" r="7" fill="#fbbf24"/>
+<circle cx="72" cy="24" r="7" fill="#fbbf24"/>
+<ellipse cx="50" cy="85" rx="34" ry="40" fill="#92400e"/>
+<circle cx="50" cy="45" r="28" fill="#92400e"/>
+<ellipse cx="50" cy="86" rx="22" ry="28" fill="#fef3c7"/>
+<ellipse cx="50" cy="50" rx="14" ry="10" fill="#fef3c7"/>
+<ellipse cx="50" cy="46" rx="5" ry="3.5"/>
+<circle cx="41" cy="38" r="3.5"/>
+<circle cx="59" cy="38" r="3.5"/>
+</svg>`;
+
+},
+
+chick:{
+render(h){
+
+return `
+<svg class="sort-svg" viewBox="0 0 100 130" style="height:${h}px">
+<ellipse cx="16" cy="80" rx="8" ry="18" fill="#eab308"/>
+<ellipse cx="84" cy="80" rx="8" ry="18" fill="#eab308"/>
+<circle cx="50" cy="85" r="34" fill="#facc15"/>
+<circle cx="50" cy="42" r="24" fill="#facc15"/>
+<ellipse cx="50" cy="88" rx="22" ry="26" fill="#fef08a"/>
+<circle cx="42" cy="38" r="4.5"/>
+<circle cx="58" cy="38" r="4.5"/>
+<polygon points="50,44 43,51 57,51" fill="#ea580c"/>
+<ellipse cx="50" cy="18" rx="5" ry="9" fill="#ef4444"/>
+<ellipse cx="40" cy="124" rx="8" ry="3.5" fill="#ea580c"/>
+<ellipse cx="60" cy="124" rx="8" ry="3.5" fill="#ea580c"/>
+</svg>`;
+
+},
+
+fish:{
+render(h){
+
+return `
+<svg class="sort-svg" viewBox="0 0 100 130" style="height:${h}px">
+<path d="M50 115Q25 135 15 120Q35 105 50 105Z" fill="#f97316"/>
+<path d="M50 115Q75 135 85 120Q65 105 50 105Z" fill="#f97316"/>
+<ellipse cx="50" cy="65" rx="33" ry="46" fill="#fb923c"/>
+<ellipse cx="14" cy="65" rx="6" ry="18" fill="#ea580c"/>
+<ellipse cx="86" cy="65" rx="6" ry="18" fill="#ea580c"/>
+<ellipse cx="50" cy="66" rx="21" ry="30" fill="#ffedd5"/>
+<circle cx="38" cy="38" r="6.5" fill="white"/>
+<circle cx="39" cy="38" r="3"/>
+<circle cx="62" cy="38" r="6.5" fill="white"/>
+<circle cx="61" cy="38" r="3"/>
+<ellipse cx="50" cy="24" rx="6" ry="3.5" fill="#c2410c"/>
+</svg>`;
+
+}
+
+};
+
+
+/* ============================================================
+   BUBBLE SORT
+============================================================ */
+
+let sortArray=[7,4,2,1,8,3,6,5];
+let sortSelected=null;
+let sortTheme="penguin";
+let sortBusy=false;
+
+const sortTrack=document.getElementById("sortTrack");
+const sortStatus=document.getElementById("sortStatus");
+
+function sortPosition(index){
+
+  const w=sortTrack.clientWidth;
+  const padding=20;
+  const char=80;
+  const usable=Math.max(100,w-padding*2-char);
+
+  const gap=usable/(sortArray.length-1);
+
+  return padding+index*gap;
+
+}
+
+function initSort(){
+
+  sortBusy=false;
+  renderSort();
+
+}
+
+function renderSort(){
+
+  sortTrack.innerHTML="";
+
+  sortArray.forEach((value,index)=>{
+
+    const node=document.createElement("div");
+
+    node.className="sort-char";
+
+    if(sortSelected===index){
+      node.classList.add("selected");
+    }
+
+    node.style.left=sortPosition(index)+"px";
+
+    const height=110+(value-1)/7*115;
+
+    node.innerHTML=`
+
+      <div class="sort-body" style="height:${height}px">
+        ${THEMES[sortTheme].render(height)}
+        <div class="number">${value}</div>
+      </div>
+
+    `;
+
+    node.onclick=()=>{
+
+      if(sortBusy)return;
+
+      AudioEngine.beep(440,.06);
+
+      if(sortSelected===index){
+        sortSelected=null;
+        sortStatus.textContent="Tanlov bekor qilindi.";
+      }else{
+        sortSelected=index;
+        sortStatus.textContent=
+          `${value} raqamli personaj tanlandi.`;
       }
+
+      renderSort();
+
     };
 
-    /* ==========================================================
-       2. PERSONAJLARNING SVG MODELLARI VA MAVZULARI
-       ========================================================== */
-    const THEMES = {
-      penguin: {
-        bg: 'radial-gradient(circle at 50% 20%, #294073, #111a33)',
-        floor: '#e0f2fe',
-        card: 'rgba(255, 255, 255, 0.12)',
-        sceneryHTML: `
-          <div class="scenery-item" style="left: 30px; bottom: 65px; font-size: 70px;">🏔️</div>
-          <div class="scenery-item" style="right: 40px; bottom: 65px; font-size: 65px;">⛄</div>
-          <div class="scenery-item" style="right: 120px; bottom: 70px; font-size: 55px;">❄️</div>
-          <div class="scenery-item" style="left: 120px; bottom: 70px; font-size: 50px;">🌲</div>
-        `,
-        renderSVG(val, height) {
-          return `
-            <svg class="char-svg" viewBox="0 0 100 130" style="height: ${height}px;">
-              <!-- Qanotlar -->
-              <ellipse cx="14" cy="75" rx="9" ry="24" fill="#0f172a" transform="rotate(-15 14 75)"/>
-              <ellipse cx="86" cy="75" rx="9" ry="24" fill="#0f172a" transform="rotate(15 86 75)"/>
-              <!-- Tana -->
-              <path d="M 50 10 C 26 10 18 40 18 85 C 18 115 30 125 50 125 C 70 125 82 115 82 85 C 82 40 74 10 50 10 Z" fill="#0f172a"/>
-              <!-- Oq qorin -->
-              <ellipse cx="50" cy="75" rx="24" ry="40" fill="#f8fafc"/>
-              <!-- Ko'zlar -->
-              <circle cx="41" cy="36" r="6" fill="#fff"/>
-              <circle cx="43" cy="36" r="2.8" fill="#000"/>
-              <circle cx="59" cy="36" r="6" fill="#fff"/>
-              <circle cx="57" cy="36" r="2.8" fill="#000"/>
-              <!-- Tumshug'i -->
-              <polygon points="50,42 43,49 57,49" fill="#f59e0b"/>
-              <!-- Oyoqchalar -->
-              <ellipse cx="38" cy="126" rx="9" ry="4" fill="#f59e0b"/>
-              <ellipse cx="62" cy="126" rx="9" ry="4" fill="#f59e0b"/>
-            </svg>
-          `;
-        }
-      },
-      bear: {
-        bg: 'radial-gradient(circle at 50% 20%, #451a03, #1f0b02)',
-        floor: '#854d0e',
-        card: 'rgba(255, 255, 255, 0.08)',
-        sceneryHTML: `
-          <div class="scenery-item" style="left: 40px; bottom: 65px; font-size: 70px;">🌲</div>
-          <div class="scenery-item" style="left: 110px; bottom: 65px; font-size: 55px;">🪵</div>
-          <div class="scenery-item" style="right: 50px; bottom: 65px; font-size: 65px;">🏕️</div>
-          <div class="scenery-item" style="right: 130px; bottom: 65px; font-size: 50px;">🌲</div>
-        `,
-        renderSVG(val, height) {
-          return `
-            <svg class="char-svg" viewBox="0 0 100 130" style="height: ${height}px;">
-              <!-- Quloqlar -->
-              <circle cx="28" cy="24" r="14" fill="#78350f"/>
-              <circle cx="28" cy="24" r="7" fill="#fbbf24"/>
-              <circle cx="72" cy="24" r="14" fill="#78350f"/>
-              <circle cx="72" cy="24" r="7" fill="#fbbf24"/>
-              <!-- Qalpoqcha -->
-              <polygon points="50,4 34,26 66,26" fill="#dc2626"/>
-              <circle cx="50" cy="4" r="5" fill="#fef08a"/>
-              <!-- Tana va bosh -->
-              <ellipse cx="50" cy="85" rx="34" ry="40" fill="#92400e"/>
-              <circle cx="50" cy="45" r="28" fill="#92400e"/>
-              <!-- Ko'krak/qorin oq doira -->
-              <ellipse cx="50" cy="86" rx="22" ry="28" fill="#fef3c7"/>
-              <!-- Tumshuq qismi -->
-              <ellipse cx="50" cy="50" rx="14" ry="10" fill="#fef3c7"/>
-              <ellipse cx="50" cy="46" rx="5" ry="3.5" fill="#1f2937"/>
-              <!-- Ko'zlar -->
-              <circle cx="41" cy="38" r="3.5" fill="#111827"/>
-              <circle cx="59" cy="38" r="3.5" fill="#111827"/>
-              <!-- Panjalar -->
-              <circle cx="20" cy="78" r="10" fill="#78350f"/>
-              <circle cx="80" cy="78" r="10" fill="#78350f"/>
-            </svg>
-          `;
-        }
-      },
-      chick: {
-        bg: 'radial-gradient(circle at 50% 20%, #1e3a5f, #0c1a2e)',
-        floor: '#166534',
-        card: 'rgba(255, 255, 255, 0.1)',
-        sceneryHTML: `
-          <div class="scenery-item" style="left: 30px; bottom: 65px; font-size: 65px;">🌻</div>
-          <div class="scenery-item" style="left: 100px; bottom: 65px; font-size: 50px;">🌾</div>
-          <div class="scenery-item" style="right: 40px; bottom: 65px; font-size: 65px;">🏡</div>
-          <div class="scenery-item" style="right: 120px; bottom: 65px; font-size: 55px;">🌷</div>
-        `,
-        renderSVG(val, height) {
-          return `
-            <svg class="char-svg" viewBox="0 0 100 130" style="height: ${height}px;">
-              <!-- Qanotlar -->
-              <ellipse cx="16" cy="80" rx="8" ry="18" fill="#eab308" transform="rotate(-15 16 80)"/>
-              <ellipse cx="84" cy="80" rx="8" ry="18" fill="#eab308" transform="rotate(15 84 80)"/>
-              <!-- Tana va Bosh -->
-              <circle cx="50" cy="85" r="34" fill="#facc15"/>
-              <circle cx="50" cy="42" r="24" fill="#facc15"/>
-              <!-- Qorin -->
-              <ellipse cx="50" cy="88" rx="22" ry="26" fill="#fef08a"/>
-              <!-- Ko'zlar -->
-              <circle cx="42" cy="38" r="4.5" fill="#000"/>
-              <circle cx="43.5" cy="36.5" r="1.5" fill="#fff"/>
-              <circle cx="58" cy="38" r="4.5" fill="#000"/>
-              <circle cx="59.5" cy="36.5" r="1.5" fill="#fff"/>
-              <!-- Tumshug'i -->
-              <polygon points="50,44 43,51 57,51" fill="#ea580c"/>
-              <!-- Qizil kokili -->
-              <ellipse cx="50" cy="18" rx="5" ry="9" fill="#ef4444"/>
-              <!-- Oyoqlar -->
-              <ellipse cx="40" cy="124" rx="8" ry="3.5" fill="#ea580c"/>
-              <ellipse cx="60" cy="124" rx="8" ry="3.5" fill="#ea580c"/>
-            </svg>
-          `;
-        }
-      },
-      fish: {
-        bg: 'radial-gradient(circle at 50% 20%, #0369a1, #082f49)',
-        floor: '#0284c7',
-        card: 'rgba(255, 255, 255, 0.1)',
-        sceneryHTML: `
-          <div class="scenery-item" style="left: 30px; bottom: 65px; font-size: 70px;">🪸</div>
-          <div class="scenery-item" style="left: 110px; bottom: 65px; font-size: 55px;">🫧</div>
-          <div class="scenery-item" style="right: 40px; bottom: 65px; font-size: 65px;">🐚</div>
-          <div class="scenery-item" style="right: 120px; bottom: 65px; font-size: 50px;">🫧</div>
-        `,
-        renderSVG(val, height) {
-          return `
-            <svg class="char-svg" viewBox="0 0 100 130" style="height: ${height}px;">
-              <!-- Dum suzgichlari -->
-              <path d="M 50 115 Q 25 135 15 120 Q 35 105 50 105 Z" fill="#f97316"/>
-              <path d="M 50 115 Q 75 135 85 120 Q 65 105 50 105 Z" fill="#f97316"/>
-              <!-- Tana (vertikal baliqcha) -->
-              <ellipse cx="50" cy="65" rx="33" ry="46" fill="#fb923c"/>
-              <!-- Yon suzgichlar -->
-              <ellipse cx="14" cy="65" rx="6" ry="18" fill="#ea580c"/>
-              <ellipse cx="86" cy="65" rx="6" ry="18" fill="#ea580c"/>
-              <!-- Oq qorin markazi -->
-              <ellipse cx="50" cy="66" rx="21" ry="30" fill="#ffedd5"/>
-              <!-- Ko'zlar -->
-              <circle cx="38" cy="38" r="6.5" fill="#fff"/>
-              <circle cx="39" cy="38" r="3" fill="#000"/>
-              <circle cx="62" cy="38" r="6.5" fill="#fff"/>
-              <circle cx="61" cy="38" r="3" fill="#000"/>
-              <!-- Og'izcha -->
-              <ellipse cx="50" cy="24" rx="6" ry="3.5" fill="#c2410c"/>
-            </svg>
-          `;
-        }
-      }
-    };
+    sortTrack.appendChild(node);
 
-    /* ==========================================================
-       3. ASOSIY DASTUR MANTIQI VA HOZIRGI HOLAT
-       ========================================================== */
-    const INITIAL_ARRAY = [7, 4, 2, 1, 8, 3, 6, 5];
-    let array = [...INITIAL_ARRAY];
-    let currentTheme = 'penguin';
-    let selectedIdx = null;
-    let isBusy = false;
+  });
 
-    // DOM Elementlar
-    const arena = document.getElementById('arena');
-    const scenery = document.getElementById('scenery');
-    const track = document.getElementById('track');
-    const statusText = document.getElementById('statusText');
-    const btnLeft = document.getElementById('btnLeft');
-    const btnRight = document.getElementById('btnRight');
-    const btnStep = document.getElementById('btnStep');
-    const btnAuto = document.getElementById('btnAuto');
-    const btnReset = document.getElementById('btnReset');
-    const themeBtns = document.querySelectorAll('.theme-btn');
+}
 
-    // Mavzuni sozlash
-    function applyTheme(themeKey) {
-      currentTheme = themeKey;
-      const theme = THEMES[themeKey];
-      document.body.style.background = theme.bg;
-      arena.style.background = theme.card;
-      document.querySelector('.stage-platform').style.background = theme.floor;
-      scenery.innerHTML = theme.sceneryHTML;
+async function sortSwap(a,b){
 
-      themeBtns.forEach(btn => {
-        btn.classList.toggle('active', btn.dataset.theme === themeKey);
-      });
-      renderTrack();
+  if(sortBusy)return;
+
+  if(a>b)[a,b]=[b,a];
+
+  const nodes=document.querySelectorAll(".sort-char");
+
+  if(nodes[a]&&nodes[b]){
+
+    nodes[a].style.left=sortPosition(b)+"px";
+    nodes[b].style.left=sortPosition(a)+"px";
+
+  }
+
+  AudioEngine.jump();
+
+  await new Promise(r=>setTimeout(r,550));
+
+  [sortArray[a],sortArray[b]]=[sortArray[b],sortArray[a]];
+
+  if(sortSelected===a)sortSelected=b;
+  else if(sortSelected===b)sortSelected=a;
+
+  renderSort();
+
+}
+
+async function manualSortMove(dir){
+
+  if(sortBusy||sortSelected===null)return;
+
+  const target=sortSelected+dir;
+
+  if(target<0||target>=sortArray.length)return;
+
+  sortBusy=true;
+
+  await sortSwap(sortSelected,target);
+
+  sortBusy=false;
+
+}
+
+async function bubbleStep(){
+
+  if(sortBusy)return;
+
+  sortBusy=true;
+
+  sortSelected=null;
+
+  for(let i=0;i<sortArray.length-1;i++){
+
+    sortStatus.textContent=
+      `Taqqoslash: ${sortArray[i]} va ${sortArray[i+1]}`;
+
+    await new Promise(r=>setTimeout(r,300));
+
+    if(sortArray[i]>sortArray[i+1]){
+
+      await sortSwap(i,i+1);
+
+      sortBusy=false;
+
+      renderSort();
+
+      return;
+
     }
 
-    // Element koordinatalarini hisoblash
-    function getNodeLeftPosition(index, total) {
-      const trackWidth = track.clientWidth || 800;
-      const charWidth = 80;
-      const padding = 20;
-      const usableWidth = trackWidth - (padding * 2) - charWidth;
-      const gap = usableWidth / (total - 1);
-      return padding + (index * gap);
-    }
+  }
 
-    // Qahramonlarni ekranga joylash
-    function renderTrack() {
-      track.innerHTML = '';
-      const total = array.length;
+  sortBusy=false;
 
-      array.forEach((val, idx) => {
-        const node = document.createElement('div');
-        node.className = 'char-node';
-        node.id = `char-${idx}`;
-        node.dataset.index = idx;
-        node.dataset.value = val;
+  sortStatus.textContent="🎉 Massiv allaqachon tartiblangan!";
 
-        // O'lcham (1 dan 8 gacha mos proportsiyada balandlashadi)
-        const minHeight = 110;
-        const maxHeight = 230;
-        const height = minHeight + ((val - 1) / 7) * (maxHeight - minHeight);
+  win("🏆","AJOYIB!","Bubble Sort muvaffaqiyatli yakunlandi!");
 
-        const leftPos = getNodeLeftPosition(idx, total);
-        node.style.left = `${leftPos}px`;
+}
 
-        // SVG qahramon
-        const charHtml = THEMES[currentTheme].renderSVG(val, height);
+async function autoSort(){
 
-        node.innerHTML = `
-          <div class="character-body" style="height: ${height}px;">
-            ${charHtml}
-            <div class="badge-number">${val}</div>
-          </div>
-        `;
+  if(sortBusy)return;
 
-        if (selectedIdx === idx) {
-          node.classList.add('selected');
-        }
+  sortBusy=true;
+  sortSelected=null;
 
-        node.addEventListener('click', () => onNodeClick(idx));
-        track.appendChild(node);
-      });
+  let n=sortArray.length;
 
-      updateButtons();
-      checkVictory();
-    }
+  let swapped;
 
-    // Bosganda tanlash
-    function onNodeClick(idx) {
-      if (isBusy) return;
-      AudioEngine.playClick();
+  do{
 
-      if (selectedIdx === idx) {
-        selectedIdx = null;
-        statusText.textContent = "Tanlov bekor qilindi. O'zingiz xohlagan boshqa personajni tanlang.";
-      } else {
-        selectedIdx = idx;
-        statusText.textContent = `Tanlandi: #${array[idx]} sonli personaj. Chapga yoki o'ngga sakrating!`;
-      }
-      renderTrack();
-    }
+    swapped=false;
 
-    // Tugmalar holatini yangilash
-    function updateButtons() {
-      btnLeft.disabled = isBusy || selectedIdx === null || selectedIdx <= 0;
-      btnRight.disabled = isBusy || selectedIdx === null || selectedIdx >= array.length - 1;
-      btnStep.disabled = isBusy;
-      btnAuto.disabled = isBusy;
-      btnReset.disabled = isBusy;
-    }
+    for(let i=0;i<n-1;i++){
 
-    // Kechikish funksiyasi
-    const sleep = (ms) => new Promise(r => setTimeout(r, ms));
+      sortStatus.textContent=
+        `${sortArray[i]} va ${sortArray[i+1]} taqqoslanmoqda...`;
 
-    /* ==========================================================
-       4. SILLIQ VA BALAND EGRI CHIZIQ (ARC) SAKRASH TRANSFORMATSIYASI
-       ========================================================== */
-    async function swapElements(i, j, sound = true) {
-      if (i === j) return;
-      if (i > j) { const temp = i; i = j; j = temp; } // doim i < j
+      await new Promise(r=>setTimeout(r,250));
 
-      const nodeA = document.getElementById(`char-${i}`);
-      const nodeB = document.getElementById(`char-${j}`);
+      if(sortArray[i]>sortArray[i+1]){
 
-      if (!nodeA || !nodeB) return;
+        await sortSwap(i,i+1);
 
-      const total = array.length;
-      const leftA = getNodeLeftPosition(i, total);
-      const leftB = getNodeLeftPosition(j, total);
+        swapped=true;
 
-      // Tovush
-      if (sound) AudioEngine.playJump(true);
-
-      // Animatsiya sinflari
-      nodeA.classList.add('jumping-right');
-      nodeB.classList.add('jumping-left');
-
-      // Silliq siljish
-      nodeA.style.left = `${leftB}px`;
-      nodeB.style.left = `${leftA}px`;
-
-      await sleep(600);
-
-      // Massivda almashtirish
-      const tempVal = array[i];
-      array[i] = array[j];
-      array[j] = tempVal;
-
-      nodeA.classList.remove('jumping-right');
-      nodeB.classList.remove('jumping-left');
-
-      if (selectedIdx === i) selectedIdx = j;
-      else if (selectedIdx === j) selectedIdx = i;
-
-      renderTrack();
-    }
-
-    // Qo'lda sakratish
-    async function manualMove(direction) {
-      if (selectedIdx === null || isBusy) return;
-      const targetIdx = selectedIdx + direction;
-      if (targetIdx < 0 || targetIdx >= array.length) return;
-
-      isBusy = true;
-      updateButtons();
-      statusText.textContent = `${array[selectedIdx]} va ${array[targetIdx]} o'zaro sakrab joy almashmoqda...`;
-
-      await swapElements(selectedIdx, targetIdx, true);
-
-      isBusy = false;
-      updateButtons();
-    }
-
-    /* ==========================================================
-       5. BUBBLE SORT ALGORITMI (KOMPYUTER SARALASHI)
-       ========================================================== */
-    async function bubbleSortStep() {
-      if (isBusy) return;
-      isBusy = true;
-      selectedIdx = null;
-      updateButtons();
-
-      let swappedAny = false;
-
-      for (let i = 0; i < array.length - 1; i++) {
-        // Taqqoslash
-        statusText.textContent = `Taqqoslash: ${array[i]} va ${array[i+1]}`;
-        const node1 = document.getElementById(`char-${i}`);
-        const node2 = document.getElementById(`char-${i+1}`);
-        if (node1) node1.classList.add('selected');
-        if (node2) node2.classList.add('selected');
-
-        await sleep(400);
-
-        if (array[i] > array[i+1]) {
-          statusText.textContent = `${array[i]} > ${array[i+1]}! Sakrab o'rni almashtirilmoqda!`;
-          await swapElements(i, i+1, true);
-          swappedAny = true;
-          await sleep(250);
-          break; // Bitta qadamda bitta almashinuv
-        } else {
-          if (node1) node1.classList.remove('selected');
-          if (node2) node2.classList.remove('selected');
-        }
       }
 
-      if (!swappedAny) {
-        statusText.textContent = "Algoritm tekshirdi: massiv allaqachon to'g'ri tartiblangan!";
-      }
-
-      isBusy = false;
-      renderTrack();
     }
 
-    async function autoBubbleSort() {
-      if (isBusy) return;
-      isBusy = true;
-      selectedIdx = null;
-      updateButtons();
+    n--;
 
-      let n = array.length;
-      let swapped;
+  }while(swapped);
 
-      do {
-        swapped = false;
-        for (let j = 0; j < n - 1; j++) {
-          statusText.textContent = `Bubble Sort: ${array[j]} va ${array[j+1]} taqqoslanmoqda...`;
-          
-          const node1 = document.getElementById(`char-${j}`);
-          const node2 = document.getElementById(`char-${j+1}`);
-          if (node1) node1.classList.add('selected');
-          if (node2) node2.classList.add('selected');
-          await sleep(350);
+  sortBusy=false;
 
-          if (array[j] > array[j+1]) {
-            statusText.textContent = `${array[j]} kattaroq, o'ng tomonga sakrab o'tmoqda!`;
-            await swapElements(j, j+1, true);
-            swapped = true;
-            await sleep(300);
-          } else {
-            if (node1) node1.classList.remove('selected');
-            if (node2) node2.classList.remove('selected');
-          }
-        }
-        n--;
-      } while (swapped);
+  renderSort();
 
-      isBusy = false;
-      renderTrack();
-    }
+  win("🎉","G‘ALABA!","Barcha personajlar to‘g‘ri tartiblandi!");
 
-    // Qayta aralashtirish
-    function resetAndShuffle() {
-      if (isBusy) return;
-      selectedIdx = null;
-      // Aralashtirish
-      for (let i = array.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [array[i], array[j]] = [array[j], array[i]];
-      }
-      statusText.textContent = "Personajlar aralashtirildi! Endi ularni 1 dan 8 gacha saralang.";
-      renderTrack();
-    }
+}
 
-    /* ==========================================================
-       6. G'ALABA VA KONFETTI EFFEKTI
-       ========================================================== */
-    function checkVictory() {
-      const isSorted = array.every((val, idx) => idx === 0 || array[idx - 1] <= val);
-      if (isSorted) {
-        statusText.innerHTML = "🎉 <b>AJOYIB G'ALABA!</b> Barcha qahramonlar 1 dan 8 gacha to'g'ri tartiblandi! 🌟";
-        document.querySelectorAll('.char-node').forEach(node => node.classList.add('victory'));
-        AudioEngine.playVictory();
-        launchConfetti();
-      }
-    }
+function shuffleSort(){
 
-    function launchConfetti() {
-      const canvas = document.getElementById('confettiCanvas');
-      const ctx = canvas.getContext('2d');
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
+  if(sortBusy)return;
 
-      const pieces = Array.from({ length: 90 }, () => ({
-        x: Math.random() * canvas.width,
-        y: -20,
-        r: Math.random() * 8 + 4,
-        color: ['#f59e0b', '#10b981', '#3b82f6', '#ec4899', '#8b5cf6'][Math.floor(Math.random() * 5)],
-        speed: Math.random() * 4 + 2,
-        tilt: Math.random() * 10 - 5
-      }));
+  for(let i=sortArray.length-1;i>0;i--){
 
-      let frames = 0;
-      function animateConfetti() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        pieces.forEach(p => {
-          p.y += p.speed;
-          p.x += Math.sin(frames * 0.05) + p.tilt * 0.2;
-          ctx.beginPath();
-          ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-          ctx.fillStyle = p.color;
-          ctx.fill();
-        });
-        frames++;
-        if (frames < 180) {
-          requestAnimationFrame(animateConfetti);
-        } else {
-          ctx.clearRect(0, 0, canvas.width, canvas.height);
-        }
-      }
-      animateConfetti();
-    }
+    const j=Math.floor(Math.random()*(i+1));
 
-    /* ==========================================================
-       7. HODISALARNI ULASH
-       ========================================================== */
-    btnLeft.addEventListener('click', () => manualMove(-1));
-    btnRight.addEventListener('click', () => manualMove(1));
-    btnStep.addEventListener('click', bubbleSortStep);
-    btnAuto.addEventListener('click', autoBubbleSort);
-    btnReset.addEventListener('click', resetAndShuffle);
+    [sortArray[i],sortArray[j]]=
+    [sortArray[j],sortArray[i]];
 
-    themeBtns.forEach(btn => {
-      btn.addEventListener('click', () => applyTheme(btn.dataset.theme));
+  }
+
+  sortSelected=null;
+
+  sortStatus.textContent=
+    "Personajlar aralashtirildi!";
+
+  renderSort();
+
+}
+
+document.getElementById("sortLeft").onclick=
+()=>manualSortMove(-1);
+
+document.getElementById("sortRight").onclick=
+()=>manualSortMove(1);
+
+document.getElementById("sortStep").onclick=
+bubbleStep;
+
+document.getElementById("sortAuto").onclick=
+autoSort;
+
+document.getElementById("sortShuffle").onclick=
+shuffleSort;
+
+document.querySelectorAll("#sortThemes .char-select")
+.forEach(btn=>{
+
+  btn.onclick=()=>{
+
+    sortTheme=btn.dataset.theme;
+
+    document.querySelectorAll("#sortThemes .char-select")
+    .forEach(x=>x.classList.remove("active"));
+
+    btn.classList.add("active");
+
+    renderSort();
+
+  };
+
+});
+
+
+/* ============================================================
+   FOOTBALL
+============================================================ */
+
+const footballChars=["🐧","🐻","🐥","🐠"];
+
+let footballPlayers=[];
+let ball={x:50,y:50};
+let footballRunning=false;
+
+function resetFootball(){
+
+  const field=document.getElementById("footballField");
+
+  footballPlayers=[];
+
+  field.querySelectorAll(".football-player")
+    .forEach(e=>e.remove());
+
+  const positions=[
+    [15,20],
+    [15,75],
+    [78,20],
+    [78,75]
+  ];
+
+  positions.forEach((p,i)=>{
+
+    const el=document.createElement("div");
+
+    el.className="football-player";
+    el.textContent=footballChars[i];
+
+    el.style.left=p[0]+"%";
+    el.style.top=p[1]+"%";
+
+    field.appendChild(el);
+
+    footballPlayers.push({
+      el,
+      x:p[0],
+      y:p[1]
     });
 
-    window.addEventListener('resize', () => {
-      renderTrack();
+  });
+
+  ball={x:50,y:50};
+
+  const b=document.getElementById("ball");
+
+  b.style.left="calc(50% - 12px)";
+  b.style.top="calc(50% - 12px)";
+
+  document.getElementById("footballStatus").textContent=
+    "⚽ 4 o‘yinchi maydonda! To‘pni olib gol uring.";
+
+  footballRunning=true;
+
+}
+
+function moveFootball(dx,dy){
+
+  if(!footballRunning)return;
+
+  const p=footballPlayers[0];
+
+  p.x=Math.max(2,Math.min(94,p.x+dx));
+  p.y=Math.max(2,Math.min(90,p.y+dy));
+
+  p.el.style.left=p.x+"%";
+  p.el.style.top=p.y+"%";
+
+  const distance=Math.hypot(p.x-ball.x,p.y-ball.y);
+
+  if(distance<8){
+
+    ball.x+=dx*.7;
+    ball.y+=dy*.7;
+
+    ball.x=Math.max(3,Math.min(97,ball.x));
+    ball.y=Math.max(3,Math.min(97,ball.y));
+
+    const b=document.getElementById("ball");
+
+    b.style.left=`calc(${ball.x}% - 12px)`;
+    b.style.top=`calc(${ball.y}% - 12px)`;
+
+    if(ball.x>96){
+
+      footballRunning=false;
+
+      win(
+        "⚽",
+        "GOOOOL!",
+        "Pingvin jamoasi gol urdi!"
+      );
+
+    }
+
+  }
+
+}
+
+function kickBall(){
+
+  if(!footballRunning)return;
+
+  const p=footballPlayers[0];
+
+  if(Math.hypot(p.x-ball.x,p.y-ball.y)<12){
+
+    ball.x+=18;
+
+    ball.x=Math.min(98,ball.x);
+
+    const b=document.getElementById("ball");
+
+    b.style.left=`calc(${ball.x}% - 12px)`;
+
+    b.style.top=`calc(${ball.y}% - 12px)`;
+
+    AudioEngine.beep(650,.1);
+
+    if(ball.x>93){
+
+      footballRunning=false;
+
+      win("⚽","GOOOOL!","Ajoyib zarba!");
+
+    }
+
+  }
+
+}
+
+document.getElementById("footballUp").onclick=
+()=>moveFootball(0,-4);
+
+document.getElementById("footballDown").onclick=
+()=>moveFootball(0,4);
+
+document.getElementById("footballLeft").onclick=
+()=>moveFootball(-4,0);
+
+document.getElementById("footballRight").onclick=
+()=>moveFootball(4,0);
+
+document.getElementById("footballKick").onclick=
+kickBall;
+
+
+/* ============================================================
+   TANK
+============================================================ */
+
+let tank={x:10,y:50,hp:100};
+let tankEnemy=[];
+let tankRunning=false;
+
+function resetTank(){
+
+  const field=document.getElementById("tankField");
+
+  field.querySelectorAll(".tank-player,.bullet")
+    .forEach(e=>e.remove());
+
+  tank={
+    x:10,
+    y:50,
+    hp:100
+  };
+
+  tankRunning=true;
+
+  createTankPlayer();
+
+  tankEnemy=[
+    createEnemy(80,20,"🐻"),
+    createEnemy(78,75,"🐥"),
+    createEnemy(55,55,"🐠")
+  ];
+
+  document.getElementById("tankStatus").textContent=
+    "🛡️ Raqib tanklarni yo‘q qiling!";
+
+}
+
+function createTankPlayer(){
+
+  const field=document.getElementById("tankField");
+
+  const el=document.createElement("div");
+
+  el.className="tank-player";
+
+  el.innerHTML=`
+    🐧
+    <span class="hp"><i></i></span>
+  `;
+
+  el.style.left=tank.x+"%";
+  el.style.top=tank.y+"%";
+
+  field.appendChild(el);
+
+  tank.el=el;
+
+}
+
+function createEnemy(x,y,emoji){
+
+  const field=document.getElementById("tankField");
+
+  const el=document.createElement("div");
+
+  el.className="tank-player";
+
+  el.textContent=emoji;
+
+  el.style.left=x+"%";
+  el.style.top=y+"%";
+
+  field.appendChild(el);
+
+  return{
+    el,
+    x,
+    y,
+    hp:100
+  };
+
+}
+
+function moveTank(dx,dy){
+
+  if(!tankRunning)return;
+
+  tank.x=Math.max(1,Math.min(91,tank.x+dx));
+  tank.y=Math.max(1,Math.min(86,tank.y+dy));
+
+  tank.el.style.left=tank.x+"%";
+  tank.el.style.top=tank.y+"%";
+
+}
+
+function fireTank(){
+
+  if(!tankRunning)return;
+
+  AudioEngine.beep(150,.12,"square");
+
+  const field=document.getElementById("tankField");
+
+  const bullet=document.createElement("div");
+
+  bullet.className="bullet";
+
+  let x=tank.x+4;
+  let y=tank.y+5;
+
+  bullet.style.left=x+"%";
+  bullet.style.top=y+"%";
+
+  field.appendChild(bullet);
+
+  const timer=setInterval(()=>{
+
+    x+=2;
+
+    bullet.style.left=x+"%";
+
+    for(let i=tankEnemy.length-1;i>=0;i--){
+
+      const e=tankEnemy[i];
+
+      if(Math.abs(x-e.x)<5 &&
+         Math.abs(y-e.y)<8){
+
+        e.hp-=50;
+
+        AudioEngine.hit();
+
+        if(e.hp<=0){
+
+          e.el.remove();
+
+          tankEnemy.splice(i,1);
+
+          showToast("💥 Raqib yo‘q qilindi!");
+
+        }
+
+        bullet.remove();
+
+        clearInterval(timer);
+
+        if(tankEnemy.length===0){
+
+          tankRunning=false;
+
+          win(
+            "🛡️",
+            "G‘ALABA!",
+            "Barcha tanklar yo‘q qilindi!"
+          );
+
+        }
+
+        return;
+
+      }
+
+    }
+
+    if(x>100){
+
+      bullet.remove();
+      clearInterval(timer);
+
+    }
+
+  },25);
+
+}
+
+document.getElementById("tankUp").onclick=
+()=>moveTank(0,-3);
+
+document.getElementById("tankDown").onclick=
+()=>moveTank(0,3);
+
+document.getElementById("tankLeft").onclick=
+()=>moveTank(-3,0);
+
+document.getElementById("tankRight").onclick=
+()=>moveTank(3,0);
+
+document.getElementById("tankFire").onclick=
+fireTank;
+
+
+/* ============================================================
+   RACING
+============================================================ */
+
+let racers=[];
+let raceRunning=false;
+let raceTimer=null;
+
+function resetRace(){
+
+  const track=document.getElementById("raceTrack");
+
+  track.querySelectorAll(".racer").forEach(e=>e.remove());
+
+  racers=[];
+
+  const positions=[
+    15,35,55,75
+  ];
+
+  const emojis=["🐧","🐻","🐥","🐠"];
+
+  const classes=[
+    "#2563eb",
+    "#92400e",
+    "#eab308",
+    "#f97316"
+  ];
+
+  positions.forEach((x,i)=>{
+
+    const el=document.createElement("div");
+
+    el.className="racer";
+
+    el.textContent=emojis[i];
+
+    el.style.left=x+"%";
+    el.style.top="390px";
+    el.style.background=classes[i];
+
+    track.appendChild(el);
+
+    racers.push({
+      el,
+      x,
+      y:390,
+      speed:1.2+Math.random()*.7,
+      player:i===0
     });
 
-    // Boshlang'ich yuklash
-    applyTheme('penguin');
-  </script>
+  });
+
+  raceRunning=true;
+
+  document.getElementById("raceStatus").textContent=
+    "🏁 Poyga boshlandi! Chap/o‘ng bilan boshqaring.";
+
+  cancelAnimationFrame(raceTimer);
+
+  raceLoop();
+
+}
+
+function raceLoop(){
+
+  if(!raceRunning)return;
+
+  racers.forEach((r,i)=>{
+
+    if(!r.player){
+
+      r.y-=r.speed;
+
+    }
+
+    r.el.style.top=r.y+"px";
+
+  });
+
+  const player=racers[0];
+
+  player.y-=.7;
+
+  player.el.style.top=player.y+"px";
+
+  if(player.y<5){
+
+    raceRunning=false;
+
+    win(
+      "🏆",
+      "FINISH!",
+      "Pingvin poygada g‘olib bo‘ldi!"
+    );
+
+    return;
+
+  }
+
+  raceTimer=requestAnimationFrame(raceLoop);
+
+}
+
+function moveRace(dx){
+
+  if(!raceRunning)return;
+
+  const p=racers[0];
+
+  p.x=Math.max(2,Math.min(90,p.x+dx));
+
+  p.el.style.left=p.x+"%";
+
+}
+
+function boostRace(){
+
+  if(!raceRunning)return;
+
+  racers[0].y-=35;
+
+  racers[0].el.style.top=racers[0].y+"px";
+
+  AudioEngine.beep(800,.12);
+
+}
+
+document.getElementById("raceLeft").onclick=
+()=>moveRace(-5);
+
+document.getElementById("raceRight").onclick=
+()=>moveRace(5);
+
+document.getElementById("raceBoost").onclick=
+boostRace;
+
+
+/* ============================================================
+   KEYBOARD CONTROL
+============================================================ */
+
+document.addEventListener("keydown",e=>{
+
+  AudioEngine.init();
+
+  if(currentScreen==="football"){
+
+    if(e.key==="ArrowUp")moveFootball(0,-4);
+    if(e.key==="ArrowDown")moveFootball(0,4);
+    if(e.key==="ArrowLeft")moveFootball(-4,0);
+    if(e.key==="ArrowRight")moveFootball(4,0);
+    if(e.code==="Space")kickBall();
+
+  }
+
+  if(currentScreen==="tank"){
+
+    if(e.key==="ArrowUp")moveTank(0,-3);
+    if(e.key==="ArrowDown")moveTank(0,3);
+    if(e.key==="ArrowLeft")moveTank(-3,0);
+    if(e.key==="ArrowRight")moveTank(3,0);
+    if(e.code==="Space")fireTank();
+
+  }
+
+  if(currentScreen==="race"){
+
+    if(e.key==="ArrowLeft")moveRace(-5);
+    if(e.key==="ArrowRight")moveRace(5);
+    if(e.code==="Space")boostRace();
+
+  }
+
+});
+
+
+/* ============================================================
+   RESIZE
+============================================================ */
+
+window.addEventListener("resize",()=>{
+
+  if(currentScreen==="sort"){
+    renderSort();
+  }
+
+});
+
+
+/* ============================================================
+   START
+============================================================ */
+
+initSort();
+
+</script>
+
 </body>
 </html>
