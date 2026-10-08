@@ -209,3 +209,4 @@ function showGameOverModal(title, scoreList) {
   SoundEngine.play(523, "triangle", 0.15);
   setTimeout(() => SoundEngine.play(659, "triangle", 0.25), 140);
 }
+
