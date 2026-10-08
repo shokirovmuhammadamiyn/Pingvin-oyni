@@ -1,0 +1,324 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  font-family: 'Segoe UI', system-ui, -apple-system, Roboto, sans-serif;
+  background: #090e1a;
+  color: #fff;
+  overflow: hidden;
+  height: 100vh;
+  width: 100vw;
+}
+
+/* EKRANLAR */
+.screen {
+  display: none;
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  inset: 0;
+}
+
+.screen.active {
+  display: flex;
+  flex-direction: column;
+}
+
+/* ================= BOSH MENYU ================= */
+#menuScreen {
+  background: radial-gradient(circle at 50% 30%, #1e294b 0%, #090e1a 100%);
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  overflow-y: auto;
+}
+
+.menu-box {
+  max-width: 800px;
+  width: 100%;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.menu-title h1 {
+  font-size: clamp(34px, 6vw, 56px);
+  font-weight: 950;
+  letter-spacing: 2px;
+  background: linear-gradient(90deg, #38bdf8, #facc15, #a855f7);
+  -webkit-background-clip: text;
+  color: transparent;
+}
+
+.menu-title p {
+  color: #94a3b8;
+  margin-top: 6px;
+  font-size: 16px;
+}
+
+.mode-select label {
+  display: block;
+  font-size: 14px;
+  color: #cbd5e1;
+  margin-bottom: 8px;
+  font-weight: 700;
+}
+
+.mode-btns {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.mode-btn {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #fff;
+  padding: 10px 18px;
+  border-radius: 12px;
+  cursor: pointer;
+  font-weight: 700;
+  transition: .2s;
+}
+
+.mode-btn.active {
+  background: #38bdf8;
+  color: #041226;
+  border-color: #38bdf8;
+  box-shadow: 0 0 20px rgba(56, 189, 248, 0.4);
+}
+
+.game-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 16px;
+  margin-top: 10px;
+}
+
+.card {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 20px;
+  padding: 24px;
+  text-align: left;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: transform .25s ease, box-shadow .25s ease;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+}
+
+.card-fishing {
+  background: linear-gradient(135deg, rgba(14, 116, 144, 0.8), rgba(8, 47, 73, 0.9));
+}
+
+.card-tank {
+  background: linear-gradient(135deg, rgba(180, 83, 9, 0.8), rgba(69, 26, 3, 0.9));
+}
+
+.card-icon {
+  font-size: 50px;
+  margin-bottom: 8px;
+}
+
+.card h2 {
+  font-size: 24px;
+  font-weight: 800;
+}
+
+.card p {
+  color: #e2e8f0;
+  font-size: 14px;
+  margin-top: 6px;
+  line-height: 1.4;
+}
+
+.play-badge {
+  display: inline-block;
+  margin-top: 16px;
+  background: rgba(0, 0, 0, 0.35);
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 13px;
+  font-weight: 800;
+  color: #facc15;
+}
+
+/* ================= O'YIN MAYDONI ================= */
+#gameScreen {
+  background: #000;
+}
+
+.top-nav {
+  height: 52px;
+  background: rgba(15, 23, 42, 0.85);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+  z-index: 10;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.btn-icon {
+  background: rgba(255, 255, 255, 0.12);
+  border: none;
+  color: #fff;
+  padding: 6px 14px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 14px;
+}
+
+.timer-badge {
+  background: #0284c7;
+  padding: 6px 18px;
+  border-radius: 20px;
+  font-weight: 900;
+  font-size: 18px;
+  box-shadow: 0 0 12px rgba(2, 132, 199, 0.5);
+}
+
+.canvas-container {
+  flex: 1;
+  position: relative;
+  width: 100%;
+  height: calc(100vh - 52px);
+  display: grid;
+  place-items: center;
+}
+
+canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* CORNER TOUCH TUGMALARI */
+.corner-btn {
+  position: absolute;
+  width: 76px;
+  height: 76px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(4px);
+  border: 3px solid rgba(255, 255, 255, 0.5);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 20;
+  transition: transform 0.1s;
+}
+
+.corner-btn:active {
+  transform: scale(0.9);
+}
+
+.corner-p1 { bottom: 18px; left: 18px; }
+.corner-p2 { top: 18px; left: 18px; }
+.corner-p3 { top: 18px; right: 18px; }
+.corner-p4 { bottom: 18px; right: 18px; }
+
+.btn-dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  margin-bottom: 2px;
+}
+.dot-cyan { background: #06b6d4; box-shadow: 0 0 8px #06b6d4; }
+.dot-green { background: #22c55e; box-shadow: 0 0 8px #22c55e; }
+.dot-purple { background: #a855f7; box-shadow: 0 0 8px #a855f7; }
+.dot-black { background: #f59e0b; box-shadow: 0 0 8px #f59e0b; }
+
+.btn-txt {
+  font-size: 12px;
+  font-weight: 900;
+  color: #fff;
+}
+
+/* ================= NATIJA MODAL ================= */
+.modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(8px);
+  display: none;
+  place-items: center;
+  z-index: 100;
+  padding: 16px;
+}
+
+.modal.show {
+  display: grid;
+}
+
+.modal-card {
+  background: linear-gradient(160deg, #1e293b, #0f172a);
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-radius: 24px;
+  max-width: 420px;
+  width: 100%;
+  padding: 30px;
+  text-align: center;
+  box-shadow: 0 25px 60px rgba(0, 0, 0, 0.7);
+}
+
+.modal-crown { font-size: 60px; margin-bottom: 8px; }
+.modal-card h2 { font-size: 28px; font-weight: 900; margin-bottom: 16px; }
+
+.score-board {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 22px;
+}
+
+.score-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 14px;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 10px;
+  font-weight: 800;
+}
+
+.modal-btns {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+}
+
+.btn-glow {
+  background: #38bdf8;
+  color: #041226;
+  border: none;
+  padding: 12px 22px;
+  border-radius: 12px;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.btn-plain {
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+  border: none;
+  padding: 12px 20px;
+  border-radius: 12px;
+  font-weight: 800;
+  cursor: pointer;
+}
