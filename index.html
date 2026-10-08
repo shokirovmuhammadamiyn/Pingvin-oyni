@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
-<title>Mini Games — Multik Qahramonlar</title>
+<title>Mini Games — Multik Qahramonlar v2</title>
 
 <style>
 *{
@@ -11,6 +11,7 @@
   margin:0;
   padding:0;
   -webkit-tap-highlight-color:transparent;
+  user-select:none;
 }
 
 :root{
@@ -28,13 +29,13 @@ body{
   min-height:100vh;
   color:#fff;
   font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
-  background:
-    radial-gradient(circle at 50% 0%,#263b73 0,#101a35 42%,#050a15 100%);
+  background:radial-gradient(circle at 50% 0%,#263b73 0,#101a35 42%,#050a15 100%);
   overflow-x:hidden;
 }
 
 button{
   font:inherit;
+  touch-action:manipulation;
 }
 
 .app{
@@ -44,8 +45,7 @@ button{
   padding:18px;
 }
 
-/* ================= HEADER ================= */
-
+/* HEADER */
 .topbar{
   display:flex;
   align-items:center;
@@ -80,13 +80,15 @@ button{
   height:45px;
   border-radius:14px;
   cursor:pointer;
+  display:grid;
+  place-items:center;
+  font-size:20px;
 }
 
-/* ================= SCREENS ================= */
-
+/* SCREENS */
 .screen{
   display:none;
-  animation:screenIn .4s ease;
+  animation:screenIn .3s ease;
 }
 
 .screen.active{
@@ -94,35 +96,28 @@ button{
 }
 
 @keyframes screenIn{
-  from{
-    opacity:0;
-    transform:translateY(12px);
-  }
-  to{
-    opacity:1;
-    transform:none;
-  }
+  from{opacity:0;transform:translateY(10px);}
+  to{opacity:1;transform:none;}
 }
 
-/* ================= HOME ================= */
-
+/* HOME */
 .hero{
   text-align:center;
-  padding:25px 10px 30px;
+  padding:20px 10px 25px;
 }
 
 .hero h1{
-  font-size:clamp(38px,7vw,72px);
-  line-height:1;
+  font-size:clamp(36px,7vw,68px);
+  line-height:1.1;
   font-weight:950;
-  letter-spacing:-3px;
+  letter-spacing:-2px;
   background:linear-gradient(90deg,#fcd34d,#fff,#7dd3fc);
   -webkit-background-clip:text;
   color:transparent;
 }
 
 .hero p{
-  margin-top:12px;
+  margin-top:10px;
   color:#b9c5dc;
   font-size:16px;
 }
@@ -134,83 +129,66 @@ button{
 }
 
 .game-card{
-  min-height:190px;
+  min-height:180px;
   border:1px solid var(--border);
-  border-radius:28px;
+  border-radius:24px;
   padding:22px;
   color:white;
   text-align:left;
   cursor:pointer;
   position:relative;
   overflow:hidden;
-  transition:.3s;
-  box-shadow:0 15px 40px rgba(0,0,0,.25);
+  transition:transform .2s ease, box-shadow .2s ease;
+  box-shadow:0 15px 35px rgba(0,0,0,.3);
+  display:flex;
+  flex-direction:column;
+  justify-content:flex-start;
 }
 
 .game-card:hover{
-  transform:translateY(-7px) scale(1.01);
-  box-shadow:0 22px 55px rgba(0,0,0,.4);
+  transform:translateY(-5px);
+  box-shadow:0 20px 45px rgba(0,0,0,.45);
 }
 
 .game-card:active{
   transform:scale(.98);
 }
 
-.game-card::after{
-  content:"";
-  position:absolute;
-  width:170px;
-  height:170px;
-  border-radius:50%;
-  right:-50px;
-  top:-60px;
-  background:rgba(255,255,255,.12);
-}
-
-.card-sort{
-  background:linear-gradient(135deg,#2563eb,#172554);
-}
-
-.card-football{
-  background:linear-gradient(135deg,#059669,#064e3b);
-}
-
-.card-tank{
-  background:linear-gradient(135deg,#dc2626,#450a0a);
-}
-
-.card-race{
-  background:linear-gradient(135deg,#7c3aed,#2e1065);
-}
+.card-sort{background:linear-gradient(135deg,#2563eb,#172554);}
+.card-football{background:linear-gradient(135deg,#059669,#064e3b);}
+.card-tank{background:linear-gradient(135deg,#dc2626,#450a0a);}
+.card-race{background:linear-gradient(135deg,#7c3aed,#2e1065);}
 
 .game-icon{
-  font-size:55px;
-  margin-bottom:12px;
+  font-size:48px;
+  margin-bottom:8px;
 }
 
 .game-card h2{
-  font-size:25px;
+  font-size:24px;
+  font-weight:800;
 }
 
 .game-card p{
   color:#dbeafe;
-  margin-top:5px;
+  margin-top:4px;
   font-size:14px;
+  max-width:75%;
 }
 
 .play-label{
   position:absolute;
-  right:20px;
-  bottom:20px;
+  right:18px;
+  bottom:18px;
   padding:8px 14px;
   border-radius:20px;
-  background:rgba(0,0,0,.25);
+  background:rgba(0,0,0,.35);
   font-size:13px;
   font-weight:800;
+  pointer-events:none;
 }
 
-/* ================= COMMON GAME ================= */
-
+/* GAME COMMON */
 .game-header{
   display:flex;
   align-items:center;
@@ -219,7 +197,7 @@ button{
 }
 
 .game-title{
-  font-size:27px;
+  font-size:26px;
   font-weight:900;
 }
 
@@ -227,113 +205,97 @@ button{
   border:1px solid var(--border);
   background:var(--glass);
   color:white;
-  padding:10px 15px;
-  border-radius:13px;
+  padding:10px 16px;
+  border-radius:14px;
   cursor:pointer;
+  font-weight:700;
 }
 
 .panel{
   border:1px solid var(--border);
   background:rgba(255,255,255,.07);
-  backdrop-filter:blur(18px);
-  border-radius:25px;
-  padding:18px;
-  box-shadow:0 20px 60px rgba(0,0,0,.25);
+  backdrop-filter:blur(16px);
+  border-radius:24px;
+  padding:16px;
+  box-shadow:0 20px 50px rgba(0,0,0,.3);
 }
 
 .status{
   text-align:center;
-  padding:12px;
+  padding:10px 14px;
   margin-bottom:14px;
-  border-radius:15px;
-  background:rgba(0,0,0,.25);
+  border-radius:14px;
+  background:rgba(0,0,0,.35);
   color:#dbeafe;
-  min-height:45px;
+  min-height:42px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-weight:600;
 }
 
 .controls{
   display:flex;
-  gap:9px;
+  gap:10px;
   justify-content:center;
   flex-wrap:wrap;
-  margin-top:15px;
+  margin-top:14px;
 }
 
 .btn{
   border:none;
   color:white;
   font-weight:800;
-  padding:12px 17px;
-  border-radius:13px;
+  padding:12px 18px;
+  border-radius:14px;
   cursor:pointer;
-  transition:.2s;
-  box-shadow:0 7px 18px rgba(0,0,0,.25);
+  transition:.15s;
 }
 
-.btn:hover{
-  transform:translateY(-2px);
-}
+.btn:active{transform:scale(.95);}
 
-.btn:active{
-  transform:scale(.96);
-}
+.btn-blue{background:linear-gradient(135deg,#0ea5e9,#0369a1);}
+.btn-green{background:linear-gradient(135deg,#10b981,#047857);}
+.btn-red{background:linear-gradient(135deg,#ef4444,#991b1b);}
+.btn-purple{background:linear-gradient(135deg,#8b5cf6,#5b21b6);}
+.btn-gray{background:linear-gradient(135deg,#64748b,#334155);}
+.btn-yellow{background:linear-gradient(135deg,#f59e0b,#b45309);color:#111;}
 
-.btn-blue{background:linear-gradient(135deg,#0ea5e9,#0369a1)}
-.btn-green{background:linear-gradient(135deg,#10b981,#047857)}
-.btn-red{background:linear-gradient(135deg,#ef4444,#991b1b)}
-.btn-purple{background:linear-gradient(135deg,#8b5cf6,#5b21b6)}
-.btn-gray{background:linear-gradient(135deg,#64748b,#334155)}
-.btn-yellow{background:linear-gradient(135deg,#f59e0b,#b45309);color:#111}
-
-/* ================= CHARACTER SELECT ================= */
-
+/* CHAR SELECT */
 .character-select{
   display:grid;
   grid-template-columns:repeat(4,1fr);
-  gap:12px;
-  margin-bottom:18px;
+  gap:10px;
+  margin-bottom:14px;
 }
 
 .char-select{
-  padding:14px 8px;
+  padding:10px 6px;
   border:2px solid transparent;
-  border-radius:18px;
+  border-radius:16px;
   background:rgba(255,255,255,.07);
   color:white;
   cursor:pointer;
-  transition:.25s;
-}
-
-.char-select:hover{
-  background:rgba(255,255,255,.12);
+  text-align:center;
 }
 
 .char-select.active{
   border-color:#fbbf24;
-  background:rgba(251,191,36,.16);
-  transform:translateY(-4px);
+  background:rgba(251,191,36,.2);
 }
 
 .char-select .emoji{
-  font-size:42px;
+  font-size:32px;
   display:block;
 }
 
-.char-select span{
-  font-weight:800;
-  font-size:13px;
-}
-
-/* ================= BUBBLE ================= */
-
+/* SORT ARENA */
 .sort-arena{
-  height:390px;
+  height:350px;
   position:relative;
   overflow:hidden;
-  border-radius:22px;
-  background:
-    linear-gradient(to bottom,rgba(255,255,255,.04),rgba(0,0,0,.15)),
-    #102044;
+  border-radius:20px;
+  background:#102044;
 }
 
 .sort-ground{
@@ -341,95 +303,78 @@ button{
   bottom:0;
   left:0;
   right:0;
-  height:65px;
+  height:50px;
   background:#dbeafe;
-  border-radius:0 0 22px 22px;
 }
 
 .sort-track{
   position:absolute;
   left:0;
   right:0;
-  bottom:65px;
+  bottom:50px;
   height:270px;
 }
 
 .sort-char{
   position:absolute;
   bottom:0;
-  width:80px;
+  width:60px;
   text-align:center;
   cursor:pointer;
-  transition:left .55s cubic-bezier(.34,1.56,.64,1);
-}
-
-.sort-body{
-  position:relative;
-  margin:auto;
-}
-
-.sort-svg{
-  width:100%;
-  height:100%;
-  filter:drop-shadow(0 8px 8px rgba(0,0,0,.35));
-}
-
-.number{
-  position:absolute;
-  left:50%;
-  top:53%;
-  transform:translate(-50%,-50%);
-  width:32px;
-  height:32px;
-  border-radius:50%;
-  background:white;
-  color:#111827;
-  display:grid;
-  place-items:center;
-  font-weight:950;
-  box-shadow:0 3px 10px rgba(0,0,0,.35);
+  transition:left .35s ease, transform .2s ease;
 }
 
 .sort-char.selected{
-  filter:drop-shadow(0 0 16px #facc15);
-  transform:translateY(-13px) scale(1.08);
+  transform:translateY(-12px) scale(1.08);
 }
 
-/* ================= FOOTBALL ================= */
+.sort-char-box{
+  width:100%;
+  border-radius:12px;
+  background:rgba(255,255,255,.15);
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:space-between;
+  padding:8px 0;
+  border:2px solid rgba(255,255,255,.4);
+}
 
+.number{
+  width:26px;
+  height:26px;
+  border-radius:50%;
+  background:white;
+  color:#111;
+  display:grid;
+  place-items:center;
+  font-weight:900;
+  font-size:14px;
+}
+
+/* FOOTBALL */
 .football-field{
   position:relative;
-  height:500px;
+  height:420px;
   overflow:hidden;
-  border-radius:24px;
-  background:
-    repeating-linear-gradient(
-      90deg,
-      #15803d 0,
-      #15803d 60px,
-      #166534 60px,
-      #166534 120px
-    );
-  border:5px solid rgba(255,255,255,.7);
-}
-
-.field-line{
-  position:absolute;
-  background:rgba(255,255,255,.8);
+  border-radius:20px;
+  background:#15803d;
+  border:4px solid rgba(255,255,255,.8);
 }
 
 .mid-line{
-  width:3px;
+  position:absolute;
+  width:2px;
   height:100%;
   left:50%;
-  top:0;
+  background:rgba(255,255,255,.8);
 }
 
 .center-circle{
   position:absolute;
-  width:130px;
-  height:130px;
-  border:3px solid white;
+  width:110px;
+  height:110px;
+  border:2px solid rgba(255,255,255,.8);
   border-radius:50%;
   left:50%;
   top:50%;
@@ -440,318 +385,197 @@ button{
   position:absolute;
   top:50%;
   transform:translateY(-50%);
-  width:35px;
-  height:140px;
-  border:5px solid white;
+  width:28px;
+  height:120px;
+  border:3px solid white;
 }
-
-.goal.left{left:-5px}
-.goal.right{right:-5px}
+.goal.left{left:0;}
+.goal.right{right:0;}
 
 .football-player{
   position:absolute;
-  width:62px;
-  height:62px;
+  width:48px;
+  height:48px;
   display:grid;
   place-items:center;
-  font-size:43px;
+  font-size:32px;
   border-radius:50%;
-  background:rgba(255,255,255,.18);
-  border:3px solid rgba(255,255,255,.8);
-  transition:.15s linear;
+  background:rgba(255,255,255,.2);
+  border:2px solid #fff;
   z-index:5;
+  transform:translate(-50%,-50%);
+  transition:all .1s linear;
 }
 
 .ball{
   position:absolute;
-  width:25px;
-  height:25px;
+  width:28px;
+  height:28px;
   border-radius:50%;
   background:white;
-  box-shadow:0 3px 8px rgba(0,0,0,.35);
+  box-shadow:0 3px 8px rgba(0,0,0,.5);
   display:grid;
   place-items:center;
-  font-size:15px;
+  font-size:16px;
   z-index:6;
-  transition:.25s ease;
+  transform:translate(-50%,-50%);
+  transition:all .15s ease-out;
 }
 
-/* ================= TANK ================= */
-
+/* TANK */
 .tank-field{
   position:relative;
-  height:500px;
+  height:420px;
   overflow:hidden;
-  border-radius:24px;
-  background:
-    radial-gradient(circle at 20% 20%,#526347,#283522 45%,#162014);
+  border-radius:20px;
+  background:#1c281a;
 }
 
 .obstacle{
   position:absolute;
-  background:#303b2b;
-  border:3px solid #66755b;
+  background:#3b4b35;
+  border:2px solid #6b825f;
   border-radius:8px;
-  box-shadow:inset 0 0 15px rgba(0,0,0,.5);
 }
 
 .tank-player{
   position:absolute;
-  width:55px;
-  height:55px;
-  border-radius:12px;
-  background:#374b32;
-  border:3px solid #a7b99b;
+  width:46px;
+  height:46px;
+  border-radius:10px;
+  background:#435e3b;
+  border:2px solid #a3c293;
   display:grid;
   place-items:center;
-  font-size:30px;
+  font-size:26px;
   z-index:5;
-  transition:.12s linear;
+  transform:translate(-50%,-50%);
 }
 
-.tank-player::after{
-  content:"";
-  position:absolute;
-  width:35px;
-  height:9px;
-  background:#65795a;
-  border:2px solid #1d281a;
-  right:-25px;
-  top:22px;
-  border-radius:4px;
+.tank-enemy{
+  background:#6b3a3a;
+  border-color:#e08484;
 }
 
 .bullet{
   position:absolute;
-  width:9px;
-  height:9px;
+  width:10px;
+  height:10px;
   border-radius:50%;
   background:#fde047;
-  box-shadow:0 0 10px #facc15;
+  transform:translate(-50%,-50%);
+  box-shadow:0 0 8px #facc15;
   z-index:10;
 }
 
-.hp{
-  position:absolute;
-  top:-13px;
-  left:0;
-  width:100%;
-  height:6px;
-  border-radius:10px;
-  background:#111;
-  overflow:hidden;
-}
-
-.hp i{
-  display:block;
-  width:100%;
-  height:100%;
-  background:#4ade80;
-}
-
-/* ================= RACING ================= */
-
+/* RACE */
 .race-track{
   position:relative;
-  height:500px;
+  height:420px;
   overflow:hidden;
-  border-radius:24px;
-  background:#292929;
-  border-left:70px solid #333;
-  border-right:70px solid #333;
+  border-radius:20px;
+  background:#262626;
+  border-left:50px solid #171717;
+  border-right:50px solid #171717;
 }
 
 .road-lines{
   position:absolute;
   inset:0;
-  background:
-    repeating-linear-gradient(
-      to bottom,
-      transparent 0,
-      transparent 45px,
-      rgba(255,255,255,.8) 45px,
-      rgba(255,255,255,.8) 75px
-    );
-  opacity:.6;
-  animation:roadMove .5s linear infinite;
-}
-
-@keyframes roadMove{
-  to{background-position:0 75px}
+  background:repeating-linear-gradient(to bottom,transparent 0,transparent 40px,rgba(255,255,255,.7) 40px,rgba(255,255,255,.7) 70px);
+  opacity:.5;
 }
 
 .racer{
   position:absolute;
-  width:54px;
-  height:90px;
-  border-radius:15px 15px 10px 10px;
+  width:48px;
+  height:76px;
+  border-radius:12px;
   display:grid;
   place-items:center;
-  font-size:31px;
-  box-shadow:0 10px 18px rgba(0,0,0,.5);
-  border:3px solid white;
+  font-size:28px;
+  border:2px solid white;
   z-index:5;
+  transform:translateX(-50%);
+  box-shadow:0 8px 16px rgba(0,0,0,.5);
 }
 
-.racer::before,
-.racer::after{
-  content:"";
-  position:absolute;
-  width:9px;
-  height:25px;
-  background:#111;
-  border-radius:5px;
-  top:20px;
-}
-
-.racer::before{left:-7px}
-.racer::after{right:-7px}
-
-/* ================= PLAYER CONTROL ================= */
-
+/* TOUCH CONTROLS */
 .mobile-controls{
   display:flex;
   justify-content:center;
   gap:12px;
-  margin-top:15px;
-  flex-wrap:wrap;
+  margin-top:14px;
 }
 
 .control-big{
-  width:65px;
-  height:55px;
-  border:none;
-  border-radius:15px;
-  background:rgba(255,255,255,.13);
+  width:60px;
+  height:52px;
+  border-radius:14px;
+  background:rgba(255,255,255,.14);
   color:white;
-  font-size:23px;
+  font-size:22px;
   cursor:pointer;
   border:1px solid var(--border);
+  display:grid;
+  place-items:center;
 }
 
 .control-big:active{
-  transform:scale(.9);
-  background:rgba(255,255,255,.25);
+  background:rgba(255,255,255,.3);
+  transform:scale(.92);
 }
 
-/* ================= MODAL ================= */
-
+/* MODAL & TOAST */
 .modal{
   position:fixed;
   inset:0;
   display:none;
   place-items:center;
-  background:rgba(0,0,0,.65);
-  backdrop-filter:blur(8px);
+  background:rgba(0,0,0,.7);
+  backdrop-filter:blur(6px);
   z-index:100;
   padding:20px;
 }
-
-.modal.show{
-  display:grid;
-}
+.modal.show{display:grid;}
 
 .modal-box{
-  width:min(440px,100%);
-  padding:30px;
+  width:min(380px,100%);
+  padding:26px;
   text-align:center;
-  background:linear-gradient(145deg,#172554,#0f172a);
+  background:#0f172a;
   border:1px solid var(--border);
-  border-radius:28px;
-  box-shadow:0 30px 90px rgba(0,0,0,.55);
-  animation:modalIn .35s ease;
+  border-radius:24px;
 }
 
-@keyframes modalIn{
-  from{
-    opacity:0;
-    transform:scale(.8);
-  }
-  to{
-    opacity:1;
-    transform:none;
-  }
-}
-
-.modal-icon{
-  font-size:70px;
-}
-
-.modal-box h2{
-  font-size:30px;
-  margin:8px 0;
-}
-
-.modal-box p{
-  color:#cbd5e1;
-  margin-bottom:20px;
-}
-
-/* ================= TOAST ================= */
+.modal-icon{font-size:60px;}
+.modal-box h2{font-size:26px;margin:8px 0;}
+.modal-box p{color:#cbd5e1;margin-bottom:18px;}
 
 .toast{
   position:fixed;
   left:50%;
   bottom:25px;
   transform:translate(-50%,100px);
-  background:#111827;
+  background:#1e293b;
   color:white;
-  padding:12px 20px;
-  border-radius:30px;
+  padding:10px 18px;
+  border-radius:20px;
   z-index:200;
-  transition:.35s;
-  box-shadow:0 10px 30px rgba(0,0,0,.4);
+  transition:.3s;
+  pointer-events:none;
+  font-weight:600;
 }
-
-.toast.show{
-  transform:translate(-50%,0);
-}
-
-/* ================= RESPONSIVE ================= */
+.toast.show{transform:translate(-50%,0);}
 
 @media(max-width:700px){
-
-  .app{
-    padding:12px;
-  }
-
-  .games-grid{
-    grid-template-columns:1fr;
-  }
-
-  .game-card{
-    min-height:155px;
-  }
-
-  .character-select{
-    grid-template-columns:repeat(2,1fr);
-  }
-
-  .sort-arena,
-  .football-field,
-  .tank-field,
-  .race-track{
-    height:430px;
-  }
-
-  .race-track{
-    border-left-width:35px;
-    border-right-width:35px;
-  }
-
-  .game-title{
-    font-size:22px;
-  }
-
-  .hero{
-    padding-top:15px;
-  }
+  .games-grid{grid-template-columns:1fr;}
+  .race-track{border-left-width:30px;border-right-width:30px;}
 }
 </style>
 </head>
 
 <body>
-
 <div class="app">
 
   <div class="topbar">
@@ -759,92 +583,74 @@ button{
       <div class="logo-icon">🎮</div>
       <span>Mini Games</span>
     </div>
-
     <button class="sound-btn" id="soundBtn">🔊</button>
   </div>
 
-  <!-- ================= HOME ================= -->
-
+  <!-- BOSH MENYU -->
   <section id="home" class="screen active">
-
     <div class="hero">
       <h1>MINI GAMES</h1>
-      <p>🐧 🐻 🐥 🐠 — sevimli qahramonlar bilan o‘ynang!</p>
+      <p>🐧 🐻 🐥 🐠 — sevimli qahramonlar bilan maroqli o‘ynang!</p>
     </div>
 
     <div class="games-grid">
-
-      <button class="game-card card-sort" onclick="openGame('sort')">
+      <div class="game-card card-sort" data-open="sort">
         <div class="game-icon">🧩</div>
         <h2>Bubble Sort</h2>
         <p>Qahramonlarni 1 dan 8 gacha tartiblang.</p>
         <div class="play-label">▶ O‘ynash</div>
-      </button>
+      </div>
 
-      <button class="game-card card-football" onclick="openGame('football')">
+      <div class="game-card card-football" data-open="football">
         <div class="game-icon">⚽</div>
         <h2>4 Player Football</h2>
-        <p>4 qahramon — bitta futbol maydoni.</p>
+        <p>4 qahramon — to‘pni raqib darvozasiga uring.</p>
         <div class="play-label">▶ O‘ynash</div>
-      </button>
+      </div>
 
-      <button class="game-card card-tank" onclick="openGame('tank')">
+      <div class="game-card card-tank" data-open="tank">
         <div class="game-icon">🛡️</div>
         <h2>Tank Battle</h2>
-        <p>Tanklarni boshqaring va raqiblarni yenging.</p>
+        <p>Barcha raqib tanklarini nishonga oling.</p>
         <div class="play-label">▶ O‘ynash</div>
-      </button>
+      </div>
 
-      <button class="game-card card-race" onclick="openGame('race')">
+      <div class="game-card card-race" data-open="race">
         <div class="game-icon">🏎️</div>
         <h2>Mini Racing</h2>
-        <p>4 qahramon bilan poygada g‘olib bo‘ling.</p>
+        <p>Poygada hamma raqiblardan tez marraga yeting.</p>
         <div class="play-label">▶ O‘ynash</div>
-      </button>
-
+      </div>
     </div>
-
   </section>
 
-
-  <!-- ================= BUBBLE SORT ================= -->
-
+  <!-- 1. BUBBLE SORT -->
   <section id="sort" class="screen">
-
     <div class="game-header">
       <div class="game-title">🧩 Bubble Sort</div>
-      <button class="back-btn" onclick="goHome()">🏠 Menyu</button>
+      <button class="back-btn" data-back>🏠 Menyu</button>
     </div>
-
     <div class="panel">
-
       <div class="character-select" id="sortThemes">
-
-        <button class="char-select active" data-theme="penguin">
+        <button class="char-select active" data-theme="🐧">
           <span class="emoji">🐧</span>
           <span>Pingvin</span>
         </button>
-
-        <button class="char-select" data-theme="bear">
+        <button class="char-select" data-theme="🐻">
           <span class="emoji">🐻</span>
           <span>Ayiq</span>
         </button>
-
-        <button class="char-select" data-theme="chick">
+        <button class="char-select" data-theme="🐥">
           <span class="emoji">🐥</span>
           <span>Jo‘ja</span>
         </button>
-
-        <button class="char-select" data-theme="fish">
+        <button class="char-select" data-theme="🐠">
           <span class="emoji">🐠</span>
           <span>Baliq</span>
         </button>
-
       </div>
 
-      <div class="status" id="sortStatus">
-        Personajni tanlang yoki Bubble Sort orqali saralang.
-      </div>
+      <div class="status" id="sortStatus">Bitta katakni tanlang va qo‘shnisi bilan almashtiring</div>
 
       <div class="sort-arena">
         <div class="sort-track" id="sortTrack"></div>
@@ -852,1249 +658,628 @@ button{
       </div>
 
       <div class="controls">
-
-        <button class="btn btn-blue" id="sortLeft">
-          ⬅️ Chapga
-        </button>
-
-        <button class="btn btn-blue" id="sortRight">
-          O‘ngga ➡️
-        </button>
-
-        <button class="btn btn-purple" id="sortStep">
-          👟 1 qadam
-        </button>
-
-        <button class="btn btn-green" id="sortAuto">
-          ⚡ Avto
-        </button>
-
-        <button class="btn btn-gray" id="sortShuffle">
-          🔀 Aralashtirish
-        </button>
-
+        <button class="btn btn-blue" id="sortLeft">⬅️ Chapga</button>
+        <button class="btn btn-blue" id="sortRight">O‘ngga ➡️</button>
+        <button class="btn btn-purple" id="sortStep">👟 1 Qadam</button>
+        <button class="btn btn-green" id="sortAuto">⚡ Avto</button>
+        <button class="btn btn-gray" id="sortShuffle">🔀 Aralashtirish</button>
       </div>
-
     </div>
-
   </section>
 
-
-  <!-- ================= FOOTBALL ================= -->
-
+  <!-- 2. FOOTBALL -->
   <section id="football" class="screen">
-
     <div class="game-header">
-      <div class="game-title">⚽ 4 Player Football</div>
-      <button class="back-btn" onclick="goHome()">🏠 Menyu</button>
+      <div class="game-title">⚽ Football</div>
+      <button class="back-btn" data-back>🏠 Menyu</button>
     </div>
-
     <div class="panel">
-
-      <div class="status" id="footballStatus">
-        4 o‘yinchi maydonga chiqdi! Gol uring!
-      </div>
-
+      <div class="status" id="footballStatus">Pingvin 🐧 bilan o‘ng darvozaga gol uring!</div>
       <div class="football-field" id="footballField">
-
-        <div class="field-line mid-line"></div>
+        <div class="mid-line"></div>
         <div class="center-circle"></div>
-
         <div class="goal left"></div>
         <div class="goal right"></div>
-
         <div class="ball" id="ball">⚽</div>
-
       </div>
-
       <div class="mobile-controls">
-
-        <button class="control-big" id="footballUp">⬆️</button>
-        <button class="control-big" id="footballLeft">⬅️</button>
-        <button class="control-big" id="footballKick">⚽</button>
-        <button class="control-big" id="footballRight">➡️</button>
-        <button class="control-big" id="footballDown">⬇️</button>
-
+        <button class="control-big" id="fbUp">⬆️</button>
+        <button class="control-big" id="fbLeft">⬅️</button>
+        <button class="control-big" id="fbKick">⚡</button>
+        <button class="control-big" id="fbRight">➡️</button>
+        <button class="control-big" id="fbDown">⬇️</button>
       </div>
-
       <div class="controls">
-
-        <button class="btn btn-green" onclick="resetFootball()">
-          🔄 Qayta boshlash
-        </button>
-
+        <button class="btn btn-green" id="fbReset">🔄 Qayta boshlash</button>
       </div>
-
     </div>
-
   </section>
 
-
-  <!-- ================= TANK ================= -->
-
+  <!-- 3. TANK -->
   <section id="tank" class="screen">
-
     <div class="game-header">
       <div class="game-title">🛡️ Tank Battle</div>
-      <button class="back-btn" onclick="goHome()">🏠 Menyu</button>
+      <button class="back-btn" data-back>🏠 Menyu</button>
     </div>
-
     <div class="panel">
-
-      <div class="status" id="tankStatus">
-        Tank jangiga tayyor!
-      </div>
-
+      <div class="status" id="tankStatus">O‘q uzib raqiblarni nishonga oling!</div>
       <div class="tank-field" id="tankField">
-
-        <div class="obstacle" style="left:18%;top:18%;width:120px;height:35px"></div>
-        <div class="obstacle" style="left:55%;top:28%;width:100px;height:80px"></div>
-        <div class="obstacle" style="left:30%;top:65%;width:140px;height:35px"></div>
-        <div class="obstacle" style="right:8%;bottom:15%;width:90px;height:80px"></div>
-
+        <div class="obstacle" style="left:20%;top:20%;width:80px;height:30px"></div>
+        <div class="obstacle" style="left:55%;top:60%;width:90px;height:35px"></div>
       </div>
-
       <div class="mobile-controls">
-
-        <button class="control-big" id="tankUp">⬆️</button>
-        <button class="control-big" id="tankLeft">⬅️</button>
-        <button class="control-big" id="tankFire">🔥</button>
-        <button class="control-big" id="tankRight">➡️</button>
-        <button class="control-big" id="tankDown">⬇️</button>
-
+        <button class="control-big" id="tkUp">⬆️</button>
+        <button class="control-big" id="tkLeft">⬅️</button>
+        <button class="control-big" id="tkFire">🔥</button>
+        <button class="control-big" id="tkRight">➡️</button>
+        <button class="control-big" id="tkDown">⬇️</button>
       </div>
-
       <div class="controls">
-        <button class="btn btn-red" onclick="resetTank()">🔄 Yangi jang</button>
+        <button class="btn btn-red" id="tkReset">🔄 Yangi jang</button>
       </div>
-
     </div>
-
   </section>
 
-
-  <!-- ================= RACING ================= -->
-
+  <!-- 4. RACING -->
   <section id="race" class="screen">
-
     <div class="game-header">
       <div class="game-title">🏎️ Mini Racing</div>
-      <button class="back-btn" onclick="goHome()">🏠 Menyu</button>
+      <button class="back-btn" data-back>🏠 Menyu</button>
     </div>
-
     <div class="panel">
-
-      <div class="status" id="raceStatus">
-        Poyga boshlanmoqda...
-      </div>
-
+      <div class="status" id="raceStatus">Marraga birinchi bo‘lib yeting!</div>
       <div class="race-track" id="raceTrack">
-
         <div class="road-lines"></div>
-
       </div>
-
       <div class="mobile-controls">
-
-        <button class="control-big" id="raceLeft">⬅️</button>
-        <button class="control-big" id="raceBoost">⚡</button>
-        <button class="control-big" id="raceRight">➡️</button>
-
+        <button class="control-big" id="rcLeft">⬅️</button>
+        <button class="control-big" id="rcBoost">🚀</button>
+        <button class="control-big" id="rcRight">➡️</button>
       </div>
-
       <div class="controls">
-        <button class="btn btn-purple" onclick="resetRace()">
-          🔄 Qayta poyga
-        </button>
+        <button class="btn btn-purple" id="rcReset">🔄 Qayta poyga</button>
       </div>
-
     </div>
-
   </section>
 
 </div>
 
-
-<!-- ================= WIN MODAL ================= -->
-
+<!-- G'ALABA MODAL -->
 <div class="modal" id="winModal">
-
   <div class="modal-box">
-
     <div class="modal-icon" id="winIcon">🏆</div>
-
     <h2 id="winTitle">G‘ALABA!</h2>
-
-    <p id="winText">Ajoyib natija!</p>
-
+    <p id="winText">Ajoyib natija ko‘rsatdingiz!</p>
     <div class="controls">
-
-      <button class="btn btn-yellow" onclick="closeModal()">
-        ▶ Davom etish
-      </button>
-
-      <button class="btn btn-gray" onclick="goHome();closeModal()">
-        🏠 Menyu
-      </button>
-
+      <button class="btn btn-yellow" id="modalOk">▶ Davom etish</button>
+      <button class="btn btn-gray" id="modalHome">🏠 Menyu</button>
     </div>
-
   </div>
-
 </div>
-
 
 <div class="toast" id="toast"></div>
 
-
 <script>
-
-/* ============================================================
-   AUDIO
-============================================================ */
-
-const AudioEngine={
-
-  ctx:null,
-  enabled:true,
-
-  init(){
-
-    if(!this.enabled)return;
-
-    if(!this.ctx){
-
-      const C=window.AudioContext||window.webkitAudioContext;
-
-      if(C)this.ctx=new C();
-
+/* ================= SOUND ENGINE ================= */
+const Sound = {
+  enabled: true,
+  ctx: null,
+  init() {
+    if (!this.ctx) {
+      const AudioCtx = window.AudioContext || window.webkitAudioContext;
+      if (AudioCtx) this.ctx = new AudioCtx();
     }
-
-    if(this.ctx && this.ctx.state==="suspended"){
+    if (this.ctx && this.ctx.state === "suspended") {
       this.ctx.resume();
     }
-
   },
-
-  beep(freq=440,duration=.08,type="sine"){
-
-    if(!this.enabled)return;
-
-    this.init();
-
-    if(!this.ctx)return;
-
-    const o=this.ctx.createOscillator();
-    const g=this.ctx.createGain();
-
-    const t=this.ctx.currentTime;
-
-    o.type=type;
-    o.frequency.setValueAtTime(freq,t);
-
-    g.gain.setValueAtTime(.08,t);
-    g.gain.exponentialRampToValueAtTime(.001,t+duration);
-
-    o.connect(g);
-    g.connect(this.ctx.destination);
-
-    o.start(t);
-    o.stop(t+duration);
-
-  },
-
-  jump(){
-    this.beep(520,.12,"sine");
-  },
-
-  hit(){
-    this.beep(110,.16,"square");
-  },
-
-  goal(){
-    this.beep(700,.18,"triangle");
-    setTimeout(()=>this.beep(900,.2,"triangle"),120);
+  play(freq = 440, type = "sine", duration = 0.08) {
+    if (!this.enabled) return;
+    try {
+      this.init();
+      if (!this.ctx) return;
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+      const t = this.ctx.currentTime;
+      osc.type = type;
+      osc.frequency.setValueAtTime(freq, t);
+      gain.gain.setValueAtTime(0.08, t);
+      gain.gain.exponentialRampToValueAtTime(0.001, t + duration);
+      osc.connect(gain);
+      gain.connect(this.ctx.destination);
+      osc.start(t);
+      osc.stop(t + duration);
+    } catch(e) {}
   }
-
 };
 
+/* ================= NAVIGATION ================= */
+let currentScreen = "home";
 
-/* ============================================================
-   GLOBAL
-============================================================ */
-
-let currentScreen="home";
-
-function openGame(id){
-
-  document.querySelectorAll(".screen").forEach(s=>{
-    s.classList.remove("active");
-  });
-
-  const target=document.getElementById(id);
-
-  if(target){
+function showScreen(id) {
+  document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
+  const target = document.getElementById(id);
+  if (target) {
     target.classList.add("active");
-    currentScreen=id;
+    currentScreen = id;
   }
 
-  if(id==="sort")initSort();
-  if(id==="football")resetFootball();
-  if(id==="tank")resetTank();
-  if(id==="race")resetRace();
-
-  window.scrollTo({top:0,behavior:"smooth"});
-
+  if (id === "sort") renderSort();
+  if (id === "football") initFootball();
+  if (id === "tank") initTank();
+  if (id === "race") initRace();
+  window.scrollTo({top: 0, behavior: "smooth"});
 }
 
-function goHome(){
-
-  document.querySelectorAll(".screen").forEach(s=>{
-    s.classList.remove("active");
+document.querySelectorAll("[data-open]").forEach(card => {
+  card.addEventListener("click", () => {
+    Sound.init();
+    Sound.play(500, "triangle", 0.05);
+    showScreen(card.getAttribute("data-open"));
   });
+});
 
-  document.getElementById("home").classList.add("active");
+document.querySelectorAll("[data-back]").forEach(btn => {
+  btn.addEventListener("click", () => {
+    showScreen("home");
+    stopAllLoops();
+  });
+});
 
-  currentScreen="home";
+document.getElementById("soundBtn").addEventListener("click", () => {
+  Sound.enabled = !Sound.enabled;
+  document.getElementById("soundBtn").textContent = Sound.enabled ? "🔊" : "🔇";
+});
 
-}
-
-function showToast(text){
-
-  const t=document.getElementById("toast");
-
-  t.textContent=text;
+function showToast(msg) {
+  const t = document.getElementById("toast");
+  t.textContent = msg;
   t.classList.add("show");
-
-  setTimeout(()=>t.classList.remove("show"),1800);
-
+  setTimeout(() => t.classList.remove("show"), 1800);
 }
 
-function win(icon,title,text){
-
-  document.getElementById("winIcon").textContent=icon;
-  document.getElementById("winTitle").textContent=title;
-  document.getElementById("winText").textContent=text;
-
+function openWin(icon, title, desc) {
+  document.getElementById("winIcon").textContent = icon;
+  document.getElementById("winTitle").textContent = title;
+  document.getElementById("winText").textContent = desc;
   document.getElementById("winModal").classList.add("show");
-
-  AudioEngine.goal();
-
+  Sound.play(523, "triangle", 0.15);
+  setTimeout(() => Sound.play(659, "triangle", 0.25), 120);
 }
 
-function closeModal(){
-
+document.getElementById("modalOk").onclick = () => {
   document.getElementById("winModal").classList.remove("show");
-
-}
-
-
-/* ============================================================
-   SOUND BUTTON
-============================================================ */
-
-document.getElementById("soundBtn").onclick=()=>{
-
-  AudioEngine.enabled=!AudioEngine.enabled;
-
-  document.getElementById("soundBtn").textContent=
-    AudioEngine.enabled ? "🔊":"🔇";
-
+};
+document.getElementById("modalHome").onclick = () => {
+  document.getElementById("winModal").classList.remove("show");
+  showScreen("home");
 };
 
-
-/* ============================================================
-   CHARACTER SVG
-============================================================ */
-
-const THEMES={
-
-penguin:{
-render(h){
-
-return `
-<svg class="sort-svg" viewBox="0 0 100 130" style="height:${h}px">
-<ellipse cx="14" cy="75" rx="9" ry="24" fill="#0f172a"/>
-<ellipse cx="86" cy="75" rx="9" ry="24" fill="#0f172a"/>
-<path d="M50 10C26 10 18 40 18 85C18 115 30 125 50 125C70 125 82 115 82 85C82 40 74 10 50 10Z" fill="#0f172a"/>
-<ellipse cx="50" cy="75" rx="24" ry="40" fill="#f8fafc"/>
-<circle cx="41" cy="36" r="6" fill="white"/>
-<circle cx="43" cy="36" r="2.8"/>
-<circle cx="59" cy="36" r="6" fill="white"/>
-<circle cx="57" cy="36" r="2.8"/>
-<polygon points="50,42 43,49 57,49" fill="#f59e0b"/>
-<ellipse cx="38" cy="126" rx="9" ry="4" fill="#f59e0b"/>
-<ellipse cx="62" cy="126" rx="9" ry="4" fill="#f59e0b"/>
-</svg>`;
-
-},
-
-bear:{
-render(h){
-
-return `
-<svg class="sort-svg" viewBox="0 0 100 130" style="height:${h}px">
-<circle cx="28" cy="24" r="14" fill="#78350f"/>
-<circle cx="72" cy="24" r="14" fill="#78350f"/>
-<circle cx="28" cy="24" r="7" fill="#fbbf24"/>
-<circle cx="72" cy="24" r="7" fill="#fbbf24"/>
-<ellipse cx="50" cy="85" rx="34" ry="40" fill="#92400e"/>
-<circle cx="50" cy="45" r="28" fill="#92400e"/>
-<ellipse cx="50" cy="86" rx="22" ry="28" fill="#fef3c7"/>
-<ellipse cx="50" cy="50" rx="14" ry="10" fill="#fef3c7"/>
-<ellipse cx="50" cy="46" rx="5" ry="3.5"/>
-<circle cx="41" cy="38" r="3.5"/>
-<circle cx="59" cy="38" r="3.5"/>
-</svg>`;
-
-},
-
-chick:{
-render(h){
-
-return `
-<svg class="sort-svg" viewBox="0 0 100 130" style="height:${h}px">
-<ellipse cx="16" cy="80" rx="8" ry="18" fill="#eab308"/>
-<ellipse cx="84" cy="80" rx="8" ry="18" fill="#eab308"/>
-<circle cx="50" cy="85" r="34" fill="#facc15"/>
-<circle cx="50" cy="42" r="24" fill="#facc15"/>
-<ellipse cx="50" cy="88" rx="22" ry="26" fill="#fef08a"/>
-<circle cx="42" cy="38" r="4.5"/>
-<circle cx="58" cy="38" r="4.5"/>
-<polygon points="50,44 43,51 57,51" fill="#ea580c"/>
-<ellipse cx="50" cy="18" rx="5" ry="9" fill="#ef4444"/>
-<ellipse cx="40" cy="124" rx="8" ry="3.5" fill="#ea580c"/>
-<ellipse cx="60" cy="124" rx="8" ry="3.5" fill="#ea580c"/>
-</svg>`;
-
-},
-
-fish:{
-render(h){
-
-return `
-<svg class="sort-svg" viewBox="0 0 100 130" style="height:${h}px">
-<path d="M50 115Q25 135 15 120Q35 105 50 105Z" fill="#f97316"/>
-<path d="M50 115Q75 135 85 120Q65 105 50 105Z" fill="#f97316"/>
-<ellipse cx="50" cy="65" rx="33" ry="46" fill="#fb923c"/>
-<ellipse cx="14" cy="65" rx="6" ry="18" fill="#ea580c"/>
-<ellipse cx="86" cy="65" rx="6" ry="18" fill="#ea580c"/>
-<ellipse cx="50" cy="66" rx="21" ry="30" fill="#ffedd5"/>
-<circle cx="38" cy="38" r="6.5" fill="white"/>
-<circle cx="39" cy="38" r="3"/>
-<circle cx="62" cy="38" r="6.5" fill="white"/>
-<circle cx="61" cy="38" r="3"/>
-<ellipse cx="50" cy="24" rx="6" ry="3.5" fill="#c2410c"/>
-</svg>`;
-
+function stopAllLoops() {
+  if (raceReq) cancelAnimationFrame(raceReq);
+  raceReq = null;
+  sortBusy = false;
 }
 
-};
+/* ================= 1. BUBBLE SORT ================= */
+let sortArray = [7, 4, 2, 1, 8, 3, 6, 5];
+let sortSelected = null;
+let sortTheme = "🐧";
+let sortBusy = false;
 
+function renderSort() {
+  const track = document.getElementById("sortTrack");
+  track.innerHTML = "";
+  const total = sortArray.length;
+  const trackWidth = track.clientWidth || 340;
+  const itemWidth = Math.min(60, Math.floor((trackWidth - 20) / total));
 
-/* ============================================================
-   BUBBLE SORT
-============================================================ */
+  sortArray.forEach((val, i) => {
+    const el = document.createElement("div");
+    el.className = "sort-char" + (sortSelected === i ? " selected" : "");
+    el.style.width = itemWidth + "px";
+    el.style.left = (10 + i * (trackWidth - 20 - itemWidth) / (total - 1)) + "px";
 
-let sortArray=[7,4,2,1,8,3,6,5];
-let sortSelected=null;
-let sortTheme="penguin";
-let sortBusy=false;
-
-const sortTrack=document.getElementById("sortTrack");
-const sortStatus=document.getElementById("sortStatus");
-
-function sortPosition(index){
-
-  const w=sortTrack.clientWidth;
-  const padding=20;
-  const char=80;
-  const usable=Math.max(100,w-padding*2-char);
-
-  const gap=usable/(sortArray.length-1);
-
-  return padding+index*gap;
-
-}
-
-function initSort(){
-
-  sortBusy=false;
-  renderSort();
-
-}
-
-function renderSort(){
-
-  sortTrack.innerHTML="";
-
-  sortArray.forEach((value,index)=>{
-
-    const node=document.createElement("div");
-
-    node.className="sort-char";
-
-    if(sortSelected===index){
-      node.classList.add("selected");
-    }
-
-    node.style.left=sortPosition(index)+"px";
-
-    const height=110+(value-1)/7*115;
-
-    node.innerHTML=`
-
-      <div class="sort-body" style="height:${height}px">
-        ${THEMES[sortTheme].render(height)}
-        <div class="number">${value}</div>
+    const h = 75 + ((val - 1) / 7) * 115;
+    el.innerHTML = `
+      <div class="sort-char-box" style="height:${h}px">
+        <div style="font-size:${Math.min(32, itemWidth * 0.6)}px">${sortTheme}</div>
+        <div class="number">${val}</div>
       </div>
-
     `;
 
-    node.onclick=()=>{
-
-      if(sortBusy)return;
-
-      AudioEngine.beep(440,.06);
-
-      if(sortSelected===index){
-        sortSelected=null;
-        sortStatus.textContent="Tanlov bekor qilindi.";
-      }else{
-        sortSelected=index;
-        sortStatus.textContent=
-          `${value} raqamli personaj tanlandi.`;
-      }
-
+    el.onclick = () => {
+      if (sortBusy) return;
+      Sound.play(400);
+      sortSelected = (sortSelected === i) ? null : i;
+      document.getElementById("sortStatus").textContent =
+        sortSelected !== null ? `${sortArray[sortSelected]} tanlandi. Chap/o‘ng bilan suring.` : "Bitta elementni tanlang.";
       renderSort();
-
     };
 
-    sortTrack.appendChild(node);
-
-  });
-
-}
-
-async function sortSwap(a,b){
-
-  if(sortBusy)return;
-
-  if(a>b)[a,b]=[b,a];
-
-  const nodes=document.querySelectorAll(".sort-char");
-
-  if(nodes[a]&&nodes[b]){
-
-    nodes[a].style.left=sortPosition(b)+"px";
-    nodes[b].style.left=sortPosition(a)+"px";
-
-  }
-
-  AudioEngine.jump();
-
-  await new Promise(r=>setTimeout(r,550));
-
-  [sortArray[a],sortArray[b]]=[sortArray[b],sortArray[a]];
-
-  if(sortSelected===a)sortSelected=b;
-  else if(sortSelected===b)sortSelected=a;
-
-  renderSort();
-
-}
-
-async function manualSortMove(dir){
-
-  if(sortBusy||sortSelected===null)return;
-
-  const target=sortSelected+dir;
-
-  if(target<0||target>=sortArray.length)return;
-
-  sortBusy=true;
-
-  await sortSwap(sortSelected,target);
-
-  sortBusy=false;
-
-}
-
-async function bubbleStep(){
-
-  if(sortBusy)return;
-
-  sortBusy=true;
-
-  sortSelected=null;
-
-  for(let i=0;i<sortArray.length-1;i++){
-
-    sortStatus.textContent=
-      `Taqqoslash: ${sortArray[i]} va ${sortArray[i+1]}`;
-
-    await new Promise(r=>setTimeout(r,300));
-
-    if(sortArray[i]>sortArray[i+1]){
-
-      await sortSwap(i,i+1);
-
-      sortBusy=false;
-
-      renderSort();
-
-      return;
-
-    }
-
-  }
-
-  sortBusy=false;
-
-  sortStatus.textContent="🎉 Massiv allaqachon tartiblangan!";
-
-  win("🏆","AJOYIB!","Bubble Sort muvaffaqiyatli yakunlandi!");
-
-}
-
-async function autoSort(){
-
-  if(sortBusy)return;
-
-  sortBusy=true;
-  sortSelected=null;
-
-  let n=sortArray.length;
-
-  let swapped;
-
-  do{
-
-    swapped=false;
-
-    for(let i=0;i<n-1;i++){
-
-      sortStatus.textContent=
-        `${sortArray[i]} va ${sortArray[i+1]} taqqoslanmoqda...`;
-
-      await new Promise(r=>setTimeout(r,250));
-
-      if(sortArray[i]>sortArray[i+1]){
-
-        await sortSwap(i,i+1);
-
-        swapped=true;
-
-      }
-
-    }
-
-    n--;
-
-  }while(swapped);
-
-  sortBusy=false;
-
-  renderSort();
-
-  win("🎉","G‘ALABA!","Barcha personajlar to‘g‘ri tartiblandi!");
-
-}
-
-function shuffleSort(){
-
-  if(sortBusy)return;
-
-  for(let i=sortArray.length-1;i>0;i--){
-
-    const j=Math.floor(Math.random()*(i+1));
-
-    [sortArray[i],sortArray[j]]=
-    [sortArray[j],sortArray[i]];
-
-  }
-
-  sortSelected=null;
-
-  sortStatus.textContent=
-    "Personajlar aralashtirildi!";
-
-  renderSort();
-
-}
-
-document.getElementById("sortLeft").onclick=
-()=>manualSortMove(-1);
-
-document.getElementById("sortRight").onclick=
-()=>manualSortMove(1);
-
-document.getElementById("sortStep").onclick=
-bubbleStep;
-
-document.getElementById("sortAuto").onclick=
-autoSort;
-
-document.getElementById("sortShuffle").onclick=
-shuffleSort;
-
-document.querySelectorAll("#sortThemes .char-select")
-.forEach(btn=>{
-
-  btn.onclick=()=>{
-
-    sortTheme=btn.dataset.theme;
-
-    document.querySelectorAll("#sortThemes .char-select")
-    .forEach(x=>x.classList.remove("active"));
-
-    btn.classList.add("active");
-
-    renderSort();
-
-  };
-
-});
-
-
-/* ============================================================
-   FOOTBALL
-============================================================ */
-
-const footballChars=["🐧","🐻","🐥","🐠"];
-
-let footballPlayers=[];
-let ball={x:50,y:50};
-let footballRunning=false;
-
-function resetFootball(){
-
-  const field=document.getElementById("footballField");
-
-  footballPlayers=[];
-
-  field.querySelectorAll(".football-player")
-    .forEach(e=>e.remove());
-
-  const positions=[
-    [15,20],
-    [15,75],
-    [78,20],
-    [78,75]
-  ];
-
-  positions.forEach((p,i)=>{
-
-    const el=document.createElement("div");
-
-    el.className="football-player";
-    el.textContent=footballChars[i];
-
-    el.style.left=p[0]+"%";
-    el.style.top=p[1]+"%";
-
-    field.appendChild(el);
-
-    footballPlayers.push({
-      el,
-      x:p[0],
-      y:p[1]
-    });
-
-  });
-
-  ball={x:50,y:50};
-
-  const b=document.getElementById("ball");
-
-  b.style.left="calc(50% - 12px)";
-  b.style.top="calc(50% - 12px)";
-
-  document.getElementById("footballStatus").textContent=
-    "⚽ 4 o‘yinchi maydonda! To‘pni olib gol uring.";
-
-  footballRunning=true;
-
-}
-
-function moveFootball(dx,dy){
-
-  if(!footballRunning)return;
-
-  const p=footballPlayers[0];
-
-  p.x=Math.max(2,Math.min(94,p.x+dx));
-  p.y=Math.max(2,Math.min(90,p.y+dy));
-
-  p.el.style.left=p.x+"%";
-  p.el.style.top=p.y+"%";
-
-  const distance=Math.hypot(p.x-ball.x,p.y-ball.y);
-
-  if(distance<8){
-
-    ball.x+=dx*.7;
-    ball.y+=dy*.7;
-
-    ball.x=Math.max(3,Math.min(97,ball.x));
-    ball.y=Math.max(3,Math.min(97,ball.y));
-
-    const b=document.getElementById("ball");
-
-    b.style.left=`calc(${ball.x}% - 12px)`;
-    b.style.top=`calc(${ball.y}% - 12px)`;
-
-    if(ball.x>96){
-
-      footballRunning=false;
-
-      win(
-        "⚽",
-        "GOOOOL!",
-        "Pingvin jamoasi gol urdi!"
-      );
-
-    }
-
-  }
-
-}
-
-function kickBall(){
-
-  if(!footballRunning)return;
-
-  const p=footballPlayers[0];
-
-  if(Math.hypot(p.x-ball.x,p.y-ball.y)<12){
-
-    ball.x+=18;
-
-    ball.x=Math.min(98,ball.x);
-
-    const b=document.getElementById("ball");
-
-    b.style.left=`calc(${ball.x}% - 12px)`;
-
-    b.style.top=`calc(${ball.y}% - 12px)`;
-
-    AudioEngine.beep(650,.1);
-
-    if(ball.x>93){
-
-      footballRunning=false;
-
-      win("⚽","GOOOOL!","Ajoyib zarba!");
-
-    }
-
-  }
-
-}
-
-document.getElementById("footballUp").onclick=
-()=>moveFootball(0,-4);
-
-document.getElementById("footballDown").onclick=
-()=>moveFootball(0,4);
-
-document.getElementById("footballLeft").onclick=
-()=>moveFootball(-4,0);
-
-document.getElementById("footballRight").onclick=
-()=>moveFootball(4,0);
-
-document.getElementById("footballKick").onclick=
-kickBall;
-
-
-/* ============================================================
-   TANK
-============================================================ */
-
-let tank={x:10,y:50,hp:100};
-let tankEnemy=[];
-let tankRunning=false;
-
-function resetTank(){
-
-  const field=document.getElementById("tankField");
-
-  field.querySelectorAll(".tank-player,.bullet")
-    .forEach(e=>e.remove());
-
-  tank={
-    x:10,
-    y:50,
-    hp:100
-  };
-
-  tankRunning=true;
-
-  createTankPlayer();
-
-  tankEnemy=[
-    createEnemy(80,20,"🐻"),
-    createEnemy(78,75,"🐥"),
-    createEnemy(55,55,"🐠")
-  ];
-
-  document.getElementById("tankStatus").textContent=
-    "🛡️ Raqib tanklarni yo‘q qiling!";
-
-}
-
-function createTankPlayer(){
-
-  const field=document.getElementById("tankField");
-
-  const el=document.createElement("div");
-
-  el.className="tank-player";
-
-  el.innerHTML=`
-    🐧
-    <span class="hp"><i></i></span>
-  `;
-
-  el.style.left=tank.x+"%";
-  el.style.top=tank.y+"%";
-
-  field.appendChild(el);
-
-  tank.el=el;
-
-}
-
-function createEnemy(x,y,emoji){
-
-  const field=document.getElementById("tankField");
-
-  const el=document.createElement("div");
-
-  el.className="tank-player";
-
-  el.textContent=emoji;
-
-  el.style.left=x+"%";
-  el.style.top=y+"%";
-
-  field.appendChild(el);
-
-  return{
-    el,
-    x,
-    y,
-    hp:100
-  };
-
-}
-
-function moveTank(dx,dy){
-
-  if(!tankRunning)return;
-
-  tank.x=Math.max(1,Math.min(91,tank.x+dx));
-  tank.y=Math.max(1,Math.min(86,tank.y+dy));
-
-  tank.el.style.left=tank.x+"%";
-  tank.el.style.top=tank.y+"%";
-
-}
-
-function fireTank(){
-
-  if(!tankRunning)return;
-
-  AudioEngine.beep(150,.12,"square");
-
-  const field=document.getElementById("tankField");
-
-  const bullet=document.createElement("div");
-
-  bullet.className="bullet";
-
-  let x=tank.x+4;
-  let y=tank.y+5;
-
-  bullet.style.left=x+"%";
-  bullet.style.top=y+"%";
-
-  field.appendChild(bullet);
-
-  const timer=setInterval(()=>{
-
-    x+=2;
-
-    bullet.style.left=x+"%";
-
-    for(let i=tankEnemy.length-1;i>=0;i--){
-
-      const e=tankEnemy[i];
-
-      if(Math.abs(x-e.x)<5 &&
-         Math.abs(y-e.y)<8){
-
-        e.hp-=50;
-
-        AudioEngine.hit();
-
-        if(e.hp<=0){
-
-          e.el.remove();
-
-          tankEnemy.splice(i,1);
-
-          showToast("💥 Raqib yo‘q qilindi!");
-
-        }
-
-        bullet.remove();
-
-        clearInterval(timer);
-
-        if(tankEnemy.length===0){
-
-          tankRunning=false;
-
-          win(
-            "🛡️",
-            "G‘ALABA!",
-            "Barcha tanklar yo‘q qilindi!"
-          );
-
-        }
-
-        return;
-
-      }
-
-    }
-
-    if(x>100){
-
-      bullet.remove();
-      clearInterval(timer);
-
-    }
-
-  },25);
-
-}
-
-document.getElementById("tankUp").onclick=
-()=>moveTank(0,-3);
-
-document.getElementById("tankDown").onclick=
-()=>moveTank(0,3);
-
-document.getElementById("tankLeft").onclick=
-()=>moveTank(-3,0);
-
-document.getElementById("tankRight").onclick=
-()=>moveTank(3,0);
-
-document.getElementById("tankFire").onclick=
-fireTank;
-
-
-/* ============================================================
-   RACING
-============================================================ */
-
-let racers=[];
-let raceRunning=false;
-let raceTimer=null;
-
-function resetRace(){
-
-  const track=document.getElementById("raceTrack");
-
-  track.querySelectorAll(".racer").forEach(e=>e.remove());
-
-  racers=[];
-
-  const positions=[
-    15,35,55,75
-  ];
-
-  const emojis=["🐧","🐻","🐥","🐠"];
-
-  const classes=[
-    "#2563eb",
-    "#92400e",
-    "#eab308",
-    "#f97316"
-  ];
-
-  positions.forEach((x,i)=>{
-
-    const el=document.createElement("div");
-
-    el.className="racer";
-
-    el.textContent=emojis[i];
-
-    el.style.left=x+"%";
-    el.style.top="390px";
-    el.style.background=classes[i];
-
     track.appendChild(el);
-
-    racers.push({
-      el,
-      x,
-      y:390,
-      speed:1.2+Math.random()*.7,
-      player:i===0
-    });
-
   });
-
-  raceRunning=true;
-
-  document.getElementById("raceStatus").textContent=
-    "🏁 Poyga boshlandi! Chap/o‘ng bilan boshqaring.";
-
-  cancelAnimationFrame(raceTimer);
-
-  raceLoop();
-
 }
 
-function raceLoop(){
+async function swapSort(i, j) {
+  if (i < 0 || j < 0 || i >= sortArray.length || j >= sortArray.length) return;
+  const temp = sortArray[i];
+  sortArray[i] = sortArray[j];
+  sortArray[j] = temp;
+  Sound.play(600, "sine", 0.08);
+  renderSort();
+  await new Promise(r => setTimeout(r, 260));
+}
 
-  if(!raceRunning)return;
+document.getElementById("sortLeft").onclick = async () => {
+  if (sortBusy || sortSelected === null || sortSelected === 0) return;
+  sortBusy = true;
+  await swapSort(sortSelected, sortSelected - 1);
+  sortSelected--;
+  renderSort();
+  sortBusy = false;
+};
 
-  racers.forEach((r,i)=>{
+document.getElementById("sortRight").onclick = async () => {
+  if (sortBusy || sortSelected === null || sortSelected >= sortArray.length - 1) return;
+  sortBusy = true;
+  await swapSort(sortSelected, sortSelected + 1);
+  sortSelected++;
+  renderSort();
+  sortBusy = false;
+};
 
-    if(!r.player){
+document.getElementById("sortShuffle").onclick = () => {
+  if (sortBusy) return;
+  sortArray.sort(() => Math.random() - 0.5);
+  sortSelected = null;
+  document.getElementById("sortStatus").textContent = "Aralashtirildi!";
+  renderSort();
+};
 
-      r.y-=r.speed;
+document.getElementById("sortStep").onclick = async () => {
+  if (sortBusy) return;
+  sortBusy = true;
+  sortSelected = null;
+  let done = true;
+  for (let i = 0; i < sortArray.length - 1; i++) {
+    if (sortArray[i] > sortArray[i + 1]) {
+      document.getElementById("sortStatus").textContent = `${sortArray[i]} > ${sortArray[i+1]} — o‘rni almashmoqda`;
+      await swapSort(i, i + 1);
+      done = false;
+      break;
+    }
+  }
+  sortBusy = false;
+  if (done) {
+    document.getElementById("sortStatus").textContent = "Barchasi to‘g‘ri tartibda!";
+    openWin("🎉", "MUVAFFAQIYAT!", "Kataklar 1 dan 8 gacha to‘liq tartiblandi!");
+  }
+};
 
+document.getElementById("sortAuto").onclick = async () => {
+  if (sortBusy) return;
+  sortBusy = true;
+  sortSelected = null;
+  let n = sortArray.length;
+  let swapped;
+  do {
+    swapped = false;
+    for (let i = 0; i < n - 1; i++) {
+      if (sortArray[i] > sortArray[i + 1]) {
+        document.getElementById("sortStatus").textContent = `Taqqoslash: ${sortArray[i]} va ${sortArray[i+1]}`;
+        await swapSort(i, i + 1);
+        swapped = true;
+      }
+    }
+    n--;
+  } while (swapped);
+  sortBusy = false;
+  openWin("🏆", "AJOYIB!", "Avtomatik Bubble Sort muvaffaqiyatli yakunlandi!");
+};
+
+document.querySelectorAll("#sortThemes .char-select").forEach(btn => {
+  btn.onclick = () => {
+    document.querySelectorAll("#sortThemes .char-select").forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+    sortTheme = btn.getAttribute("data-theme");
+    renderSort();
+  };
+});
+
+/* ================= 2. FOOTBALL ================= */
+let fbPlayers = [];
+let fbBall = {x: 50, y: 50};
+let fbGoalScored = false;
+
+function initFootball() {
+  const field = document.getElementById("footballField");
+  field.querySelectorAll(".football-player").forEach(e => e.remove());
+  fbGoalScored = false;
+
+  const list = [
+    {emoji: "🐧", x: 20, y: 50, main: true},
+    {emoji: "🐻", x: 25, y: 25},
+    {emoji: "🐥", x: 75, y: 35},
+    {emoji: "🐠", x: 80, y: 65}
+  ];
+
+  fbPlayers = list.map(item => {
+    const el = document.createElement("div");
+    el.className = "football-player";
+    el.textContent = item.emoji;
+    field.appendChild(el);
+    return {...item, el};
+  });
+
+  fbBall = {x: 50, y: 50};
+  drawFootball();
+  document.getElementById("footballStatus").textContent = "Pingvin 🐧 bilan to‘pni suring yoki zarba bering!";
+}
+
+function drawFootball() {
+  fbPlayers.forEach(p => {
+    p.el.style.left = p.x + "%";
+    p.el.style.top = p.y + "%";
+  });
+  const b = document.getElementById("ball");
+  b.style.left = fbBall.x + "%";
+  b.style.top = fbBall.y + "%";
+}
+
+function moveFb(dx, dy) {
+  if (fbGoalScored) return;
+  const p = fbPlayers[0];
+  p.x = Math.max(6, Math.min(94, p.x + dx));
+  p.y = Math.max(8, Math.min(92, p.y + dy));
+
+  const dist = Math.hypot(p.x - fbBall.x, p.y - fbBall.y);
+  if (dist < 8) {
+    fbBall.x = Math.max(3, Math.min(97, fbBall.x + dx * 1.2));
+    fbBall.y = Math.max(5, Math.min(95, fbBall.y + dy * 1.2));
+    Sound.play(280, "sine", 0.04);
+  }
+
+  drawFootball();
+  checkGoal();
+}
+
+function kickFb() {
+  if (fbGoalScored) return;
+  const p = fbPlayers[0];
+  const dist = Math.hypot(p.x - fbBall.x, p.y - fbBall.y);
+  if (dist < 14) {
+    fbBall.x = Math.min(98, fbBall.x + 22);
+    fbBall.y += (Math.random() - 0.5) * 10;
+    Sound.play(450, "square", 0.1);
+    drawFootball();
+    checkGoal();
+  } else {
+    showToast("To‘pga yaqinroq boring!");
+  }
+}
+
+function checkGoal() {
+  if (fbBall.x >= 96 && fbBall.y >= 35 && fbBall.y <= 65) {
+    fbGoalScored = true;
+    openWin("⚽", "GOOOOL!", "Pingvin jamoasi ajoyib gol urdi!");
+  }
+}
+
+document.getElementById("fbUp").onclick = () => moveFb(0, -6);
+document.getElementById("fbDown").onclick = () => moveFb(0, 6);
+document.getElementById("fbLeft").onclick = () => moveFb(-6, 0);
+document.getElementById("fbRight").onclick = () => moveFb(6, 0);
+document.getElementById("fbKick").onclick = kickFb;
+document.getElementById("fbReset").onclick = initFootball;
+
+/* ================= 3. TANK BATTLE ================= */
+let playerTank = {x: 15, y: 50, el: null};
+let enemyTanks = [];
+let tankActive = true;
+
+function initTank() {
+  const field = document.getElementById("tankField");
+  field.querySelectorAll(".tank-player, .bullet").forEach(e => e.remove());
+  tankActive = true;
+
+  playerTank = {x: 15, y: 50};
+  const pEl = document.createElement("div");
+  pEl.className = "tank-player";
+  pEl.textContent = "🐧";
+  field.appendChild(pEl);
+  playerTank.el = pEl;
+
+  const enemies = [
+    {emoji: "🐻", x: 80, y: 25},
+    {emoji: "🐥", x: 75, y: 75},
+    {emoji: "🐠", x: 60, y: 50}
+  ];
+
+  enemyTanks = enemies.map(en => {
+    const el = document.createElement("div");
+    el.className = "tank-player tank-enemy";
+    el.textContent = en.emoji;
+    field.appendChild(el);
+    return {...en, el, alive: true};
+  });
+
+  drawTanks();
+  document.getElementById("tankStatus").textContent = "3 ta raqib tanki maydonda! Barchasini nishonga oling.";
+}
+
+function drawTanks() {
+  if (playerTank.el) {
+    playerTank.el.style.left = playerTank.x + "%";
+    playerTank.el.style.top = playerTank.y + "%";
+  }
+  enemyTanks.forEach(en => {
+    if (en.alive) {
+      en.el.style.left = en.x + "%";
+      en.el.style.top = en.y + "%";
+    }
+  });
+}
+
+function moveTk(dx, dy) {
+  if (!tankActive) return;
+  playerTank.x = Math.max(8, Math.min(92, playerTank.x + dx));
+  playerTank.y = Math.max(10, Math.min(90, playerTank.y + dy));
+  drawTanks();
+}
+
+function fireTk() {
+  if (!tankActive) return;
+  Sound.play(200, "sawtooth", 0.1);
+  const field = document.getElementById("tankField");
+  const b = document.createElement("div");
+  b.className = "bullet";
+  let bx = playerTank.x + 4;
+  let by = playerTank.y;
+  b.style.left = bx + "%";
+  b.style.top = by + "%";
+  field.appendChild(b);
+
+  const timer = setInterval(() => {
+    bx += 3.5;
+    b.style.left = bx + "%";
+
+    for (let en of enemyTanks) {
+      if (en.alive && Math.hypot(en.x - bx, en.y - by) < 7) {
+        en.alive = false;
+        en.el.remove();
+        b.remove();
+        clearInterval(timer);
+        Sound.play(150, "square", 0.2);
+        showToast("💥 Raqib tanki yo‘q qilindi!");
+
+        if (enemyTanks.every(e => !e.alive)) {
+          tankActive = false;
+          openWin("🛡️", "G‘ALABA!", "Barcha dushman tanklari yo‘q qilindi!");
+        }
+        return;
+      }
     }
 
-    r.el.style.top=r.y+"px";
+    if (bx > 98) {
+      b.remove();
+      clearInterval(timer);
+    }
+  }, 25);
+}
 
+document.getElementById("tkUp").onclick = () => moveTk(0, -6);
+document.getElementById("tkDown").onclick = () => moveTk(0, 6);
+document.getElementById("tkLeft").onclick = () => moveTk(-6, 0);
+document.getElementById("tkRight").onclick = () => moveTk(6, 0);
+document.getElementById("tkFire").onclick = fireTk;
+document.getElementById("tkReset").onclick = initTank;
+
+/* ================= 4. RACING ================= */
+let racers = [];
+let raceReq = null;
+let raceActive = false;
+
+function initRace() {
+  const track = document.getElementById("raceTrack");
+  track.querySelectorAll(".racer").forEach(e => e.remove());
+  if (raceReq) cancelAnimationFrame(raceReq);
+
+  const list = [
+    {emoji: "🐧", x: 20, color: "#2563eb", isUser: true},
+    {emoji: "🐻", x: 40, color: "#92400e"},
+    {emoji: "🐥", x: 60, color: "#eab308"},
+    {emoji: "🐠", x: 80, color: "#f97316"}
+  ];
+
+  racers = list.map(item => {
+    const el = document.createElement("div");
+    el.className = "racer";
+    el.textContent = item.emoji;
+    el.style.background = item.color;
+    track.appendChild(el);
+    return {...item, el, y: 330, speed: 1.2 + Math.random() * 0.8};
   });
 
-  const player=racers[0];
+  raceActive = true;
+  document.getElementById("raceStatus").textContent = "Poyga boshlandi! 🚀 Boost bilan oldinga o‘ting.";
+  raceLoop();
+}
 
-  player.y-=.7;
+function raceLoop() {
+  if (!raceActive) return;
 
-  player.el.style.top=player.y+"px";
+  racers.forEach(r => {
+    if (!r.isUser) {
+      r.y -= r.speed;
+    } else {
+      r.y -= 0.6; // sekin tabiiy harakat
+    }
+    r.el.style.left = r.x + "%";
+    r.el.style.top = r.y + "px";
+  });
 
-  if(player.y<5){
-
-    raceRunning=false;
-
-    win(
-      "🏆",
-      "FINISH!",
-      "Pingvin poygada g‘olib bo‘ldi!"
-    );
-
+  const player = racers[0];
+  if (player.y <= 15) {
+    raceActive = false;
+    openWin("🏎️", "MARRA!", "Pingvin poygada mutlaq g‘olib bo‘ldi!");
     return;
-
   }
 
-  raceTimer=requestAnimationFrame(raceLoop);
+  // Raqiblardan biri o'tib ketsa
+  for (let i = 1; i < racers.length; i++) {
+    if (racers[i].y <= 10) {
+      raceActive = false;
+      showToast("Raqib birinchi yetib bordi! Qayta urining.");
+      return;
+    }
+  }
 
+  raceReq = requestAnimationFrame(raceLoop);
 }
 
-function moveRace(dx){
+document.getElementById("rcLeft").onclick = () => {
+  if (!raceActive) return;
+  racers[0].x = Math.max(15, racers[0].x - 8);
+  racers[0].el.style.left = racers[0].x + "%";
+};
 
-  if(!raceRunning)return;
+document.getElementById("rcRight").onclick = () => {
+  if (!raceActive) return;
+  racers[0].x = Math.min(85, racers[0].x + 8);
+  racers[0].el.style.left = racers[0].x + "%";
+};
 
-  const p=racers[0];
+document.getElementById("rcBoost").onclick = () => {
+  if (!raceActive) return;
+  racers[0].y = Math.max(10, racers[0].y - 35);
+  racers[0].el.style.top = racers[0].y + "px";
+  Sound.play(600, "sine", 0.1);
+};
 
-  p.x=Math.max(2,Math.min(90,p.x+dx));
+document.getElementById("rcReset").onclick = initRace;
 
-  p.el.style.left=p.x+"%";
-
-}
-
-function boostRace(){
-
-  if(!raceRunning)return;
-
-  racers[0].y-=35;
-
-  racers[0].el.style.top=racers[0].y+"px";
-
-  AudioEngine.beep(800,.12);
-
-}
-
-document.getElementById("raceLeft").onclick=
-()=>moveRace(-5);
-
-document.getElementById("raceRight").onclick=
-()=>moveRace(5);
-
-document.getElementById("raceBoost").onclick=
-boostRace;
-
-
-/* ============================================================
-   KEYBOARD CONTROL
-============================================================ */
-
-document.addEventListener("keydown",e=>{
-
-  AudioEngine.init();
-
-  if(currentScreen==="football"){
-
-    if(e.key==="ArrowUp")moveFootball(0,-4);
-    if(e.key==="ArrowDown")moveFootball(0,4);
-    if(e.key==="ArrowLeft")moveFootball(-4,0);
-    if(e.key==="ArrowRight")moveFootball(4,0);
-    if(e.code==="Space")kickBall();
-
+/* ================= KLAVIATURA BOSHQARUVI ================= */
+window.addEventListener("keydown", e => {
+  Sound.init();
+  if (currentScreen === "football") {
+    if (e.key === "ArrowUp") moveFb(0, -6);
+    if (e.key === "ArrowDown") moveFb(0, 6);
+    if (e.key === "ArrowLeft") moveFb(-6, 0);
+    if (e.key === "ArrowRight") moveFb(6, 0);
+    if (e.code === "Space") kickFb();
+  } else if (currentScreen === "tank") {
+    if (e.key === "ArrowUp") moveTk(0, -6);
+    if (e.key === "ArrowDown") moveTk(0, 6);
+    if (e.key === "ArrowLeft") moveTk(-6, 0);
+    if (e.key === "ArrowRight") moveTk(6, 0);
+    if (e.code === "Space") fireTk();
+  } else if (currentScreen === "race") {
+    if (e.key === "ArrowLeft") document.getElementById("rcLeft").click();
+    if (e.key === "ArrowRight") document.getElementById("rcRight").click();
+    if (e.code === "Space") document.getElementById("rcBoost").click();
   }
-
-  if(currentScreen==="tank"){
-
-    if(e.key==="ArrowUp")moveTank(0,-3);
-    if(e.key==="ArrowDown")moveTank(0,3);
-    if(e.key==="ArrowLeft")moveTank(-3,0);
-    if(e.key==="ArrowRight")moveTank(3,0);
-    if(e.code==="Space")fireTank();
-
-  }
-
-  if(currentScreen==="race"){
-
-    if(e.key==="ArrowLeft")moveRace(-5);
-    if(e.key==="ArrowRight")moveRace(5);
-    if(e.code==="Space")boostRace();
-
-  }
-
 });
-
-
-/* ============================================================
-   RESIZE
-============================================================ */
-
-window.addEventListener("resize",()=>{
-
-  if(currentScreen==="sort"){
-    renderSort();
-  }
-
-});
-
-
-/* ============================================================
-   START
-============================================================ */
-
-initSort();
-
 </script>
-
 </body>
 </html>
