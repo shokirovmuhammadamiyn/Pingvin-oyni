@@ -1,97 +1,83 @@
 <!DOCTYPE html>
 <html lang="uz">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Party Games 4 Player — Mini Battle</title>
-  <link rel="stylesheet" href="style.css">
-</head>
-<body>
-
-  <!-- BOSH MENYU -->
-  <div id="menuScreen" class="screen active">
-    <div class="menu-box">
-      <div class="menu-title">
-        <h1>4 PLAYER PARTY</h1>
-        <p>Do‘stlar bilan yoki Aqlli Botlarga qarshi!</p>
-      </div>
-
-      <div class="mode-select">
-        <label>O‘yinchilar soni:</label>
-        <div class="mode-btns">
-          <button class="mode-btn active" data-players="1">1 O‘yinchi (vs 3 Bot)</button>
-          <button class="mode-btn" data-players="2">2 O‘yinchi</button>
-          <button class="mode-btn" data-players="4">4 O‘yinchi (Party)</button>
-        </div>
-      </div>
-
-      <div class="game-cards">
-        <div class="card card-fishing" onclick="launchGame('fishing')">
-          <div class="card-icon">🎣</div>
-          <h2>Baliq Ovi</h2>
-          <p>Qarmoqni otib, eng ko‘p baliqlarni ilib oling!</p>
-          <span class="play-badge">O‘ynash ▶</span>
-        </div>
-
-        <div class="card card-tank" onclick="launchGame('tank')">
-          <div class="card-icon">🛡️</div>
-          <h2>Tank Jangi</h2>
-          <p>O‘q uzing, devorlardan foydalaning va yengib chiqing!</p>
-          <span class="play-badge">O‘ynash ▶</span>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- O'YIN MAYDONI EKRANI -->
-  <div id="gameScreen" class="screen">
-    <!-- Yuqori panel -->
-    <div class="top-nav">
-      <button class="btn-icon" id="btnBack">🏠 Menyu</button>
-      <div id="gameTimer" class="timer-badge">⏱️ 45</div>
-      <button class="btn-icon" id="btnSound">🔊</button>
-    </div>
-
-    <!-- Canvas o'yin maydoni -->
-    <div class="canvas-container">
-      <canvas id="gameCanvas"></canvas>
-
-      <!-- 4 BURCHAK TOUCH TUGMALARI (Smartfonlar uchun) -->
-      <div class="corner-btn corner-p1" id="tapP1">
-        <span class="btn-dot dot-cyan"></span>
-        <span class="btn-txt">P1</span>
-      </div>
-      <div class="corner-btn corner-p2" id="tapP2">
-        <span class="btn-dot dot-green"></span>
-        <span class="btn-txt">P2</span>
-      </div>
-      <div class="corner-btn corner-p3" id="tapP3">
-        <span class="btn-dot dot-purple"></span>
-        <span class="btn-txt">P3</span>
-      </div>
-      <div class="corner-btn corner-p4" id="tapP4">
-        <span class="btn-dot dot-black"></span>
-        <span class="btn-txt">P4</span>
-      </div>
-    </div>
-  </div>
-
-  <!-- G'ALABA / NATIJA MODAL -->
-  <div id="resultModal" class="modal">
-    <div class="modal-card">
-      <div class="modal-crown" id="resIcon">🏆</div>
-      <h2 id="resTitle">G‘olib: 1-O‘yinchi!</h2>
-      <div id="resScores" class="score-board"></div>
-      <div class="modal-btns">
-        <button class="btn-glow" id="btnRestart">🔄 Yana o‘ynash</button>
-        <button class="btn-plain" id="btnMenu">🏠 Menyu</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- SKRIPTLAR -->
-  <script src="main.js"></script>
-  <script src="fishing.js"></script>
-  <script src="tank.js"></script>
-</body>
-</html>
+  <head>
+    <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+        <meta name="theme-color" content="#05070d">
+          <title>Tank Arena — 4 Player</title>
+          <link rel="stylesheet" href="style.css">
+          </head>
+          <body>
+            <section id="menuScreen" class="screen active">
+              <div class="menu">
+                <div class="logo">TANK ARENA</div>
+                <div class="sub">4 O‘YINCHI • REAL-TIME BATTLE • BONUSLAR • RAUNDLAR</div>
+                <div class="modes">
+                  <button class="mode active" data-players="1">1 O‘YINCHI</button>
+                  <button class="mode" data-players="2">2 O‘YINCHI</button>
+                  <button class="mode" data-players="3">3 O‘YINCHI</button>
+                  <button class="mode" data-players="4">4 O‘YINCHI</button>
+                </div>
+                <div class="cards">
+                  <div class="card card1" id="tankCard">
+                    <div class="icon">🛡️</div>
+                    <h2>Tank Arena</h2>
+                    <p>4 qahramonli jang. Harakat qiling, o‘q uzing, bonuslarni oling va oxirgi tirik tank bo‘ling.</p>
+                    <span class="play">▶ O‘YNASH</span>
+                  </div>
+                  <div class="card card2" id="quickCard">
+                    <div class="icon">⚡</div>
+                    <h2>Tezkor jang</h2>
+                    <p>3 ta ketma-ket arena. Har raundda yangi xarita va yangi bonuslar.</p>
+                    <span class="play">▶ BOSHLASH</span>
+                  </div>
+                </div>
+              </div>
+            </section>
+            <section id="gameScreen" class="screen">
+              <div class="top">
+                <button id="backBtn">← MENYU</button>
+                <div id="roundText">RAUND 1 / 3</div>
+                <button id="soundBtn">🔊</button>
+              </div>
+              <div class="stage" id="stage">
+                <canvas id="gameCanvas">
+                </canvas>
+                <div class="hint">BOSIB TURING — YURADI • QO‘YIB YUBORING — O‘Q UZADI</div>
+                <button class="corner c1" data-p="0">
+                  <dot>
+                  </dot>
+                  <b>P1</b>
+                </button>
+                <button class="corner c2" data-p="1">
+                  <dot>
+                  </dot>
+                  <b>P2</b>
+                </button>
+                <button class="corner c3" data-p="2">
+                  <dot>
+                  </dot>
+                  <b>P3</b>
+                </button>
+                <button class="corner c4" data-p="3">
+                  <dot>
+                  </dot>
+                  <b>P4</b>
+                </button>
+              </div>
+            </section>
+            <div id="modal" class="modal">
+              <div class="box">
+                <div class="big" id="modalIcon">🏆</div>
+                <h2 id="modalTitle">G‘OLIB!</h2>
+                <div class="reward" id="reward">
+                </div>
+                <div class="scores" id="scores">
+                </div>
+                <div class="actions">
+                  <button class="primary" id="nextBtn">KEYINGI RAUND ▶</button>
+                  <button class="secondary" id="menuBtn">MENYU</button>
+                </div>
+              </div>
+            </div><script src="game.js"></script></body>
+          </html>
