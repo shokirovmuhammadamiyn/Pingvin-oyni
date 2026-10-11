@@ -1,293 +1,53 @@
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-  user-select: none;
-  -webkit-user-select: none;
-  -webkit-tap-highlight-color: transparent;
-}
+*{box-sizing:border-box;margin:0;padding:0;user-select:none;-webkit-user-select:none;-webkit-tap-highlight-color:transparent}
+html,body{width:100%;height:100%;overflow:hidden;background:#05070d;color:#fff;font-family:Segoe UI,system-ui,sans-serif;touch-action:none}
+button{font:inherit}
+.screen{display:none;position:absolute;inset:0;width:100%;height:100%}
+.screen.active{display:flex}
 
-body {
-  font-family: 'Segoe UI', system-ui, -apple-system, Roboto, sans-serif;
-  background: #090e1a;
-  color: #fff;
-  overflow: hidden;
-  height: 100vh;
-  width: 100vw;
-  touch-action: none;
-}
+/* MENU */
+#menuScreen{align-items:center;justify-content:center;padding:18px;background:
+radial-gradient(circle at 50% 15%,#243b64 0,#10182b 35%,#05070d 100%);overflow:auto}
+.menu{width:min(900px,100%);text-align:center}
+.logo{font-size:clamp(38px,7vw,72px);font-weight:1000;letter-spacing:3px;line-height:.95;
+background:linear-gradient(90deg,#38bdf8,#facc15,#a855f7);-webkit-background-clip:text;color:transparent;
+text-shadow:0 10px 40px #000}
+.sub{color:#aebbd1;margin:12px 0 24px;font-weight:700}
+.modes{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-bottom:20px}
+.mode{border:1px solid #ffffff2b;background:#ffffff12;color:#fff;padding:11px 18px;border-radius:14px;font-weight:900;cursor:pointer}
+.mode.active{background:#38bdf8;color:#03101d;box-shadow:0 0 25px #38bdf866}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}
+.card{position:relative;min-height:180px;padding:22px;border-radius:24px;text-align:left;border:1px solid #ffffff25;overflow:hidden;cursor:pointer;
+box-shadow:0 15px 40px #0006;transition:.18s}
+.card:hover{transform:translateY(-4px)}
+.card:active{transform:scale(.98)}
+.card1{background:linear-gradient(135deg,#075985,#082f49 65%,#031525)}
+.card2{background:linear-gradient(135deg,#92400e,#451a03 65%,#170a02)}
+.card h2{font-size:27px}.card p{margin-top:7px;color:#dbeafe}.icon{font-size:55px}
+.play{display:inline-block;margin-top:17px;padding:8px 15px;border-radius:20px;background:#0008;color:#facc15;font-weight:1000}
 
-.screen {
-  display: none;
-  width: 100%;
-  height: 100%;
-  position: absolute;
-  inset: 0;
-}
+/* GAME */
+#gameScreen{background:#000;flex-direction:column}
+.top{height:52px;flex:none;display:flex;align-items:center;justify-content:space-between;padding:0 12px;z-index:20;
+background:linear-gradient(#111827f5,#0b1020e8);border-bottom:1px solid #ffffff1a}
+.top button{border:0;background:#ffffff16;color:#fff;border-radius:10px;padding:7px 12px;font-weight:900;cursor:pointer}
+.stage{position:relative;flex:1;min-height:0;overflow:hidden}
+canvas{display:block;width:100%;height:100%}
+.corner{position:absolute;width:104px;height:104px;border-radius:50%;z-index:50;display:flex;flex-direction:column;align-items:center;justify-content:center;
+border:4px solid #ffffffd9;background:#ffffff30;box-shadow:0 5px 28px #0009;touch-action:none;cursor:pointer}
+.corner:active,.corner.pressed{transform:scale(.91);background:#ffffff75}
+.c1{left:-13px;bottom:-13px}.c2{left:-13px;top:-13px}.c3{right:-13px;top:-13px}.c4{right:-13px;bottom:-13px}
+dot{width:21px;height:21px;border-radius:50%;margin-bottom:3px}.c1 dot{background:#06b6d4;box-shadow:0 0 14px #06b6d4}.c2 dot{background:#22c55e;box-shadow:0 0 14px #22c55e}
+.c3 dot{background:#a855f7;box-shadow:0 0 14px #a855f7}.c4 dot{background:#f59e0b;box-shadow:0 0 14px #f59e0b}
+.corner b{font-size:14px}.hint{position:absolute;left:50%;top:8px;transform:translateX(-50%);z-index:10;padding:5px 10px;border-radius:15px;background:#0008;color:#e2e8f0;font-size:12px;font-weight:900}
 
-.screen.active {
-  display: flex;
-  flex-direction: column;
-}
-
-/* ================= BOSH MENYU ================= */
-#menuScreen {
-  background: radial-gradient(circle at 50% 30%, #1e294b 0%, #090e1a 100%);
-  align-items: center;
-  justify-content: center;
-  padding: 16px;
-  overflow-y: auto;
-}
-
-.menu-box {
-  max-width: 800px;
-  width: 100%;
-  text-align: center;
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-
-.menu-title h1 {
-  font-size: clamp(34px, 6vw, 56px);
-  font-weight: 950;
-  letter-spacing: 2px;
-  background: linear-gradient(90deg, #38bdf8, #facc15, #a855f7);
-  -webkit-background-clip: text;
-  color: transparent;
-}
-
-.menu-title p {
-  color: #94a3b8;
-  font-size: 16px;
-}
-
-.mode-select label {
-  display: block;
-  font-size: 14px;
-  color: #cbd5e1;
-  margin-bottom: 8px;
-  font-weight: 700;
-}
-
-.mode-btns {
-  display: flex;
-  gap: 10px;
-  justify-content: center;
-  flex-wrap: wrap;
-}
-
-.mode-btn {
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  color: #fff;
-  padding: 10px 18px;
-  border-radius: 12px;
-  cursor: pointer;
-  font-weight: 700;
-  transition: 0.2s;
-}
-
-.mode-btn.active {
-  background: #38bdf8;
-  color: #041226;
-  border-color: #38bdf8;
-  box-shadow: 0 0 20px rgba(56, 189, 248, 0.4);
-}
-
-.game-cards {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  gap: 16px;
-}
-
-.card {
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  border-radius: 20px;
-  padding: 24px;
-  text-align: left;
-  cursor: pointer;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
-}
-
-.card-fishing { background: linear-gradient(135deg, rgba(14, 116, 144, 0.8), rgba(8, 47, 73, 0.9)); }
-.card-tank { background: linear-gradient(135deg, rgba(180, 83, 9, 0.8), rgba(69, 26, 3, 0.9)); }
-
-.card-icon { font-size: 50px; margin-bottom: 8px; }
-.card h2 { font-size: 24px; font-weight: 800; }
-.card p { color: #e2e8f0; font-size: 14px; margin-top: 6px; }
-
-.play-badge {
-  display: inline-block;
-  margin-top: 16px;
-  background: rgba(0, 0, 0, 0.35);
-  padding: 6px 14px;
-  border-radius: 20px;
-  font-size: 13px;
-  font-weight: 800;
-  color: #facc15;
-}
-
-/* ================= O'YIN MAYDONI ================= */
-#gameScreen {
-  background: #000;
-  position: relative;
-}
-
-.top-nav {
-  height: 50px;
-  background: rgba(15, 23, 42, 0.9);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 16px;
-  z-index: 100;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.btn-icon {
-  background: rgba(255, 255, 255, 0.15);
-  border: none;
-  color: #fff;
-  padding: 6px 14px;
-  border-radius: 10px;
-  cursor: pointer;
-  font-weight: 700;
-}
-
-.timer-badge {
-  background: #0284c7;
-  padding: 5px 16px;
-  border-radius: 20px;
-  font-weight: 900;
-  font-size: 16px;
-}
-
-.canvas-container {
-  flex: 1;
-  position: relative;
-  width: 100%;
-  height: calc(100vh - 50px);
-  overflow: hidden;
-}
-
-canvas {
-  width: 100%;
-  height: 100%;
-  display: block;
-}
-
-/* ================= CORNER TOUCH TUGMALAR ================= */
-.corner-btn {
-  position: absolute;
-  width: 110px;
-  height: 110px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.28);
-  border: 5px solid rgba(255, 255, 255, 0.85);
-  box-shadow: 0 0 25px rgba(0, 0, 0, 0.6);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  z-index: 9999;
-  touch-action: none;
-  pointer-events: auto;
-}
-
-.corner-btn.pressed {
-  background: rgba(255, 255, 255, 0.65) !important;
-  transform: scale(0.92);
-}
-
-.corner-p1 { bottom: -15px; left: -15px; }
-.corner-p2 { top: -15px; left: -15px; }
-.corner-p3 { top: -15px; right: -15px; }
-.corner-p4 { bottom: -15px; right: -15px; }
-
-.btn-dot {
-  width: 22px;
-  height: 22px;
-  border-radius: 50%;
-  margin-bottom: 3px;
-  pointer-events: none;
-}
-.dot-cyan { background: #06b6d4; box-shadow: 0 0 10px #06b6d4; }
-.dot-green { background: #22c55e; box-shadow: 0 0 10px #22c55e; }
-.dot-purple { background: #a855f7; box-shadow: 0 0 10px #a855f7; }
-.dot-black { background: #f59e0b; box-shadow: 0 0 10px #f59e0b; }
-
-.btn-txt {
-  font-size: 16px;
-  font-weight: 900;
-  color: #fff;
-  pointer-events: none;
-}
-
-/* ================= NATIJA MODAL ================= */
-.modal {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.8);
-  display: none;
-  place-items: center;
-  z-index: 10000;
-  padding: 16px;
-}
-
-.modal.show {
-  display: grid;
-}
-
-.modal-card {
-  background: #0f172a;
-  border: 2px solid rgba(255, 255, 255, 0.2);
-  border-radius: 20px;
-  max-width: 400px;
-  width: 100%;
-  padding: 24px;
-  text-align: center;
-}
-
-.modal-crown { font-size: 54px; margin-bottom: 8px; }
-.modal-card h2 { font-size: 26px; font-weight: 900; }
-.score-board { margin: 16px 0; display: flex; flex-direction: column; gap: 8px; }
-
-.score-row {
-  display: flex;
-  justify-content: space-between;
-  padding: 8px 12px;
-  background: rgba(255, 255, 255, 0.08);
-  border-radius: 8px;
-  font-weight: 800;
-}
-
-.modal-btns { display: flex; gap: 10px; justify-content: center; }
-
-.btn-glow {
-  background: #38bdf8;
-  color: #041226;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 10px;
-  font-weight: 900;
-  cursor: pointer;
-}
-
-.btn-plain {
-  background: rgba(255, 255, 255, 0.15);
-  color: #fff;
-  border: none;
-  padding: 10px 18px;
-  border-radius: 10px;
-  font-weight: 800;
-  cursor: pointer;
-}
-
+/* MODALS */
+.modal{position:absolute;inset:0;z-index:100;display:none;place-items:center;background:#000b;padding:18px}
+.modal.show{display:grid}
+.box{width:min(470px,100%);border-radius:25px;padding:24px;text-align:center;background:linear-gradient(160deg,#18233c,#0a1020);
+border:2px solid #ffffff26;box-shadow:0 25px 80px #000}
+.box h2{font-size:30px;margin:6px 0 15px}.big{font-size:62px}.scores{display:grid;gap:8px;margin:15px 0}
+.row{display:flex;justify-content:space-between;padding:10px 13px;border-radius:10px;background:#ffffff0d;font-weight:900}
+.actions{display:flex;gap:10px;justify-content:center}.actions button{border:0;padding:11px 18px;border-radius:12px;font-weight:1000;cursor:pointer}
+.primary{background:#38bdf8;color:#03101d}.secondary{background:#ffffff16;color:#fff}
+.reward{font-size:18px;color:#facc15;font-weight:1000;margin:8px}
+@media(max-width:600px){.corner{width:88px;height:88px}.top{height:46px}.hint{font-size:10px}.card{min-height:150px}}
