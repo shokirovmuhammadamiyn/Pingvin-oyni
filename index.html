@@ -1,85 +1,90 @@
 <!doctype html>
 <html lang="uz">
-  <head>
-    <meta charset="utf-8">
-      <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
-        <meta name="theme-color" content="#05070d">
-          <title>Tank Arena — 4 Player</title>
-          <link rel="stylesheet" href="style.css">
-          </head>
-          <body>
-            <section id="menuScreen" class="screen active">
-              <main class="menu">
-                <div class="logo">TANK ARENA</div>
-                <div class="sub">4 O‘YINCHI • REAL-TIME BATTLE • BONUSLAR • RAUNDLAR</div>
-                <div class="modes">
-                  <button class="mode active" data-players="1" type="button">1 O‘YINCHI</button>
-                  <button class="mode" data-players="2" type="button">2 O‘YINCHI</button>
-                  <button class="mode" data-players="3" type="button">3 O‘YINCHI</button>
-                  <button class="mode" data-players="4" type="button">4 O‘YINCHI</button>
-                </div>
-                <div class="cards">
-                  <button class="card card1" id="tankCard" type="button">
-                    <div class="icon">🛡️</div>
-                    <h2>Tank Arena</h2>
-                    <p>Harakat qiling, o‘q uzing, bonuslarni oling va oxirgi tirik tank bo‘ling.</p>
-                    <span class="play">▶ O‘YNASH</span>
-                  </button>
-                  <button class="card card2" id="quickCard" type="button">
-                    <div class="icon">⚡</div>
-                    <h2>Tezkor jang</h2>
-                    <p>3 ta ketma-ket arena. Har raundda yangi xarita va yangi bonuslar.</p>
-                    <span class="play">▶ BOSHLASH</span>
-                  </button>
-                </div>
-              </main>
-            </section>
-            <section id="gameScreen" class="screen">
-              <div class="top">
-                <button id="backBtn" type="button">← MENYU</button>
-                <div id="roundText">RAUND 1 / 3</div>
-                <button id="soundBtn" type="button">🔊</button>
-              </div>
-              <div class="stage">
-                <canvas id="gameCanvas">
-                </canvas>
-                <div class="hint">BOSIB TURING — YURADI • QO‘YIB YUBORING — O‘Q UZADI</div>
-                <button class="corner c1" data-p="0" type="button">
-                  <span class="dot">
-                  </span>
-                  <b>P1</b>
-                </button>
-                <button class="corner c2" data-p="1" type="button">
-                  <span class="dot">
-                  </span>
-                  <b>P2</b>
-                </button>
-                <button class="corner c3" data-p="2" type="button">
-                  <span class="dot">
-                  </span>
-                  <b>P3</b>
-                </button>
-                <button class="corner c4" data-p="3" type="button">
-                  <span class="dot">
-                  </span>
-                  <b>P4</b>
-                </button>
-              </div>
-            </section>
-            <div id="modal" class="modal">
-              <div class="box">
-                <div class="big" id="modalIcon">🏆</div>
-                <h2 id="modalTitle">G‘OLIB!</h2>
-                <div class="reward" id="reward">
-                </div>
-                <div class="scores" id="scores">
-                </div>
-                <div class="actions">
-                  <button class="primary" id="nextBtn" type="button">KEYINGI RAUND ▶</button>
-                  <button class="secondary" id="menuBtn" type="button">MENYU</button>
-                </div>
-              </div>
-            </div>
-            <script src="game.js"></script>
-          </body>
-        </html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+  <meta name="theme-color" content="#05070d">
+  <title>Tank Arena — 4 Player</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- BOSH MENYU -->
+  <section id="menuScreen" class="screen active">
+    <main class="menu">
+      <div class="logo">TANK ARENA</div>
+      <div class="sub">4 O‘YINCHI • REAL-TIME BATTLE • BONUSLAR • RAUNDLAR</div>
+
+      <div class="modes">
+        <button class="mode active" data-players="1" type="button">1 O‘YINCHI</button>
+        <button class="mode" data-players="2" type="button">2 O‘YINCHI</button>
+        <button class="mode" data-players="3" type="button">3 O‘YINCHI</button>
+        <button class="mode" data-players="4" type="button">4 O‘YINCHI</button>
+      </div>
+
+      <div class="cards">
+        <button class="card card1" id="tankCard" type="button">
+          <div class="icon">🛡️</div>
+          <h2>Tank Arena</h2>
+          <p>Harakat qiling, o‘q uzing, bonuslarni oling va oxirgi tirik tank bo‘ling.</p>
+          <span class="play">▶ O‘YNASH</span>
+        </button>
+
+        <button class="card card2" id="quickCard" type="button">
+          <div class="icon">⚡</div>
+          <h2>Tezkor jang</h2>
+          <p>3 ta ketma-ket arena. Har raundda yangi xarita va yangi bonuslar.</p>
+          <span class="play">▶ BOSHLASH</span>
+        </button>
+      </div>
+    </main>
+  </section>
+
+  <!-- O'YIN MAYDONI -->
+  <section id="gameScreen" class="screen">
+    <div class="top">
+      <button id="backBtn" type="button">← MENYU</button>
+      <div id="roundText">RAUND 1 / 3</div>
+      <button id="soundBtn" type="button">🔊</button>
+    </div>
+
+    <div class="stage">
+      <canvas id="gameCanvas"></canvas>
+      <div class="hint">BOSIB TURING — YURADI • QO‘YIB YUBORING — O‘Q UZADI</div>
+
+      <button class="corner c1" data-p="0" type="button">
+        <span class="dot"></span>
+        <b>P1</b>
+      </button>
+      <button class="corner c2" data-p="1" type="button">
+        <span class="dot"></span>
+        <b>P2</b>
+      </button>
+      <button class="corner c3" data-p="2" type="button">
+        <span class="dot"></span>
+        <b>P3</b>
+      </button>
+      <button class="corner c4" data-p="3" type="button">
+        <span class="dot"></span>
+        <b>P4</b>
+      </button>
+    </div>
+  </section>
+
+  <!-- NATIJA MODAL -->
+  <div id="modal" class="modal">
+    <div class="box">
+      <div class="big" id="modalIcon">🏆</div>
+      <h2 id="modalTitle">G‘OLIB!</h2>
+      <div class="reward" id="reward"></div>
+      <div class="scores" id="scores"></div>
+      <div class="actions">
+        <button class="primary" id="nextBtn" type="button">KEYINGI RAUND ▶</button>
+        <button class="secondary" id="menuBtn" type="button">MENYU</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="game.js"></script>
+</body>
+</html>
