@@ -151,7 +151,7 @@ class TankGame {
       maxAmmo: 4,
       cooldown: 0,
       speed: 2.4,
-      turnSpeed: 0.045, // Aylanish tezligi
+      turnSpeed: 0.045,
       moving: false,
       rotationDir: i % 2 === 0 ? 1 : -1,
       bot: i >= this.humans,
@@ -228,20 +228,18 @@ class TankGame {
       t.cooldown = Math.max(0, t.cooldown - dt);
       t.shield = Math.max(0, t.shield - dt);
 
-      // Bot boshqaruvi
       if (t.bot) {
         this.botThink(t, dt);
       }
 
-      // 1. TUGMA BOSILGANDA -> OLDINGA YURISH
+      // Bosib turganda oldinga harakatlanadi
       if (t.moving) {
         this.moveTank(t);
       } else {
-        // 2. TUGMA BOSILMAGANDA -> JOYIDA DOIMIY AYLANISH
+        // Qo'yib yuborilganda o'z joyida doimiy aylanadi
         t.angle += t.turnSpeed * t.rotationDir;
       }
 
-      // Bonus olish
       if (this.bonus && Math.hypot(t.x - this.bonus.x, t.y - this.bonus.y) < 32) {
         this.collectBonus(t);
       }
@@ -276,7 +274,6 @@ class TankGame {
     const desired = Math.atan2(target.y - t.y, target.x - t.x);
     let diff = normalizeAngle(desired - t.angle);
 
-    // Bot nishon tomonga buralishi
     if (Math.abs(diff) < 0.22) {
       if (t.ammo > 0 && Math.random() < 0.04) {
         this.fire(t);
@@ -298,13 +295,12 @@ class TankGame {
       t.y = ny;
       this.addDust(t);
     } else {
-      // Devorga tekkanida tiqilmasdan to'xtash
       this.addDust(t);
     }
   }
 
   collides(x, y, self) {
-    const r = 24; // Tank radiusi (1 sm² ga mos ~48px)
+    const r = 24;
 
     if (x < r || x > this.width - r || y < r || y > this.height - r) {
       return true;
@@ -337,9 +333,9 @@ class TankGame {
     if (!t || !t.alive || t.cooldown > 0 || t.ammo <= 0) return;
 
     t.ammo--;
-    t.cooldown = 400; // O'qlar orasidagi interval
+    t.cooldown = 400;
 
-    // O'Q OTILGANDA AYLANISH YO'NALISHI ALMASHADI (1-2-3-4 Player qoidasi)
+    // O'q otilgach, aylanish yo'nalishi teskariga o'zgaradi
     t.rotationDir *= -1;
 
     AudioEngine.shot();
@@ -350,7 +346,7 @@ class TankGame {
     this.bullets.push({
       x: t.x + dx * 30,
       y: t.y + dy * 30,
-      vx: dx * 4.6, // O'q tezligi
+      vx: dx * 4.6,
       vy: dy * 4.6,
       owner: t,
       life: 220
@@ -374,17 +370,17 @@ class TankGame {
 
       let remove = false;
 
-      // 1. Ekran chetiga tegsa -> DARHOL YO'QOLADI
+      // Maydon chetiga tegsa yo'qoladi
       if (b.x <= 4 || b.y <= 4 || b.x >= this.width - 4 || b.y >= this.height - 4 || b.life <= 0) {
         remove = true;
       }
 
-      // 2. Devorga tegsa -> DARHOL YO'QOLADI (rikoshet yo'q)
+      // Devorga tegsa yo'qoladi (rikoshet yo'q)
       if (!remove && this.walls.some((w) => pointInRect(b.x, b.y, w))) {
         remove = true;
       }
 
-      // 3. Tankka tegsa -> Tankni yo'q qiladi
+      // Tankka tegsa zarba beradi
       if (!remove) {
         for (const t of this.tanks) {
           if (t === b.owner || !t.alive || Math.hypot(b.x - t.x, b.y - t.y) > 26) {
@@ -537,7 +533,6 @@ class TankGame {
 
     c.clearRect(0, 0, w, h);
 
-    // Fon va to'r
     c.fillStyle = m.bg;
     c.fillRect(0, 0, w, h);
 
@@ -551,7 +546,6 @@ class TankGame {
       c.beginPath(); c.moveTo(0, y); c.lineTo(w, y); c.stroke();
     }
 
-    // Devorlar
     for (const wall of this.walls) {
       c.fillStyle = m.wall;
       c.fillRect(wall.x, wall.y, wall.w, wall.h);
@@ -569,7 +563,6 @@ class TankGame {
     this.drawDecoration();
     this.drawBonus();
 
-    // O'qlar
     for (const b of this.bullets) {
       c.save();
       c.fillStyle = '#fff';
@@ -581,7 +574,6 @@ class TankGame {
       c.restore();
     }
 
-    // Zarrachalar
     for (const p of this.particles) {
       c.globalAlpha = Math.max(0, p.life / p.max);
       c.fillStyle = p.color;
@@ -591,12 +583,10 @@ class TankGame {
     }
     c.globalAlpha = 1;
 
-    // Tanklar
     for (const t of this.tanks) {
       if (t.alive) this.drawTank(t);
     }
 
-    // Matnlar
     for (const t of this.texts) {
       c.globalAlpha = Math.min(1, t.life / 20);
       c.fillStyle = t.color;
@@ -671,7 +661,6 @@ class TankGame {
       c.shadowBlur = 0;
     }
 
-    // Gusenitsalar
     c.fillStyle = '#151923';
     c.fillRect(-25, -23, 50, 46);
 
@@ -685,7 +674,6 @@ class TankGame {
       c.fillRect(x, 16, 4, 7);
     }
 
-    // Korpus
     c.fillStyle = t.color;
     c.strokeStyle = t.dark;
     c.lineWidth = 3;
@@ -693,14 +681,12 @@ class TankGame {
     c.fill();
     c.stroke();
 
-    // Zambarak
     c.fillStyle = '#1b2330';
     c.fillRect(2, -5, 31, 10);
 
     c.fillStyle = '#aeb9c7';
     c.fillRect(30, -6, 6, 12);
 
-    // Minora
     c.fillStyle = t.dark;
     c.beginPath();
     c.arc(0, 0, 13, 0, Math.PI * 2);
@@ -805,16 +791,25 @@ function startGame() {
   AudioEngine.init();
   showGame();
 
-  const canvas = $('#gameCanvas');   if (!canvas) return;    game = new TankGame(canvas, playerCount);   game.start(); }  document.addEventListener('DOMContentLoaded', () => {   const modes = $$('.mode');
-  modes.forEach((btn) => {
-    btn.addEventListener('click', () => {
-      modes.forEach((x) => x.classList.remove('active'));
+  const canvas = $('#gameCanvas');
+  if (!canvas) return;
+
+  game = new TankGame(canvas, playerCount);
+  game.start();
+}
+
+// BARCHA HODISALARNI TO'G'RIDAN-TO'G'RI BOG'LASH
+function setupEventListeners() {
+  // O'yinchilar soni tanlash
+  $$('.mode').forEach((btn) => {     btn.addEventListener('click', (e) => {       e.stopPropagation();       $$
+('.mode').forEach((x) => x.classList.remove('active'));
       btn.classList.add('active');
       playerCount = Number(btn.dataset.players) || 1;
       AudioEngine.tone(560, 0.05, 'triangle');
     });
   });
 
+  // Boshlash tugmalari
   const tankCard = $('#tankCard');
   const quickCard = $('#quickCard');
   const backBtn = $('#backBtn');
@@ -827,7 +822,7 @@ function startGame() {
       e.preventDefault();
       btn.classList.add('pressed');
       if (game && game.tanks[index] && game.tanks[index].alive) {
-        game.tanks[index].moving = true; // Bosib turganda oldinga yuradi
+        game.tanks[index].moving = true;
       }
     };
 
@@ -836,7 +831,7 @@ function startGame() {
       btn.classList.remove('pressed');
       if (game && game.tanks[index] && game.tanks[index].alive) {
         game.tanks[index].moving = false;
-        game.fire(game.tanks[index]); // Qo'yib yuborganda o'q uzadi va aylanma yo'nalishi o'zgaradi
+        game.fire(game.tanks[index]);
       }
     };
 
@@ -871,4 +866,11 @@ function startGame() {
   window.addEventListener('resize', () => {
     if (game) game.resize();
   });
-});
+}
+
+// Brauzer tayyor bo'lishi bilan hodisalarni darhol ishga tushirish
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', setupEventListeners);
+} else {
+  setupEventListeners();
+}
