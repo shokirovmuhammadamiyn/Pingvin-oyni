@@ -1345,4 +1345,4 @@ window.addEventListener(
    game.fire(game.tanks[i]);
   }
  }
-);
+); 
